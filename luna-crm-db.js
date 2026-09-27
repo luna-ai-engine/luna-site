@@ -17,6 +17,8 @@
      email ni téléphone n'est mis dans un filtre d'adresse : seulement des identifiants, des codes de listes fixes et des dates.
    - Écritures : champs permis seulement (FIELDS). « Ne pas contacter », revue, archivage et restauration sont des actions
      séparées, pour que l'historique les nomme exactement ; suppression définitive par la seule fonction delete_record (David).
+   - Nouveau contact avec ses coordonnées : un seul appel, la fonction create_contact (contrat 1 avec Sun, migration 0036),
+     tout ou rien ; aucun repli vers une création en plusieurs appels (critère TR10).
    - Erreurs : un code (kind, detail), jamais le texte de la base, écrit en français alors que l'écran de Renata est en anglais. */
 (function (root) {
   "use strict";
@@ -46,7 +48,7 @@
     note: "id,kind,body,occurred_at,company_id,contact_id,deal_id,brand_id,outlet_id,archived_at,archived_by,created_by,version",
     journal: "id,at,actor,record_type,record_id,parent_type,parent_id,action,changed_fields,old_values,new_values,reason",
     name_company: "id,name",
-    name_contact: "id,first_name,last_name,company_id",
+    name_contact: "id,first_name,last_name,company_id,archived_at",
     name_deal: "id,name",
     preview: "item_type,item_id,effect"
   };
@@ -93,8 +95,10 @@
   const text = (v, max) => String(v == null ? "" : v).trim().slice(0, max || 200);
   const fold = s => String(s == null ? "" : s).normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().trim();
 
-  // Mêmes formes que la base (migration 0034) : contrôlées avant l'envoi pour que l'écran le dise tout de suite.
-  const EMAIL_RE = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
+  // Mêmes formes que la base : contrôlées avant l'envoi pour que l'écran le dise tout de suite. Email : forme commune du
+  // contrat 2 avec Sun (après espaces retirés et minuscules, 254 caractères au plus) ; ni « ? », ni « & », ni « = », ni
+  // « % », ni « # » : une adresse ne peut pas porter de copie cachée, d'objet ou de texte dans un lien mailto:.
+  const EMAIL_RE = /^[a-z0-9._'+-]+@[a-z0-9-]+(\.[a-z0-9-]+)+$/;
   const PHONE_RE = /^\+?[0-9][0-9 ().-]{3,30}$/;
   const valid = {
     email: v => { const e = String(v == null ? "" : v).trim().toLowerCase(); return e.length <= 254 && EMAIL_RE.test(e) ? e : null; },
@@ -392,6 +396,30 @@
     return writeOne("contacts", id, { do_not_contact: false, version: needVersion(version) });
   }
 
+  // Nouveau contact et ses coordonnées (critère TR10) : un seul appel à crm.create_contact (contrat 1 avec Sun). La base crée le
+  // contact, son email principal, son téléphone et, si demandé, le désigne comme contact principal de son entreprise, dans une
+  // seule transaction : après tout refus ou toute coupure, rien n'est créé. Une clé absente prend la valeur par défaut de la
+  // fonction. Email et téléphone contrôlés avant l'appel, pour que l'écran le dise tout de suite.
+  const CREATE_CONTACT = { first_name: "p_first_name", last_name: "p_last_name", job_title: "p_job_title", company_id: "p_company_id",
+    brand_id: "p_brand_id", decision_role: "p_decision_role", preferred_language: "p_preferred_language", nature: "p_nature",
+    source_id: "p_source_id", email: "p_email", email_state: "p_email_state", phone: "p_phone", phone_type: "p_phone_type",
+    make_main: "p_make_main" };
+  async function createContact(values) {
+    const v = values || {}, args = {};
+    Object.entries(CREATE_CONTACT).forEach(([k, arg]) => {
+      const x = v[k];
+      if (x === undefined || x === null || x === "" || (k === "make_main" && x !== true)) return;
+      args[arg] = typeof x === "string" ? x.trim() : x;
+    });
+    if (args.p_email !== undefined) { const e = valid.email(args.p_email); if (!e) throw new CrmError("invalid", "email"); args.p_email = e; }
+    if (args.p_phone !== undefined) { const p = valid.phone(args.p_phone); if (!p) throw new CrmError("invalid", "phone"); args.p_phone = p; }
+    const s = await db();
+    const r = await run(s.rpc("create_contact", args));
+    const row = Array.isArray(r) ? r[0] : r;
+    if (!row || !row.id) throw new CrmError("error");
+    return row;
+  }
+
   // Revue des données (« Revoir maintenant ») : Garder repousse la date de revue ; sinon la fiche est archivée.
   async function reviewContact(id, version, keep) {
     if (!isUuid(id)) throw new CrmError("not_found");
@@ -416,9 +444,9 @@
   root.lunaCrm = Object.freeze({
     start, lists, reviewPeriods, pipeline, companies, contacts, deals, company, contact, deal, brands, outlets, emails, phones,
     notes, notesByIds, history, names, sameNameCompanies, emailOwners, sameNameContacts,
-    insert, update, archive, restore, setDoNotContact, removeDoNotContact, reviewContact, deletionPreview, deleteRecord,
+    insert, createContact, update, archive, restore, setDoNotContact, removeDoNotContact, reviewContact, deletionPreview, deleteRecord,
     valid, fold, isUuid, CrmError
   });
   // Pour les tests hors ligne seulement : listes de colonnes et de champs, jamais une donnée.
-  root.__lunaCrmDbInternals = { COLS, TABLES, FIELDS, ON_INSERT, CODES, DETAIL_CODES: DETAILS.map(d => d[1]), classify, detailOf };
+  root.__lunaCrmDbInternals = { COLS, TABLES, FIELDS, ON_INSERT, CODES, CREATE_CONTACT, EMAIL_RE, DETAIL_CODES: DETAILS.map(d => d[1]), classify, detailOf };
 })(typeof window !== "undefined" ? window : globalThis);

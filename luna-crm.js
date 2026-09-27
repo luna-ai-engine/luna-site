@@ -10,7 +10,15 @@
    - Tout texte venu de la base s'affiche comme texte (textContent), jamais comme HTML ; un lien n'est ouvert que s'il commence
      par https://, http://, mailto: ou tel: (D4 : le téléphone de Renata appelle ou écrit ; Luna n'envoie rien).
    - Aucun message de réussite sans enregistrement confirmé par la base ; en cas d'échec, « non enregistré » et la saisie est
-     gardée (critère TR10). Chaque mise à jour renvoie la version lue (TR11).
+     gardée (critère TR10). Un nouveau contact et ses coordonnées se créent en un seul appel, tout ou rien. Chaque mise à
+     jour renvoie la version lue (TR11) ; après un refus de version, la fiche ou la liste est relue avant le message.
+   - Un champ dont les choix n'ont pas pu être chargés n'est jamais envoyé vide à la place de sa valeur ; « Enregistrer »
+     attend la fin du chargement. Une fenêtre qui envoie ne se ferme pas avant la réponse, et cette réponse ne ferme qu'elle.
+   - Sous « ne pas contacter », appeler et écrire sont désactivés ; le numéro et l'adresse restent lisibles (décision de Luna
+     du 27/09/2026). Un lien mailto: encode l'adresse : elle ne peut porter ni copie cachée, ni objet, ni texte.
+   - Heures saisies et affichées à l'heure de Dubaï, quel que soit le fuseau de l'appareil.
+   - Geste retour du téléphone : il ferme la fenêtre, puis chaque niveau de la fiche, sans quitter le site ; une saisie en
+     cours demande confirmation.
    - Conçus d'abord pour un téléphone de 390 points de large : aucun défilement horizontal, aucun texte coupé (TR2). */
 (function (root) {
   "use strict";
@@ -137,6 +145,19 @@
       err_country: "Not saved: enter a two-letter country code, such as AE.", err_blocks: "Not deleted: this company still has contacts or deals.",
       err_months: "Not saved: enter a number of months between 1 and 120.", err_note_text: "Not saved: a note needs a text.",
       err_nothing: "Nothing to save: no change.", partial_contact: "The contact is saved, but some details were not. Check the contact page.",
+      err_version: "Not saved: this page is out of date. Reload it and make your change again.",
+      err_version_reloaded: "Not saved: this page was out of date. It has been reloaded; make your change again.",
+      err_move_partial: "The new order was only partly saved. The list has been reloaded and shows the saved order: check it, and move the item again only if it is not in the right place.",
+      err_move_unsure: "The new order was only partly saved, and the list could not be reloaded: the order shown may be wrong. Check your internet connection. The list will be reloaded before any other move.",
+      list_reloaded: "The list has been reloaded and shows the saved order. Check it, then move the item again if needed.",
+      choices_kept: "Brand, outlet and main contact could not be loaded; saving keeps them as they are.",
+      choices_failed: "Brand, outlet and main contact could not be loaded; try again to choose them.",
+      brands_kept: "The brands could not be loaded; saving keeps the brand as it is.",
+      brands_failed: "The brands could not be loaded; try again to choose one.",
+      not_loaded: "Not loaded", other_company: "Other company",
+      main_now: name => `Current main contact: ${name}. Ticking the box makes this person the main contact instead.`,
+      pipeline_value_filtered: "Pipeline value (filtered)",
+      leave_q: "Leave this form? What you typed will be lost.", leave: "Leave", stay: "Keep editing",
       set_lists: "Lists", set_lists_lead: "Your lists for sorting companies, contacts and deals. An archived item disappears from the choices but stays on the records that carry it; nothing is deleted.",
       lists_label: "List", list_group: "Groups", list_tag: "Tags", list_sector: "Industries", list_service: "Services", list_source: "Sources",
       list_stage: "Pipeline stages", list_win_reason: "Win reasons", list_loss_reason: "Loss reasons",
@@ -256,6 +277,19 @@
       err_country: "Non enregistré : saisissez un code de pays de deux lettres, comme AE.", err_blocks: "Non supprimé : cette entreprise porte encore des contacts ou des affaires.",
       err_months: "Non enregistré : saisissez un nombre de mois entre 1 et 120.", err_note_text: "Non enregistré : une note demande un texte.",
       err_nothing: "Rien à enregistrer : aucune modification.", partial_contact: "Le contact est enregistré, mais une partie des coordonnées ne l'est pas. Vérifiez la fiche du contact.",
+      err_version: "Non enregistré : cette page n'est plus à jour. Rechargez-la et refaites votre modification.",
+      err_version_reloaded: "Non enregistré : cette page n'était plus à jour. Elle a été rechargée ; refaites votre modification.",
+      err_move_partial: "Le nouvel ordre n'a été enregistré qu'en partie. La liste a été relue et montre l'ordre enregistré : vérifiez-le, et déplacez de nouveau l'élément seulement s'il n'est pas à la bonne place.",
+      err_move_unsure: "Le nouvel ordre n'a été enregistré qu'en partie, et la liste n'a pas pu être relue : l'ordre affiché peut être faux. Vérifiez votre connexion internet. La liste sera relue avant tout autre déplacement.",
+      list_reloaded: "La liste a été relue et montre l'ordre enregistré. Vérifiez-le, puis déplacez de nouveau l'élément si besoin.",
+      choices_kept: "Marque, point de vente et contact principal n'ont pas pu être chargés ; l'enregistrement les garde tels quels.",
+      choices_failed: "Marque, point de vente et contact principal n'ont pas pu être chargés ; réessayez pour les choisir.",
+      brands_kept: "Les marques n'ont pas pu être chargées ; l'enregistrement garde la marque telle quelle.",
+      brands_failed: "Les marques n'ont pas pu être chargées ; réessayez pour en choisir une.",
+      not_loaded: "Non chargé", other_company: "Autre entreprise",
+      main_now: name => `Contact principal actuel : ${name}. Cocher la case fait de cette personne le contact principal à sa place.`,
+      pipeline_value_filtered: "Valeur du pipeline (filtrée)",
+      leave_q: "Quitter ce formulaire ? Votre saisie sera perdue.", leave: "Quitter", stay: "Continuer la saisie",
       set_lists: "Listes", set_lists_lead: "Vos listes pour classer entreprises, contacts et affaires. Un élément archivé disparaît des choix mais reste sur les fiches qui le portent ; rien n'est supprimé.",
       lists_label: "Liste", list_group: "Groupes", list_tag: "Étiquettes", list_sector: "Secteurs", list_service: "Services", list_source: "Sources",
       list_stage: "Étapes du pipeline", list_win_reason: "Motifs de gain", list_loss_reason: "Motifs de perte",
@@ -283,8 +317,46 @@
     }
   };
 
-  // Pour les tests hors ligne seulement : textes et listes fixes, jamais une donnée.
-  root.__lunaCrmInternals = { CT, FIXED, LIST_KINDS };
+  // ------------------------------------------------------------------ formes pures (sans écran), essayées hors navigateur
+  // Heure de Dubaï, fixe (UTC+4, sans heure d'été) : c'est celle qu'affiche fmtWhen. Une date et heure saisie dans un
+  // formulaire se lit et s'écrit à cette heure-là, quel que soit le fuseau de l'appareil (défaut C13).
+  const DUBAI_MS = 4 * 3600e3;
+  function toLocalInput(iso) {
+    const d = iso ? new Date(iso) : new Date();
+    return isNaN(d) ? "" : new Date(d.getTime() + DUBAI_MS).toISOString().slice(0, 16);
+  }
+  function fromLocalInput(v) {
+    const m = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})/.exec(String(v || ""));
+    if (!m) return null;
+    const ms = Date.UTC(Number(m[1]), Number(m[2]) - 1, Number(m[3]), Number(m[4]), Number(m[5])) - DUBAI_MS;
+    return isNaN(ms) ? null : new Date(ms).toISOString();
+  }
+  // Valeur en AED : nombre entier. Un séparateur de milliers (espace, espace insécable ou fine, virgule, apostrophe, point),
+  // toujours le même, n'est admis que devant un groupe d'exactement trois chiffres : « 2 500,50 » ou « 2.500,5 » sont refusés
+  // au lieu de devenir 250 050 (défaut C9). Rend null si vide, undefined si refusé.
+  function parseAed(v) {
+    const s = String(v == null ? "" : v).trim();
+    if (!s) return null;
+    if (!/^\d+$/.test(s) && !/^\d{1,3}(?:([\s\u00a0\u202f,'.])\d{3}(?:\1\d{3})*)$/.test(s)) return undefined;
+    const digits = s.replace(/\D/g, "");
+    if (digits.length > 10) return undefined;
+    const n = Number(digits);
+    return n <= 2147483647 ? n : undefined;
+  }
+  // Lien mailto: d'une adresse enregistrée : partie avant et partie après le dernier « @ » encodées séparément, jamais une
+  // simple concaténation ; une suite « ?bcc=… » ou « ?subject=… » reste du texte et n'ajoute aucun paramètre (défaut C1).
+  function mailHref(email) {
+    const e = String(email == null ? "" : email).trim(), i = e.lastIndexOf("@");
+    if (i < 1 || i === e.length - 1) return "";
+    return "mailto:" + encodeURIComponent(e.slice(0, i)) + "@" + encodeURIComponent(e.slice(i + 1));
+  }
+
+  // Attente la plus longue d'un chargement qui garde « Enregistrer » inactif (défauts C5 et C6), en millisecondes.
+  const WAIT = { choicesMs: 10000 };
+
+  // Pour les tests hors ligne seulement : textes, listes fixes et formes pures, jamais une donnée ; WAIT se raccourcit dans
+  // les essais pour ne pas attendre dix secondes.
+  root.__lunaCrmInternals = { CT, FIXED, LIST_KINDS, toLocalInput, fromLocalInput, parseAed, mailHref, WAIT };
   if (!doc || typeof doc.addEventListener !== "function" || !doc.documentElement) return;   // hors navigateur : textes seulement
 
   // ------------------------------------------------------------------ outils
@@ -344,19 +416,10 @@
       .forEach(x => { p[x.type] = x.value; });
     return `${p.year}-${p.month}-${p.day}`;
   }
-  const toLocalInput = iso => { const d = iso ? new Date(iso) : new Date(); if (isNaN(d)) return ""; return new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 16); };
-  const fromLocalInput = v => { if (!v) return null; const d = new Date(v); return isNaN(d) ? null : d.toISOString(); };
   const fold = s => String(s == null ? "" : s).normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().trim();
   const fullName = r => [r && r.first_name, r && r.last_name].filter(Boolean).join(" ");
   const actor = a => (!a ? "" : /^system:/.test(String(a)) ? t("system") : String(a));
   const telHref = p => "tel:" + String(p || "").replace(/[^\d+]/g, "");
-  function parseAed(v) {
-    const s = String(v == null ? "" : v).replace(/[\s  ,']/g, "");
-    if (!s) return null;
-    if (!/^\d{1,10}$/.test(s)) return undefined;
-    const n = Number(s);
-    return n <= 2147483647 ? n : undefined;
-  }
   const natureFor = status => ({ current_client: "client", past_client: "client", prospect: "prospect", partner_supplier: "partner_supplier", media: "press" }[status] || "");
   const statusTone = s => (s === "current_client" ? "good" : s === "prospect" ? "" : "muted");
 
@@ -367,7 +430,7 @@
     pf: { view: "open", stage: "", service: "", source: "", noNext: false, archived: false, period: "month" },
     cf: { q: "", status: "", group: "", sector: "", tag: "", archived: false },
     kf: { q: "", group: "", nature: "", companyStatus: "", tag: "", review: false, dnc: false, archived: false },
-    listKind: "group"
+    listKind: "group", listsUnsure: false
   };
   const nextSeq = k => (S.seq[k] = (S.seq[k] || 0) + 1);
   const isDecider = () => !!(S.me && S.me.decider);
@@ -457,11 +520,21 @@
     const kind = e && e.kind;
     if (kind === "offline") return t("err_offline");
     if (kind === "conflict") return t("err_conflict");
+    if (kind === "version") return t("err_version");
     if (kind === "forbidden") return t("err_forbidden");
     if (kind === "not_found") return t("err_not_found");
     if (kind === "closed") return t("err_closed");
     if (kind === "invalid") { const k = "err_" + (e.detail || ""); return e.detail && CT.en[k] !== undefined ? t(k) : t("err_invalid"); }
     return t("err_generic");
+  }
+  // Fiche modifiée ailleurs entre-temps (conflict, 409) ou lue sans sa version (version, 428) : réessayer tel quel échouerait
+  // encore. La fiche est relue d'abord ; « rechargée » ne s'écrit qu'après une relecture réussie.
+  const isStale = e => !!e && (e.kind === "conflict" || e.kind === "version");
+  async function staleText(e, reload) {
+    let ok;
+    try { ok = (await (reload || refreshAfterWrite)()) !== false; } catch (x) { ok = false; }
+    if (e.kind === "conflict") return t(ok ? "err_conflict_reloaded" : "err_conflict");
+    return t(ok ? "err_version_reloaded" : "err_version");
   }
   // Action immédiate (sans formulaire) : message seulement après la réponse de la base ; fiche rechargée si elle a changé.
   async function doAction(run, okText, after) {
@@ -472,27 +545,29 @@
       await refreshAfterWrite();
       return res;
     } catch (e) {
-      toast(e && e.kind === "conflict" ? t("err_conflict_reloaded") : errorText(e), true);
-      if (e && e.kind === "conflict") await refreshAfterWrite();
+      toast(isStale(e) ? await staleText(e) : errorText(e), true);
       return undefined;
     }
   }
 
-  // Échec dans une petite fenêtre : fiche modifiée entre-temps, la fenêtre se ferme et la fiche est rechargée ; sinon le
-  // message reste dans la fenêtre.
-  async function failIn(msg, e) {
-    if (e && e.kind === "conflict") { closeDialog(true); toast(t("err_conflict_reloaded"), true); await refreshAfterWrite(); return; }
+  // Échec dans une petite fenêtre : fiche modifiée entre-temps, la fenêtre (celle qui a envoyé, jeton tok) se ferme et la
+  // fiche est rechargée ; sinon le message reste dans la fenêtre.
+  async function failIn(msg, e, tok) {
+    if (isStale(e)) { closeDialog(true, tok); toast(await staleText(e), true); return; }
     clearToast();
     msg.className = "crm-msg err"; msg.textContent = errorText(e);
   }
 
   // ------------------------------------------------------------------ fenêtre de formulaire (par-dessus l'écran)
-  let dialogBusy = false, dialogReturn = null;
+  // dialogSeq : jeton de la fenêtre ouverte ; la réponse d'un envoi ne ferme que la fenêtre qui l'a lancé (défaut C15).
+  // dialogGuard : dit si la fenêtre contient une saisie (le geste retour demande alors confirmation, défaut C11).
+  let dialogBusy = false, dialogReturn = null, dialogSeq = 0, dialogGuard = null;
   function openDialog(title, ...content) {
     const d = byId("crm-dialog"), body = byId("crm-dialog-body");
-    if (!d || !body) return;
+    if (!d || !body) return 0;
     dialogReturn = doc.activeElement;
     clearToast();
+    dialogSeq += 1; dialogGuard = null;
     byId("crm-dialog-title").textContent = title;
     put(body, ...content.flat(Infinity).filter(Boolean));
     d.hidden = false; byId("crm-dialog-back").hidden = false; dialogBusy = false;
@@ -500,15 +575,79 @@
     updateFab(); refreshIcons();
     const first = body.querySelector("input:not([type=checkbox]):not([disabled]), select, textarea");
     setTimeout(() => { try { (first || byId("crm-dialog-close")).focus({ preventScroll: true }); } catch (e) { /* focus facultatif */ } }, 30);
+    return dialogSeq;
   }
-  function closeDialog(force) {
-    if (dialogBusy && !force) return;
-    dialogBusy = false;
+  function closeDialog(force, tok) {
+    if (dialogBusy && !force) return false;
+    if (tok != null && tok !== dialogSeq) return false;
     const d = byId("crm-dialog");
-    if (!d || d.hidden) return;
+    if (!d || d.hidden) return false;
+    dialogBusy = false; dialogGuard = null;
     d.hidden = true; byId("crm-dialog-back").hidden = true; byId("crm-dialog-body").replaceChildren();
     updateFab();
     try { if (dialogReturn && dialogReturn.isConnected) dialogReturn.focus({ preventScroll: true }); } catch (e) { /* focus facultatif */ }
+    return true;
+  }
+  // Envoi depuis une petite fenêtre (confirmation, étape, revue, client actuel, suppression) : la fenêtre reste ouverte
+  // pendant l'envoi (ni le fond, ni « Fermer », ni Échap, ni le geste retour ne la ferment) ; sa réponse ne touche qu'elle.
+  async function busyRun(tok, fn) {
+    if (dialogBusy || tok !== dialogSeq) return;
+    dialogBusy = true;
+    try { await fn(); } finally { if (tok === dialogSeq) dialogBusy = false; }
+  }
+
+  // ------------------------------------------------------------------ geste retour du téléphone (défaut C11)
+  // Chaque calque ouvert (chaque niveau de la fiche, la fenêtre) porte une entrée d'historique, sans changer l'adresse : le
+  // geste retour ferme le calque du dessus au lieu de quitter le site ; une fenêtre qui contient une saisie demande d'abord
+  // confirmation. Le traitement de l'adresse au démarrage de la page n'est pas touché.
+  const H = { pushed: 0, pending: false, timer: null };
+  const hist = () => (root.history && typeof root.history.pushState === "function" && typeof root.history.go === "function" ? root.history : null);
+  function layerDepth() {
+    const sheet = byId("crm-sheet"), dialog = byId("crm-dialog");
+    return (sheet && !sheet.hidden ? Math.max(S.stack.length, 1) : 0) + (dialog && !dialog.hidden ? 1 : 0);
+  }
+  function syncHistory() {
+    if (!hist() || H.timer) return;
+    H.timer = setTimeout(() => { H.timer = null; applyHistory(); }, 0);
+  }
+  function applyHistory() {
+    const h = hist();
+    if (!h || H.pending) return;
+    const want = layerDepth();
+    while (H.pushed < want) { H.pushed += 1; h.pushState({ lunaCrm: H.pushed }, ""); }
+    if (H.pushed > want) { const n = H.pushed - want; H.pending = true; H.pushed = want; h.go(-n); }
+  }
+  // « Quitter » passe par la fermeture ordinaire : pendant un envoi, la fenêtre reste ouverte jusqu'à la réponse (défaut C15,
+  // repris pour cette question). Toucher « Enregistrer » répond à la question : elle disparaît dès que l'envoi part.
+  function askLeave() {
+    const body = byId("crm-dialog-body");
+    if (!body || body.querySelector(".crm-leave")) return;
+    const box = h("div", { class: "crm-warn crm-leave", role: "alert" }, h("span", { text: t("leave_q") }),
+      h("div", { class: "crm-acts" }, btn(t("stay"), () => box.remove()), btn(t("leave"), () => closeDialog(), "danger")));
+    body.insertBefore(box, body.firstChild);
+    body.scrollTop = 0;
+  }
+  function onPopState(ev) {
+    const idx = ev && ev.state && typeof ev.state.lunaCrm === "number" ? ev.state.lunaCrm : 0;
+    if (H.pending) { H.pending = false; H.pushed = idx; applyHistory(); return; }   // retour demandé par l'écran lui-même
+    const depth = layerDepth();
+    H.pushed = Math.min(idx, depth);
+    if (depth === 0) { if (idx > 0 && hist()) hist().back(); return; }              // entrée restée d'avant un rechargement
+    if (idx >= depth) { applyHistory(); return; }
+    const dialog = byId("crm-dialog");
+    if (!dialog.hidden) {
+      if (dialogBusy || (dialogGuard && dialogGuard())) {                           // envoi en cours, ou saisie : on demande
+        if (!dialogBusy) askLeave();
+        applyHistory();
+        return;
+      }
+      closeDialog(true);
+    }
+    if (!byId("crm-sheet").hidden && layerDepth() > idx) {
+      while (S.stack.length > 1 && layerDepth() > idx) S.stack.pop();
+      if (layerDepth() > idx) closeSheet(); else renderSheet();
+    }
+    applyHistory();
   }
 
   function field(label, control, o) {
@@ -595,19 +734,30 @@
   }
 
   // Formulaire : contrôle des champs, enregistrement, message « non enregistré » et saisie gardée en cas d'échec.
-  function formDialog({ title, fields, submit, submitLabel, intro, done, openMore }) {
+  // ui.hold(clé, vrai) garde « Enregistrer » inactif tant qu'un chargement dont dépendent les valeurs n'est pas fini, dix
+  // secondes au plus (défauts C5 et C6, WAIT.choicesMs) ; ui.note(...) affiche un avis dans le formulaire ; reload relit ce
+  // qu'il faut après un refus.
+  function formDialog({ title, fields, submit, submitLabel, intro, done, openMore, reload }) {
     const msg = h("p", { class: "crm-msg", role: "status", "aria-live": "polite" });
     const extra = h("div", { class: "crm-extra" });
+    const notice = h("div", { class: "crm-notice", hidden: true });
     const save = h("button", { type: "submit", class: "btn primary", text: submitLabel || t("save") });
     const main = fields.filter(f => !f.more), more = fields.filter(f => f.more);
     const form = h("form", { class: "crm-form", novalidate: true },
       intro || null, main.map(f => f.node),
       more.length ? h("details", { class: "crm-more", open: !!openMore }, h("summary", { text: t("more_details") }), h("div", { class: "crm-form" }, more.map(f => f.node))) : null,
-      extra, h("div", { class: "crm-actions" }, msg, btn(t("cancel"), () => closeDialog()), save));
-    const ui = { msg, extra, form, save };
+      notice, extra, h("div", { class: "crm-actions" }, msg, btn(t("cancel"), () => closeDialog()), save));
+    const holds = new Set();
+    let sending = false;
+    const syncSave = () => { save.disabled = sending || holds.size > 0; };
+    const ui = { msg, extra, notice, form, save, dirty: false, token: 0,
+      hold(key, on) { if (on) holds.add(key); else holds.delete(key); syncSave(); },
+      note(...nodes) { put(notice, ...nodes); notice.hidden = !notice.childNodes.length; } };
+    form.addEventListener("input", () => { ui.dirty = true; });
+    form.addEventListener("change", () => { ui.dirty = true; });
     form.addEventListener("submit", async ev => {
       ev.preventDefault();
-      if (dialogBusy) return;
+      if (dialogBusy || holds.size) return;
       extra.replaceChildren();
       const values = {};
       for (const f of fields) {
@@ -621,7 +771,9 @@
         }
         values[f.key] = f.get();
       }
-      dialogBusy = true; save.disabled = true; msg.className = "crm-msg"; msg.textContent = t("saving"); clearToast();
+      dialogBusy = true; sending = true; syncSave(); msg.className = "crm-msg"; msg.textContent = t("saving"); clearToast();
+      const leaveBox = byId("crm-dialog-body").querySelector(".crm-leave");
+      if (leaveBox) leaveBox.remove();
       try {
         const res = await submit(values, ui);
         if (res === false) {                                                   // avertissement affiché : Renata choisit
@@ -629,19 +781,20 @@
           try { extra.scrollIntoView({ block: "nearest" }); } catch (e) { /* facultatif */ }
           return;
         }
-        closeDialog(true);
+        closeDialog(true, ui.token);
         toast(t("saved"));
         if (done) await done(res);
       } catch (e) {
         clearToast();
         msg.className = "crm-msg err"; msg.textContent = errorText(e);
-        if (e && e.kind === "conflict") {
-          extra.append(h("div", { class: "crm-warn" }, h("span", { text: t("conflict_hint") }),
-            btn(t("reload"), async () => { closeDialog(true); await refreshAfterWrite(); })));
+        if (isStale(e)) {
+          extra.append(h("div", { class: "crm-warn" }, e.kind === "conflict" ? h("span", { text: t("conflict_hint") }) : null,
+            btn(t("reload"), async () => { closeDialog(true, ui.token); await (reload || refreshAfterWrite)(); })));
         }
-      } finally { dialogBusy = false; save.disabled = false; }
+      } finally { if (ui.token === dialogSeq) dialogBusy = false; sending = false; syncSave(); }
     });
-    openDialog(title, form);
+    ui.token = openDialog(title, form);
+    dialogGuard = () => ui.dirty;
     return ui;
   }
   // Renvoie le formulaire après « Créer quand même » (repli pour les navigateurs sans requestSubmit).
@@ -651,7 +804,7 @@
       h("span", { class: "s", text: t("dup_nothing_merged") }), h("div", { class: "crm-acts" }, btn(anywayLabel || t("create_anyway"), onAnyway)));
   }
   function openLink(label, type, id) {
-    return h("button", { type: "button", class: "linkbtn", text: label, onclick: () => { closeDialog(true); openRecord(type, id); } });
+    return h("button", { type: "button", class: "linkbtn", text: label, onclick: () => { if (dialogBusy) return; closeDialog(true); openRecord(type, id); } });
   }
   // Champs réellement changés (rien n'est envoyé si rien ne change).
   function diff(row, values, keys) {
@@ -850,16 +1003,23 @@
         info.textContent = t("count_deals", rows.length);
         put(list, ...(rows.length ? rows.map(r => dealRow(r, { showStage: true })) : [empty(t("none_match"))]));
       } else if (f.view === "open") {
-        const sum = await api().pipeline();
+        // Sans filtre : nombres et valeurs de la vue pipeline_summary. Avec un filtre (service, source, sans prochaine étape) :
+        // calculés sur les affaires ouvertes filtrées, lues une fois, et la valeur est dite « filtrée » (défaut C10).
+        const filtered = !!(f.service || f.source || f.noNext);
+        const [sum, open] = await Promise.all([api().pipeline(), filtered ? api().deals({ ...common, outcome: "open", noNextStep: f.noNext }) : null]);
         if (my !== S.seq.pl) return;
-        const stages = (sum || []).filter(s => s.stage_outcome === "open" && (!s.stage_archived || Number(s.deal_count) > 0));
+        const by = id => (open || []).filter(r => r.stage_id === id);
+        // Étapes dans l'ordre de Paramètres (position, puis libellé anglais) : deux positions égales s'affichent partout pareil.
+        const shown = (sum || []).slice().sort(byPos).filter(s => s.stage_outcome === "open").map(s => (filtered
+          ? Object.assign({}, s, { deal_count: by(s.stage_id).length, value_aed_total: by(s.stage_id).reduce((a, r) => a + Number(r.value_aed || 0), 0) }) : s));
+        const stages = shown.filter(s => !s.stage_archived || Number(s.deal_count) > 0);
         if (!stages.some(s => s.stage_id === f.stage)) f.stage = stages.length ? stages[0].stage_id : "";
         const totalValue = stages.reduce((a, s) => a + Number(s.value_aed_total || 0), 0);
-        put(total, h("span", { class: "l", text: t("pipeline_value") }), h("span", { class: "v", text: fmtAed(totalValue) }));
+        put(total, h("span", { class: "l", text: t(filtered ? "pipeline_value_filtered" : "pipeline_value") }), h("span", { class: "v", text: fmtAed(totalValue) }));
         put(stagesBox, ...stages.map(s => h("button", { type: "button", class: "crm-stage", "aria-pressed": String(s.stage_id === f.stage),
           onclick: () => { f.stage = s.stage_id; loadPipeline(); } },
           h("span", { class: "l", text: stageLabel(s) }), h("span", { class: "n", text: fmtInt(s.deal_count) }), h("span", { class: "v", text: fmtAed(s.value_aed_total) }))));
-        const rows = f.stage ? await api().deals({ ...common, stage: f.stage, noNextStep: f.noNext }) : [];
+        const rows = !f.stage ? [] : filtered ? by(f.stage) : await api().deals({ ...common, stage: f.stage, noNextStep: f.noNext });
         if (my !== S.seq.pl) return;
         const cur = stages.find(s => s.stage_id === f.stage);
         info.textContent = cur ? t("stage_count", stageLabel(cur), rows.length, sumOf(rows)) : "";
@@ -893,58 +1053,64 @@
     byId("crm-sheet").hidden = true; byId("crm-sheet-back").hidden = true; byId("crm-sheet-body").replaceChildren();
     updateFab();
   }
-  function sheetBack() { S.stack.pop(); if (S.stack.length) renderSheet(); else closeSheet(); }
+  function sheetBack() { S.stack.pop(); syncHistory(); if (S.stack.length) renderSheet(); else closeSheet(); }
   async function openRecord(type, id) {
     const top = S.stack[S.stack.length - 1];
     if (!top || top.type !== type || top.id !== id) S.stack.push({ type, id });
     showSheet();
-    await renderSheet();
+    return renderSheet();
   }
+  // Rend vrai si la fiche a été relue et affichée, faux sinon.
   async function renderSheet() {
     const top = S.stack[S.stack.length - 1];
-    if (!top) { closeSheet(); return; }
+    if (!top) { closeSheet(); return true; }
     const my = nextSeq("sheet"), body = byId("crm-sheet-body"), title = byId("crm-sheet-title");
     byId("crm-sheet-back-btn").hidden = S.stack.length < 2;
     const same = S.current && S.current.type === top.type && S.current.row && S.current.row.id === top.id;
     const scroll = same ? body.scrollTop : 0;
     if (!same) { title.textContent = ""; put(body, loading()); }
+    let ok = true;
     try {
       const view = await VIEWS[top.type](top.id);
-      if (my !== S.seq.sheet) return;
+      if (my !== S.seq.sheet) return true;
       title.textContent = view.title;
       put(body, ...view.nodes.filter(Boolean));
       body.scrollTop = scroll;
       refreshIcons();
     } catch (e) {
-      if (my !== S.seq.sheet) return;
-      S.current = null;
+      if (my !== S.seq.sheet) return true;
+      S.current = null; ok = false;
       put(body, loadError(e, renderSheet));
     }
     updateFab();
+    return ok;
   }
+  // Rend faux si la fiche ouverte n'a pas pu être relue (le message ne dira pas « rechargée »).
   async function refreshAfterWrite() {
     PANELS.forEach(p => { if (panelVisible(p)) renderPanel(p); });
-    if (!byId("crm-sheet").hidden) await renderSheet();
+    if (!byId("crm-sheet").hidden) return renderSheet();
+    return true;
   }
   function archivedBanner(type, row) {
     if (!row.archived_at) return null;
     return h("div", { class: "crm-warn" }, h("span", { text: archivedLine(row) }),
       h("div", { class: "crm-acts" }, actBtn(t("restore"), () => doAction(() => api().restore(type, row.id, row.version), t("restored")))));
   }
-  function archivedList(list, labelOf, after) {
+  function archivedList(list, labelOf, action) {
     if (!list.length) return null;
+    const run = action || doAction;
     return h("details", { class: "crm-archived" }, h("summary", { text: t("show_archived", list.length) }),
       list.map(([type, r]) => h("div", { class: "crm-subline" },
         h("span", { class: "s" }, h("b", { text: labelOf([type, r]) }), " · " + archivedLine(r)),
-        h("span", { class: "crm-mini" }, actBtn(t("restore"), () => doAction(() => api().restore(type, r.id, r.version), t("restored"), after), "sm")))));
+        h("span", { class: "crm-mini" }, actBtn(t("restore"), () => run(() => api().restore(type, r.id, r.version), t("restored")), "sm")))));
   }
   function confirmArchive(type, row) {
     const msg = h("p", { class: "crm-msg", role: "status" });
-    openDialog(t("archive_title"), h("p", { class: "note", text: t("archive_lead") }),
-      h("div", { class: "crm-actions" }, btn(t("cancel"), () => closeDialog()), actBtn(t("archive"), async () => {
-        try { await api().archive(type, row.id, row.version); closeDialog(true); toast(t("archived_done")); await refreshAfterWrite(); }
-        catch (e) { await failIn(msg, e); }
-      }, "primary")), msg);
+    const tok = openDialog(t("archive_title"), h("p", { class: "note", text: t("archive_lead") }),
+      h("div", { class: "crm-actions" }, btn(t("cancel"), () => closeDialog()), actBtn(t("archive"), () => busyRun(tok, async () => {
+        try { await api().archive(type, row.id, row.version); closeDialog(true, tok); toast(t("archived_done")); await refreshAfterWrite(); }
+        catch (e) { await failIn(msg, e, tok); }
+      }), "primary")), msg);
   }
   function footer(type, row, onEdit) {
     return h("div", { class: "crm-foot" },
@@ -1095,7 +1261,7 @@
     const mainMail = activeMails.find(m => m.is_primary) || activeMails[0], firstTel = activeTels[0];
     const quick = h("div", { class: "p-actions" },
       quickLink("phone", t("call"), !dnc && firstTel ? telHref(firstTel.phone) : ""),
-      quickLink("mail", t("write"), !dnc && mainMail ? "mailto:" + mainMail.email : ""));
+      quickLink("mail", t("write"), !dnc && mainMail ? mailHref(mainMail.email) : ""));
     const company = ct.company_id ? h("button", { type: "button", class: "linkbtn", text: ct.company_name || t("rt_company"), onclick: () => openRecord("company", ct.company_id) }) : t("no_company");
     const brand = ct.brand_id ? ((brands.find(b => b.id === ct.brand_id) || {}).name || "") : "";
     const identity = section(t("sec_identity"), kv([
@@ -1108,7 +1274,7 @@
         return A.update("company", co.id, co.version, { primary_contact_id: ct.id });
       }))) : null);
     const mailLine = m => h("div", { class: "crm-subline" },
-      h("span", { class: "s" }, dnc ? h("b", { text: m.email }) : h("a", { href: "mailto:" + m.email, text: m.email }), " ",
+      h("span", { class: "s" }, dnc || !mailHref(m.email) ? h("b", { text: m.email }) : h("a", { href: mailHref(m.email), text: m.email }), " ",
         chip(fx("email_state", m.state), m.state === "confirmed" ? "good" : "warn"), m.is_primary ? " " : null, m.is_primary ? chip(t("primary"), "muted") : null),
       locked ? null : h("span", { class: "crm-mini" },
         m.state !== "confirmed" ? actBtn(t("confirm_email"), () => doAction(() => A.update("contact_email", m.id, m.version, { state: "confirmed" })), "sm") : null,
@@ -1218,6 +1384,18 @@
     });
   }
 
+  // Chargement dont dépend « Enregistrer » (marque, point de vente, contact : défauts C5 et C6) : au-delà de WAIT.choicesMs
+  // sans réponse, il compte comme un échec (avis affiché, champs gardés tels quels) ; une réponse tardive est ignorée.
+  function timeLimit(promise, ms) {
+    let timer = null;
+    const limit = new Promise((_, reject) => { timer = setTimeout(() => reject({ kind: "timeout" }), ms); });
+    return Promise.race([promise, limit]).finally(() => clearTimeout(timer));
+  }
+  // Avis d'une liste de choix non chargée, avec « Réessayer » (défauts C5 et C6).
+  const choicesNote = (key, again) => h("div", { class: "crm-warn", role: "status" }, h("span", { text: t(key) }),
+    h("div", { class: "crm-acts" }, btn(t("retry"), again)));
+  const marked = (label, mark) => label + (mark ? " · " + mark : "");
+
   function contactForm(row, pre) {
     const edit = !!row, p = pre || {};
     const company0 = edit ? (row.company_id ? { type: "company", id: row.company_id, name: row.company_name || "", row: { status: row.company_status } } : null) : (p.company || null);
@@ -1230,18 +1408,47 @@
     nature.input.addEventListener("change", () => { natureTouched = true; });
     const brand = fSelect("brand_id", t("f_brand"), [], "", { empty: t("none") });
     const main = fCheck("main", t("f_main_contact_check"), edit ? !!row.is_primary_contact : false);
-    async function setCompany(c) {
-      put(brand.input, h("option", { value: "", text: t("none") }));
-      brand.node.hidden = !c; main.node.hidden = !c;
+    const mainHint = h("small", { class: "crm-hint", hidden: true });
+    main.node = h("div", { class: "crm-field" }, main.node, mainHint);
+    // Marques de l'entreprise choisie : « Enregistrer » attend leur chargement (dix secondes au plus) ; en cas d'échec ou
+    // passé ce délai, la marque n'est pas envoyée (elle reste telle quelle) si l'entreprise n'a pas changé (défaut C6).
+    let ui = null, brandsOk = true, brandSeq = 0;
+    async function loadBrands(c) {
+      const my = ++brandSeq, same = edit && !!c && c.id === row.company_id;
+      brandsOk = !c;
+      put(brand.input, h("option", { value: "", text: c ? t("st_loading") : t("none") }));
+      brand.input.disabled = !!c;
+      if (ui) { ui.note(); ui.hold("brands", !!c); }
       if (!c) return;
-      if (!natureTouched && c.row && natureFor(c.row.status)) nature.input.value = natureFor(c.row.status);
       try {
-        (await api().brands(c.id)).filter(b => !b.archived_at || (edit && b.id === row.brand_id))
-          .forEach(b => brand.input.append(h("option", { value: b.id, text: b.name })));
-        if (edit && row.brand_id && c.id === row.company_id) brand.input.value = row.brand_id;
-      } catch (e) { /* marques facultatives */ }
+        const list = await timeLimit(api().brands(c.id), WAIT.choicesMs);
+        if (my !== brandSeq) return;
+        put(brand.input, h("option", { value: "", text: t("none") }),
+          list.filter(b => !b.archived_at || (same && b.id === row.brand_id)).map(b => h("option", { value: b.id, text: marked(b.name, b.archived_at ? t("archived_chip") : "") })));
+        if (same && row.brand_id) brand.input.value = row.brand_id;
+        brandsOk = true;
+      } catch (e) {
+        if (my !== brandSeq) return;
+        put(brand.input, h("option", { value: "", text: t("not_loaded") }));
+        if (ui) ui.note(choicesNote(same ? "brands_kept" : "brands_failed", () => loadBrands(company.get())));
+      } finally {
+        if (my === brandSeq) { brand.input.disabled = !brandsOk; if (ui) ui.hold("brands", false); }
+      }
     }
-    const company = fPicker("company", t("f_company"), company0, { kinds: ["company"], onChange: setCompany });
+    function setCompany(c, initial) {
+      brand.node.hidden = !c; main.node.hidden = !c;
+      if (c && !natureTouched && c.row && natureFor(c.row.status)) nature.input.value = natureFor(c.row.status);
+      // « Contact principal » vaut pour l'entreprise choisie : revenir à l'entreprise d'origine rend son état d'origine ; toute
+      // autre entreprise décoche la case, qui ne se coche que si Renata la coche pour celle-ci. Le contact principal actuel
+      // de cette entreprise est affiché, s'il existe (défaut C14).
+      if (!initial) main.input.checked = !!(edit && c && c.id === row.company_id && row.is_primary_contact);
+      const r = (c && c.row) || {};
+      const current = fullName({ first_name: r.primary_contact_first_name, last_name: r.primary_contact_last_name });
+      mainHint.textContent = current && !(edit && r.primary_contact_id === row.id) ? t("main_now", current) : "";
+      mainHint.hidden = !mainHint.textContent;
+      return loadBrands(c);
+    }
+    const company = fPicker("company", t("f_company"), company0, { kinds: ["company"], onChange: c => setCompany(c, false) });
     const role = fSelect("decision_role", t("f_decision_role"), fxOptions("decision_role"), edit ? row.decision_role : "", { empty: t("none") });
     const source = fSelect("source_id", t("f_source"), itemOptions("source", edit ? row.source_id : null), edit ? row.source_id : "", { required: true, empty: t("choose") });
     const language = fSelect("preferred_language", t("f_language"), fxOptions("preferred_language"), edit ? row.preferred_language : "", { empty: t("none") });
@@ -1259,12 +1466,11 @@
       fMulti("tag_ids", t("f_tags"), itemOptions("tag", row.tag_ids), row.tag_ids),
       fText("next_step", t("f_next_step"), row.next_step, { max: 500 }),
       fDate("follow_up_on", t("f_follow_up"), row.follow_up_on));
-    setCompany(company0);
     let anyway = false;
     [first.input, last.input, email && email.input].filter(Boolean).forEach(i => i.addEventListener("input", () => { anyway = false; }));
-    formDialog({
+    ui = formDialog({
       title: edit ? t("edit_contact") : t("new_contact"), fields,
-      submit: async (v, ui) => {
+      submit: async (v, form) => {
         const A = api(), c = v.company;
         if (!anyway) {
           const warn = [];
@@ -1272,20 +1478,25 @@
           const nameChanged = !edit || fold(v.first_name) !== fold(row.first_name) || fold(v.last_name) !== fold(row.last_name) || (c && c.id) !== row.company_id;
           if (c && nameChanged) (await A.sameNameContacts(v.first_name, v.last_name, c.id, edit ? row.id : null)).forEach(r => warn.push([t("dup_name"), r]));
           if (warn.length) {
-            [...new Set(warn.map(w => w[0]))].forEach(title => ui.extra.append(warnBox(title,
+            [...new Set(warn.map(w => w[0]))].forEach(title => form.extra.append(warnBox(title,
               warn.filter(w => w[0] === title).map(([, r]) => openLink([fullName(r), r.company_name, r.archived_at ? t("archived_chip") : ""].filter(Boolean).join(" · "), "contact", r.id)),
-              () => { anyway = true; resubmit(ui); }, edit ? t("save_anyway") : t("create_anyway"))));
+              () => { anyway = true; resubmit(form); }, edit ? t("save_anyway") : t("create_anyway"))));
             return false;
           }
         }
         const values = { first_name: v.first_name || null, last_name: v.last_name || null, job_title: v.job_title || null, company_id: c ? c.id : null,
           brand_id: c ? v.brand_id : null, decision_role: v.decision_role, nature: v.nature, source_id: v.source_id, preferred_language: v.preferred_language };
-        if (edit) Object.assign(values, { group_ids: v.group_ids, tag_ids: v.tag_ids, next_step: v.next_step || null, follow_up_on: v.follow_up_on });
-        const saved = edit ? await saveChanges("contact", row, values, Object.keys(values)) : await A.insert("contact", values);
+        if (c && !brandsOk) { if (edit && c.id === row.company_id) delete values.brand_id; else values.brand_id = null; }
+        // Nouveau contact : un seul appel, tout ou rien ; en cas d'échec, rien n'est créé, la fenêtre reste ouverte avec la
+        // saisie (critère TR10, contrat 1).
+        if (!edit) {
+          return { row: await A.createContact(Object.assign(values, { email: v.email || null, email_state: v.email_state, phone: v.phone || null,
+            phone_type: v.phone_type, make_main: !!(c && v.main) })), problems: [] };
+        }
+        Object.assign(values, { group_ids: v.group_ids, tag_ids: v.tag_ids, next_step: v.next_step || null, follow_up_on: v.follow_up_on });
+        const saved = await saveChanges("contact", row, values, Object.keys(values));
         const problems = [];
-        if (!edit && v.email) { try { await A.insert("contact_email", { contact_id: saved.id, email: A.valid.email(v.email), state: v.email_state || "not_confirmed", is_primary: true }); } catch (e) { problems.push(e); } }
-        if (!edit && v.phone) { try { await A.insert("contact_phone", { contact_id: saved.id, phone: A.valid.phone(v.phone), phone_type: v.phone_type || "mobile" }); } catch (e) { problems.push(e); } }
-        const wasMain = edit && !!row.is_primary_contact && c && row.company_id === c.id;
+        const wasMain = !!row.is_primary_contact && c && row.company_id === c.id;
         if (c && !!v.main !== wasMain) {
           try {
             const coRow = await A.company(c.id);
@@ -1300,6 +1511,7 @@
         if (!edit) { renderPanels(); await openRecord("contact", res.row.id); } else await refreshAfterWrite();
       }
     });
+    setCompany(company0, true);
   }
 
   function dealForm(row, pre) {
@@ -1309,18 +1521,45 @@
     const brand = fSelect("brand_id", t("f_brand"), [], "", { empty: t("none"), more: true });
     const outlet = fSelect("outlet_id", t("f_outlet"), [], "", { empty: t("none"), more: true });
     const contact = fSelect("primary_contact_id", t("f_deal_contact"), [], "", { empty: t("none"), more: true });
+    const choices = [brand, outlet, contact];
+    // Marques, points de vente et contacts de l'entreprise : « Enregistrer » attend leur chargement (dix secondes au plus) ;
+    // en cas d'échec ou passé ce délai, les trois champs ne sont pas envoyés (ils restent tels quels) si l'entreprise n'a pas
+    // changé (défaut C5). Le contact principal actuel de l'affaire reste dans les choix même s'il est archivé ou rattaché
+    // ailleurs (défaut C7).
+    let ui = null, refsOk = true, refsSeq = 0;
     async function setCompany(c) {
-      [brand, outlet, contact].forEach(f => put(f.input, h("option", { value: "", text: t("none") })));
+      const my = ++refsSeq, same = edit && !!c && c.id === row.company_id;
+      refsOk = !c;
+      choices.forEach(f => { put(f.input, h("option", { value: "", text: c ? t("st_loading") : t("none") })); f.input.disabled = !!c; });
+      if (ui) { ui.note(); ui.hold("choices", !!c); }
       if (!c) return;
       try {
-        const [bs, os, cs] = await Promise.all([api().brands(c.id), api().outlets(c.id), api().contacts({ company: c.id })]);
-        const same = edit && c.id === row.company_id;
-        bs.filter(b => !b.archived_at || (same && b.id === row.brand_id)).forEach(b => brand.input.append(h("option", { value: b.id, text: b.name })));
-        os.filter(o => !o.archived_at || (same && o.id === row.outlet_id)).forEach(o => outlet.input.append(h("option", { value: o.id, text: o.name })));
-        cs.forEach(x => contact.input.append(h("option", { value: x.id, text: fullName(x) })));
+        const [bs, os, cs, kept] = await timeLimit((async () => {
+          const [bs, os, cs] = await Promise.all([api().brands(c.id), api().outlets(c.id), api().contacts({ company: c.id })]);
+          let kept = null;
+          if (same && row.primary_contact_id && !cs.some(x => x.id === row.primary_contact_id)) {
+            const found = (await api().names("contact", [row.primary_contact_id]))[0];
+            const mark = !found ? "" : found.archived_at ? t("archived_chip") : found.company_id !== c.id ? t("other_company") : "";
+            kept = h("option", { value: row.primary_contact_id, text: marked((found && fullName(found)) || t("rt_contact"), mark) });
+          }
+          return [bs, os, cs, kept];
+        })(), WAIT.choicesMs);
+        if (my !== refsSeq) return;
+        put(brand.input, h("option", { value: "", text: t("none") }), bs.filter(b => !b.archived_at || (same && b.id === row.brand_id))
+          .map(b => h("option", { value: b.id, text: marked(b.name, b.archived_at ? t("archived_chip") : "") })));
+        put(outlet.input, h("option", { value: "", text: t("none") }), os.filter(o => !o.archived_at || (same && o.id === row.outlet_id))
+          .map(o => h("option", { value: o.id, text: marked(o.name, o.archived_at ? t("archived_chip") : "") })));
+        put(contact.input, h("option", { value: "", text: t("none") }), cs.map(x => h("option", { value: x.id, text: fullName(x) })), kept);
         if (same) { brand.input.value = row.brand_id || ""; outlet.input.value = row.outlet_id || ""; contact.input.value = row.primary_contact_id || ""; }
         else if (p.contact && cs.some(x => x.id === p.contact)) contact.input.value = p.contact;
-      } catch (e) { /* choix facultatifs */ }
+        refsOk = true;
+      } catch (e) {
+        if (my !== refsSeq) return;
+        choices.forEach(f => put(f.input, h("option", { value: "", text: t("not_loaded") })));
+        if (ui) ui.note(choicesNote(same ? "choices_kept" : "choices_failed", () => setCompany(company.get())));
+      } finally {
+        if (my === refsSeq) { choices.forEach(f => { f.input.disabled = !refsOk; }); if (ui) ui.hold("choices", false); }
+      }
     }
     const company = fPicker("company", t("f_company"), company0, { kinds: ["company"], required: true, onChange: setCompany });
     const openStages = items("stage").filter(s => s.stage_outcome === "open");
@@ -1336,8 +1575,7 @@
       fCheck("is_renewal", t("f_renewal"), edit ? row.is_renewal : false, { more: true }),
       fSelect("source_id", t("f_source"), itemOptions("source", edit ? row.source_id : null), edit ? row.source_id : "", { empty: t("none"), more: true }),
       fPicker("referred", t("f_referred_by"), p.referred || null, { kinds: ["company", "contact"], more: true }));
-    setCompany(company0);
-    formDialog({
+    ui = formDialog({
       title: edit ? t("edit_deal") : t("new_deal"), fields,
       openMore: edit && !!(row.brand_id || row.outlet_id || row.primary_contact_id || row.is_renewal || row.source_id || p.referred),
       submit: async v => {
@@ -1346,11 +1584,16 @@
           outlet_id: v.outlet_id, primary_contact_id: v.primary_contact_id, is_renewal: !!v.is_renewal, source_id: v.source_id,
           referred_by_company_id: v.referred && v.referred.type === "company" ? v.referred.id : null,
           referred_by_contact_id: v.referred && v.referred.type === "contact" ? v.referred.id : null };
+        if (!refsOk) {
+          if (edit && v.company && v.company.id === row.company_id) ["brand_id", "outlet_id", "primary_contact_id"].forEach(k => { delete values[k]; });
+          else Object.assign(values, { brand_id: null, outlet_id: null, primary_contact_id: null });
+        }
         if (!edit) return api().insert("deal", Object.assign(values, { stage_id: v.stage_id }));
         return saveChanges("deal", row, values, Object.keys(values));
       },
       done: async res => { if (!edit && res && res.id) { renderPanels(); await openRecord("deal", res.id); } else await refreshAfterWrite(); }
     });
+    setCompany(company0);
   }
 
   function noteForm(n, ctx) {
@@ -1454,28 +1697,36 @@
   }
   function reviewDialog(ct) {
     const msg = h("p", { class: "crm-msg", role: "status" });
-    const go = keep => async () => {
+    const go = keep => () => busyRun(tok, async () => {
       try {
         const r = await api().reviewContact(ct.id, ct.version, keep);
-        closeDialog(true);
+        closeDialog(true, tok);
         toast(keep ? t("review_kept", fmtDay(r && r.review_due_on)) : t("archived_done"));
         await refreshAfterWrite();
-      } catch (e) { await failIn(msg, e); }
-    };
-    openDialog(t("review_now"), note(t("review_lead")), kv([[t("review_date"), fmtDay(ct.review_due_on)]]),
+      } catch (e) { await failIn(msg, e, tok); }
+    });
+    const tok = openDialog(t("review_now"), note(t("review_lead")), kv([[t("review_date"), fmtDay(ct.review_due_on)]]),
       h("div", { class: "crm-actions" }, actBtn(t("keep"), go(true), "primary"), actBtn(t("archive"), go(false))), msg);
   }
   // Changer d'étape (PI3) : deux touches pour une étape ouverte ; Gagné ou Perdu demandent un motif (PI4, PI5).
+  // Une seule écriture à la fois : dès la première touche, tous les choix sont inactifs et la fenêtre occupée, jusqu'à la
+  // réponse (défaut C12).
   function stageDialog(d) {
     const msg = h("p", { class: "crm-msg", role: "status", "aria-live": "polite" });
     const box = h("div", { class: "crm-stage-pick" });
-    async function save(changes, won) {
-      try {
-        await api().update("deal", d.id, d.version, changes);
-        closeDialog(true); toast(t("saved"));
-        await refreshAfterWrite();
-        if (won) await askMakeClient(d);
-      } catch (e) { await failIn(msg, e); }
+    let tok = 0;
+    const lock = on => box.querySelectorAll("button").forEach(b => { b.disabled = on || b.dataset.current === "true"; });
+    function save(changes, won) {
+      return busyRun(tok, async () => {
+        lock(true);
+        try {
+          await api().update("deal", d.id, d.version, changes);
+          closeDialog(true, tok); toast(t("saved"));
+          await refreshAfterWrite();
+          if (won) await askMakeClient(d);
+        } catch (e) { await failIn(msg, e, tok); }
+        finally { if (tok === dialogSeq) lock(false); }
+      });
     }
     function finalStage(s) {
       const won = s.stage_outcome === "won";
@@ -1490,15 +1741,15 @@
           }, "primary")));
     }
     const choices = () => items("stage").map(s => h("button", { type: "button", class: "crm-stage-opt", disabled: s.id === d.stage_id, "aria-current": s.id === d.stage_id ? "true" : null,
-      onclick: async ev => {
-        const b = ev.currentTarget;
+      "data-current": s.id === d.stage_id ? "true" : null,
+      onclick: async () => {
+        if (dialogBusy) return;
         if (s.stage_outcome !== "open") { finalStage(s); return; }
-        b.disabled = true;
-        try { await save({ stage_id: s.id }, false); } finally { b.disabled = false; }
+        await save({ stage_id: s.id }, false);
       } },
       h("span", { class: "n", text: itemLabel(s.id) }), s.stage_outcome !== "open" ? h("small", { text: t("reason_asked") }) : null));
     put(box, ...choices());
-    openDialog(t("change_stage"), box, msg);
+    tok = openDialog(t("change_stage"), box, msg);
   }
   async function askMakeClient(d) {
     if (!d.company_id) return;
@@ -1506,30 +1757,31 @@
     try { co = await api().company(d.company_id); } catch (e) { return; }
     if (co.status === "current_client" || co.archived_at) return;
     const msg = h("p", { class: "crm-msg", role: "status" });
-    openDialog(t("make_client_title"), h("p", { text: t("make_client_q", co.name) }),
-      h("div", { class: "crm-actions" }, btn(t("make_client_no"), () => closeDialog()), actBtn(t("make_client_yes"), async () => {
-        try { await api().update("company", co.id, co.version, { status: "current_client" }); closeDialog(true); toast(t("saved")); await refreshAfterWrite(); }
-        catch (e) { await failIn(msg, e); }
-      }, "primary")), msg);
+    const tok = openDialog(t("make_client_title"), h("p", { text: t("make_client_q", co.name) }),
+      h("div", { class: "crm-actions" }, btn(t("make_client_no"), () => closeDialog()), actBtn(t("make_client_yes"), () => busyRun(tok, async () => {
+        try { await api().update("company", co.id, co.version, { status: "current_client" }); closeDialog(true, tok); toast(t("saved")); await refreshAfterWrite(); }
+        catch (e) { await failIn(msg, e, tok); }
+      }), "primary")), msg);
   }
   // Suppression définitive (David seul) : aperçu complet, notes détachées montrées, motif, confirmation (TR7).
   async function deleteDialog(type, row) {
     const msg = h("p", { class: "crm-msg", role: "status" });
     const box = h("div", { class: "crm-del" }, loading());
     const reason = fSelect("reason", t("del_reason"), fxOptions("deletion_reason"), "", { required: true, empty: t("choose"), requiredKey: "err_reason" });
-    const confirm = actBtn(t("delete_perm"), async () => {
+    let tok = 0;
+    const confirm = actBtn(t("delete_perm"), () => busyRun(tok, async () => {
       const bad = reason.check();
       if (bad) { msg.className = "crm-msg err"; msg.textContent = t(bad); return; }
       try {
         await api().deleteRecord(type, row.id, reason.get());
-        closeDialog(true); toast(t("del_done"));
+        closeDialog(true, tok); toast(t("del_done"));
         S.stack.pop(); S.current = null;
         if (S.stack.length) await renderSheet(); else closeSheet();
         renderPanels();
       } catch (e) { msg.className = "crm-msg err"; msg.textContent = e && e.detail === "blocks" ? t("err_blocks") : errorText(e); }
-    }, "danger");
+    }), "danger");
     confirm.disabled = true;
-    openDialog(t("delete_perm"), note(t("del_lead")), box, reason.node, h("div", { class: "crm-actions" }, btn(t("cancel"), () => closeDialog()), confirm), msg);
+    tok = openDialog(t("delete_perm"), note(t("del_lead")), box, reason.node, h("div", { class: "crm-actions" }, btn(t("cancel"), () => closeDialog()), confirm), msg);
     try {
       const prev = await api().deletionPreview(type, row.id);
       const count = effect => {
@@ -1550,11 +1802,39 @@
   }
 
   // ------------------------------------------------------------------ Paramètres : listes (E8, PA1 à PA5) et durées de revue (PA6)
-  async function reloadLists() {
-    try { await loadRefs(); } catch (e) { /* listes gardées telles quelles */ }
-    renderSettings();
-    S.built = {};
-    PANELS.forEach(p => renderPanel(p));
+  // Relit les listes et les durées de revue, puis redessine. Rend faux si la relecture échoue ; keepOnFail laisse alors
+  // l'écran tel quel (une saisie en cours n'est pas effacée).
+  async function reloadLists(keepOnFail) {
+    let ok = true;
+    try { await loadRefs(); } catch (e) { ok = false; }
+    if (ok || keepOnFail !== true) {
+      renderSettings();
+      S.built = {};
+      PANELS.forEach(p => renderPanel(p));
+    }
+    return ok;
+  }
+  // Geste de Paramètres : après une réussite comme après tout refus (conflit ou autre) ou un déplacement fait à moitié, les
+  // listes et les durées sont relues avant le message ; « rechargée » ne s'écrit qu'après une relecture réussie (défaut C8).
+  // Un déplacement fait à moitié n'est jamais dit « non enregistré » : relecture réussie, la liste montre l'ordre enregistré ;
+  // relecture en échec, le message le dit et l'ordre affiché est tenu pour incertain (S.listsUnsure) jusqu'à la prochaine
+  // relecture réussie.
+  async function listAction(run, okText) {
+    try {
+      const res = await run();
+      toast(okText || t("saved"));
+      await reloadLists();
+      if (!byId("crm-sheet").hidden) await renderSheet();
+      return res;
+    } catch (e) {
+      const ok = await reloadLists(true);
+      let text = errorText(e);
+      if (e && e.partial) { text = t(ok ? "err_move_partial" : "err_move_unsure"); if (!ok) S.listsUnsure = true; }
+      else if (e && e.kind === "conflict") text = t(ok ? "err_conflict_reloaded" : "err_conflict");
+      else if (e && e.kind === "version") text = t(ok ? "err_version_reloaded" : "err_version");
+      toast(text, true);
+      return undefined;
+    }
   }
   function itemForm(kind, item) {
     const en = fText("label_en", t("f_label_en"), item ? item.label_en : "", { required: true, max: 80, noOpt: true });
@@ -1562,16 +1842,33 @@
     formDialog({ title: item ? t("edit_item") : t("new_item"), intro: note(t("list_" + kind)), fields: [en, fr],
       submit: v => (item ? saveChanges("list_item", item, { label_en: v.label_en, label_fr: v.label_fr || null }, ["label_en", "label_fr"])
                           : api().insert("list_item", { kind, label_en: v.label_en, label_fr: v.label_fr || null })),
-      done: reloadLists });
+      done: () => reloadLists(), reload: () => reloadLists() });
+  }
+  // Déplacement dans une liste (défaut C8). L'ordre voulu est celui de l'écran (position, puis libellé anglais), l'élément
+  // échangé avec son voisin. Chaque place garde sa position quand les positions montent déjà strictement (un échange
+  // ordinaire écrit deux éléments, comme avant) ; une égalité de positions, reste d'un déplacement coupé, est réparée au
+  // passage : la place suivante prend la position d'avant plus un. Seuls les éléments dont la position change sont écrits.
+  const POSITION_MAX = 100000;                                                 // limite de la base (list_items_position_chk)
+  function movePlan(list, idx, dir) {
+    const order = list.slice();
+    order[idx] = list[idx + dir]; order[idx + dir] = list[idx];
+    let prev = -1, slots = list.map(i => (prev = Math.max(Number(i.position) || 0, prev + 1)));
+    if (prev > POSITION_MAX) slots = list.map((i, k) => k + 1);
+    return order.map((i, k) => [i, slots[k]]).filter(([i, p]) => Number(i.position) !== p);
   }
   async function moveItem(list, idx, dir) {
-    const a = list[idx], b = list[idx + dir];
-    if (!a || !b) return;
-    await doAction(async () => {
-      if (Number(a.position) === Number(b.position)) return api().update("list_item", a.id, a.version, { position: Math.max(0, Number(b.position) + dir) });
-      await api().update("list_item", a.id, a.version, { position: Number(b.position) });
-      return api().update("list_item", b.id, b.version, { position: Number(a.position) });
-    }, t("saved"), reloadLists);
+    if (!list[idx] || !list[idx + dir]) return;
+    if (S.listsUnsure) {                                                       // ordre affiché incertain : relire d'abord, ne rien déplacer
+      const ok = await reloadLists(true);
+      toast(t(ok ? "list_reloaded" : "err_move_unsure"), !ok);
+      return;
+    }
+    const plan = movePlan(list, idx, dir);
+    await listAction(async () => {
+      let done = 0;
+      try { for (const [i, p] of plan) { await api().update("list_item", i.id, i.version, { position: p }); done += 1; } }
+      catch (e) { if (done && e && typeof e === "object") e.partial = true; throw e; }   // une écriture au moins est faite
+    }, t("saved"));
   }
   function renderSettings() {
     const lists = byId("crm-set-lists"), review = byId("crm-set-review");
@@ -1593,12 +1890,12 @@
         idx > 0 ? actBtn("↑", () => moveItem(active, idx, -1), "sm", t("move_up")) : null,
         idx < active.length - 1 ? actBtn("↓", () => moveItem(active, idx, 1), "sm", t("move_down")) : null,
         i.is_locked || (kind === "stage" && i.stage_outcome === "open" && openStages <= 1) ? null
-          : actBtn(t("archive"), () => doAction(() => api().archive("list_item", i.id, i.version), t("archived_done"), reloadLists), "sm")));
+          : actBtn(t("archive"), () => listAction(() => api().archive("list_item", i.id, i.version), t("archived_done")), "sm")));
     put(lists, h("h3", { text: t("set_lists") }), note(t("set_lists_lead")),
       ctlSelect("crm-set-kind", t("lists_label"), LIST_KINDS.map(k => [k, t("list_" + k)]), kind, v => { S.listKind = v; renderSettings(); }),
       kind === "group" ? note(t("auto_groups_note")) : null,
       h("ol", { class: "crm-items" }, active.map(rowOf)),
-      archivedList(archived.map(i => ["list_item", i]), ([, i]) => itemLabel(i.id), reloadLists),
+      archivedList(archived.map(i => ["list_item", i]), ([, i]) => itemLabel(i.id), listAction),
       acts(btn(t("add_item"), () => itemForm(kind, null))));
     review.hidden = false;
     const periods = FIXED.contact_nature.map(([code]) => S.periods.find(p => p.nature === code)).filter(Boolean);
@@ -1609,7 +1906,7 @@
         actBtn(t("save"), async () => {
           const n = Number(input.value);
           if (!Number.isInteger(n) || n < 1 || n > 120) { toast(t("err_months"), true); return; }
-          await doAction(() => api().update("review_period", p.id, p.version, { months: n }), t("saved"), reloadLists);
+          await listAction(() => api().update("review_period", p.id, p.version, { months: n }), t("saved"));
         }, "sm")));
     };
     put(review, h("h3", { text: t("set_review") }), note(t("set_review_lead")), h("ul", { class: "crm-periods" }, periods.map(periodRow)));
@@ -1620,6 +1917,7 @@
     const fab = byId("crm-fab"), dialog = byId("crm-dialog"), sheet = byId("crm-sheet");
     if (!fab || !dialog || !sheet) return;
     fab.hidden = !(S.state === "ready" && dialog.hidden && (PANELS.some(panelVisible) || !sheet.hidden));
+    syncHistory();
   }
   function fabMenu() {
     const cur = S.current, r = cur && cur.row;
@@ -1644,6 +1942,7 @@
   async function loadRefs() {
     const [list, periods] = await Promise.all([api().lists(), api().reviewPeriods()]);
     S.items = list || []; S.byId = new Map(S.items.map(i => [i.id, i])); S.periods = periods || [];
+    S.listsUnsure = false;                                                     // l'ordre affiché redevient l'ordre enregistré
   }
   async function start() {
     S.state = "loading"; S.built = {}; renderAll();
@@ -1669,6 +1968,11 @@
       if (ev.key !== "Escape") return;
       if (!byId("crm-dialog").hidden) closeDialog(); else if (!byId("crm-sheet").hidden) closeSheet();
     });
+    // Geste retour du téléphone : ferme le calque du dessus (défaut C11). Une entrée restée d'avant un rechargement de la
+    // page est remise à zéro, sans changer l'adresse.
+    if (typeof root.addEventListener === "function") root.addEventListener("popstate", onPopState);
+    const hh = hist();
+    if (hh && hh.state && typeof hh.state.lunaCrm === "number") { try { hh.replaceState(null, ""); } catch (e) { /* facultatif */ } }
     // Un panneau du CRM qui s'ouvre (menu de la page) relit ses données.
     const watch = new MutationObserver(muts => {
       muts.forEach(m => { const p = String(m.target.id || "").replace(/^p-crm-/, ""); if (PANELS.includes(p) && !m.target.hidden) renderPanel(p); });

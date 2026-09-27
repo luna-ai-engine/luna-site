@@ -110,9 +110,9 @@
   // Écran étroit (téléphone) : une indication de champ trop longue pour sa case est remplacée par sa forme courte, sans rien
   // changer à la page ; la forme complète revient dès qu'elle tient (rotation, autre langue).
   const SHORT = {
-    fr: { search_all: "Entreprise, contact, marché, sujet…", search_dir: "Établissement, lieu, concept, groupe", search_ct: "Nom, poste, groupe, établissement",
+    fr: { search_all: "Entreprise, personne repérée, marché…", search_dir: "Établissement, lieu, concept, groupe", search_ct: "Nom, poste, groupe, établissement",
           search_opp: "Nom, lieu, concept", search_press: "Nom, lieu, concept", search_name: "Nom ou numéro de licence", search_dd: "Nom ou numéro de licence" },
-    en: { search_all: "Company, contact, market, topic…", search_dir: "Venue, place, concept, group", search_ct: "Name, position, group, venue",
+    en: { search_all: "Company, person found, market…", search_dir: "Venue, place, concept, group", search_ct: "Name, position, group, venue",
           search_opp: "Name, place, concept", search_press: "Name, place, concept", search_name: "Name or licence number", search_dd: "Name or licence number" }
   };
   let canvas = null;
