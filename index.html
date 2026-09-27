@@ -1,0 +1,1581 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.116.0/dist/umd/supabase.js https://cdn.jsdelivr.net/npm/lucide@0.460.0/dist/umd/lucide.min.js 'sha256-TyV9o0RflJli+ExfMvJZwHnh1uMOucdCZkRnZV2XeB0='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src https://jqqzzakidyrcglyzgbrk.supabase.co wss://jqqzzakidyrcglyzgbrk.supabase.co; manifest-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta name="referrer" content="no-referrer">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#F7F3EC">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Luna">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<title>Luna</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Inter:wght@400;500;600&display=swap">
+<script src="https://cdn.jsdelivr.net/npm/lucide@0.460.0/dist/umd/lucide.min.js" integrity="sha384-ieG+IKD0d/ZPXyCBTMVAbqsQdns8QGJR/e26WMw7M4fkaI/rHcS/YIoi+ah9WGge" crossorigin="anonymous"></script>
+<style>
+:root{
+  color-scheme:light;
+  --ivory:#F7F3EC; --cream:#FCFAF7; --beige:#E8DED1; --tiffany:#91C9C1; --tiffany-dark:#6FAAA3; --btn:#79B8B0;
+  --taupe:#514B45; --taupe-soft:#8B837A; --border:#DED7CE; --btn-border:#D9D0C6;
+  --line:rgba(81,75,69,.07); --hover:#F2EDE6; --active-bg:#E5EFEC; --active-ink:#3F6964;
+  --pos-bg:#E3F0ED; --pos-ink:#4D8079; --neu-bg:#EEE9E2; --neu-ink:#746D65; --warn-bg:#F2E6D4; --warn-ink:#9A7651;
+  --chart:#91C9C1; --chart-2:#D8D0C6; --grid:rgba(81,75,69,.06);
+  --shadow:0 8px 30px rgba(71,61,50,.05);
+  --serif:"Cormorant Garamond",Georgia,serif; --sans:"Inter",Arial,sans-serif;
+  /* compatibilité avec le code existant */
+  --ink:var(--taupe); --muted:var(--taupe-soft); --faint:#A69E94; --surface:var(--cream); --sunk:var(--neu-bg); --line-strong:var(--border);
+  --accent:var(--tiffany-dark); --good:var(--pos-ink); --warn:var(--warn-ink); --crit:#A5574B; --bar:var(--chart); --btn-ink:#FFFFFF; --mono:var(--sans);
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--ivory);color:var(--taupe);font-family:var(--sans);font-size:14.5px;line-height:1.6;-webkit-font-smoothing:antialiased}
+.app{display:grid;grid-template-columns:240px 1fr;min-height:100%}
+/* barre latérale */
+.side{position:sticky;top:0;height:100vh;padding:28px 16px 20px;display:flex;flex-direction:column;gap:28px;background:var(--ivory);border-right:1px solid var(--line)}
+.brand{display:grid;justify-items:center;gap:6px;padding:4px 0 8px}
+.brand img{width:58px;height:58px}
+.wordmark{font-family:var(--serif);font-weight:500;font-size:26px;letter-spacing:.42em;margin-right:-.42em;color:var(--taupe);line-height:1}
+.tagline{font-size:9.5px;letter-spacing:.28em;margin-right:-.28em;color:var(--taupe-soft);text-transform:uppercase}
+.nav{display:grid;gap:2px}
+.nav button{display:flex;align-items:center;gap:12px;width:100%;border:0;background:transparent;color:var(--taupe-soft);font:500 13.5px var(--sans);padding:10px 12px;border-radius:10px;cursor:pointer;text-align:left;transition:background .2s ease,color .2s ease}
+@media (hover:hover){.nav button:hover{background:var(--hover);color:var(--taupe)}}
+.nav button[aria-current="page"]{background:var(--active-bg);color:var(--active-ink)}
+.nav svg{width:18px;height:18px;flex:0 0 auto}
+.nav .count{margin-left:auto;font-size:11.5px;color:var(--taupe-soft);font-weight:400}
+.nav button[aria-current="page"] .count{color:var(--active-ink)}
+.side .spacer{flex:1}
+/* barre du haut, téléphone */
+.topbar{display:none}
+/* contenu */
+main{padding:40px 48px 64px;min-width:0}
+.panel{max-width:1040px;margin:0 auto;display:grid;gap:24px;animation:fade .2s ease}
+@keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+.page-head{display:grid;gap:6px}
+.eyebrow{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--taupe-soft);font-weight:500}
+h1,.h1{font-family:var(--serif);font-weight:500;font-size:48px;line-height:1.05;margin:0;letter-spacing:-.005em;color:var(--taupe);text-wrap:balance}
+h2,.h2{font-family:var(--serif);font-weight:500;font-size:34px;line-height:1.1;margin:0;color:var(--taupe);text-wrap:balance}
+.lead{color:var(--taupe-soft);font-size:15px;max-width:68ch;margin:0}
+.section-title{font-family:var(--serif);font-weight:500;font-size:24px;margin:8px 0 0}
+.status{display:flex;flex-wrap:wrap;gap:6px 18px}
+.pill{display:inline-flex;align-items:center;gap:7px;font-size:12.5px;color:var(--taupe-soft)}
+.pill .dot{width:6px;height:6px;border-radius:50%;background:currentColor}
+.pill.good{color:var(--pos-ink)} .pill.warn{color:var(--warn-ink)} .pill.crit{color:var(--crit)}
+/* cartes */
+.card{background:var(--cream);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);padding:22px 24px;display:grid;gap:12px;transition:box-shadow .2s ease,transform .2s ease}
+.card h3{margin:0;font-size:18px;font-weight:500;line-height:1.35;color:var(--taupe);text-wrap:balance}
+.row{display:flex;flex-wrap:wrap;gap:4px 20px;color:var(--taupe-soft);font-size:13.5px}
+.row b{color:var(--taupe);font-weight:500}
+/* KPI */
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:16px}
+.kpi{background:var(--cream);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);padding:20px 22px}
+.kpi .n{font-family:var(--sans);font-size:28px;font-weight:500;line-height:1.1;letter-spacing:-.01em;color:var(--taupe);font-variant-numeric:tabular-nums}
+.kpi .kico{width:34px;height:34px;border-radius:10px;background:var(--active-bg);color:var(--active-ink);display:grid;place-items:center;margin-bottom:14px}
+.kpi .kico svg{width:17px;height:17px}
+.kpi .l{font-size:12.5px;color:var(--taupe-soft);margin-bottom:8px;font-weight:500}
+/* étiquettes */
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font-size:11.5px;font-weight:500;border-radius:999px;padding:3px 10px;background:var(--neu-bg);color:var(--neu-ink);border:0}
+.chip.good{background:var(--pos-bg);color:var(--pos-ink)}
+.chip.warn{background:var(--warn-bg);color:var(--warn-ink)}
+.chip.muted{background:var(--neu-bg);color:var(--neu-ink)}
+.chip:not(.good):not(.warn):not(.muted){background:var(--pos-bg);color:var(--pos-ink)}
+/* liens et textes */
+a{color:var(--taupe);text-decoration:underline;text-decoration-color:var(--border);text-underline-offset:3px;overflow-wrap:anywhere;transition:text-decoration-color .15s ease}
+a:hover{text-decoration-color:var(--tiffany-dark)}
+.src{font-size:13px;color:var(--taupe-soft)} .src li{margin:4px 0}
+.src ul,.research ul{margin:0;padding-left:16px}
+.label{font-size:12px;letter-spacing:.06em;text-transform:uppercase;font-weight:500;color:var(--taupe-soft);margin:2px 0}
+q.quote{display:block;quotes:none;color:var(--taupe-soft);font-size:12.5px;margin-top:4px;padding-left:12px;border-left:2px solid var(--beige)}
+.research{border-top:1px solid var(--line);padding-top:14px;display:grid;gap:8px;font-size:13.5px}
+.research dl{display:grid;grid-template-columns:max-content 1fr;gap:6px 18px;margin:0}
+.research dt{color:var(--taupe-soft);font-weight:500}
+.research dd{margin:0}
+.note{font-size:13px;color:var(--taupe-soft);max-width:75ch;margin:0}
+.empty{color:var(--taupe-soft);font-size:14px;padding:32px 16px;text-align:center}
+/* formulaires */
+.filters{display:grid;grid-template-columns:2fr 1fr 1fr;gap:12px}
+.filters.f4{grid-template-columns:2fr 1fr 1fr 1fr}
+input[type=search],select,textarea{width:100%;font:14px var(--sans);color:var(--taupe);background:var(--cream);border:1px solid var(--border);border-radius:12px;padding:10px 14px;transition:border-color .2s ease}
+input[type=search]:focus,select:focus,textarea:focus{outline:0;border-color:var(--tiffany)}
+input::placeholder,textarea::placeholder{color:#A69E94}
+textarea{min-height:110px;resize:vertical;line-height:1.55}
+input[type=checkbox]{accent-color:var(--tiffany-dark)}
+label.check{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--taupe-soft)}
+.searchbar{position:relative}
+.searchbar input{height:52px;border-radius:14px;padding-left:48px;font-size:15px}
+.searchbar svg{position:absolute;left:16px;top:50%;transform:translateY(-50%);width:18px;height:18px;color:var(--taupe-soft);pointer-events:none}
+/* boutons */
+.btn{font:500 13.5px var(--sans);border:1px solid var(--btn-border);background:transparent;color:var(--taupe);border-radius:10px;padding:9px 16px;cursor:pointer;transition:background .2s ease,border-color .2s ease}
+@media (hover:hover){.btn:hover{background:var(--hover)}}
+.btn.primary{background:var(--btn);border-color:var(--btn);color:#FFFFFF}
+@media (hover:hover){.btn.primary:hover{background:var(--tiffany-dark);border-color:var(--tiffany-dark)}}
+.btn:disabled{opacity:.45;cursor:default}
+button:focus-visible,select:focus-visible,input:focus-visible,textarea:focus-visible,summary:focus-visible,a:focus-visible,tr:focus-visible{outline:2px solid var(--tiffany);outline-offset:2px}
+/* tableaux éditoriaux */
+.tablebox{overflow-x:auto;background:var(--cream);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow)}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{text-align:left;padding:0 18px;height:58px;border-bottom:1px solid var(--line);vertical-align:middle}
+td{padding-top:10px;padding-bottom:10px;height:auto;min-height:58px}
+tr{height:58px}
+th{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--taupe-soft);font-weight:500;background:transparent;white-space:nowrap}
+tbody tr{transition:background .15s ease}
+@media (hover:hover){tbody tr:hover td{background:var(--hover)}}
+td.num,td.date{font-size:13px;white-space:nowrap;font-variant-numeric:tabular-nums;color:var(--taupe-soft)}
+td.name{font-weight:500}
+td .legal{display:block;color:var(--taupe-soft);font-size:12px;font-weight:400}
+tr:last-child td{border-bottom:0}
+.dir-table tbody tr{cursor:pointer}
+.pager{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;font-size:13px;color:var(--taupe-soft)}
+.linkbtn{font:inherit;color:var(--taupe);background:none;border:0;padding:0;cursor:pointer;text-decoration:underline;text-decoration-color:var(--border);text-underline-offset:3px;text-align:left}
+.linkbtn:hover{text-decoration-color:var(--tiffany-dark)}
+/* graphiques */
+.chart{background:var(--cream);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);padding:20px 22px}
+.chart h4{margin:0 0 14px;font-size:13px;color:var(--taupe-soft);font-weight:500}
+.bars{display:grid;grid-template-columns:repeat(8,1fr);gap:12px;align-items:end;height:130px;background-image:linear-gradient(var(--grid) 1px,transparent 1px);background-size:100% 25%}
+.bar{display:grid;grid-template-rows:auto 1fr auto;height:100%;text-align:center;gap:6px}
+.bar .v{font-size:11.5px;color:var(--taupe-soft);font-variant-numeric:tabular-nums}
+.bar .fill{align-self:end;background:var(--chart);border-radius:4px 4px 0 0;min-height:2px}
+.bar .m{font-size:11.5px;color:var(--taupe-soft)}
+.hbars{display:grid;gap:10px}
+.hbar{display:grid;grid-template-columns:170px 1fr 48px;gap:12px;align-items:center;font-size:13px}
+.hbar .track{height:8px;border-radius:999px;background:var(--chart-2);overflow:hidden}
+.hbar .track span{display:block;height:100%;background:var(--chart);border-radius:999px}
+.hbar .v{text-align:right;color:var(--taupe-soft);font-variant-numeric:tabular-nums}
+/* sources : sous-onglets */
+.subtabs{display:flex;flex-wrap:wrap;gap:8px}
+.subtabs button{font:500 13px var(--sans);color:var(--taupe-soft);background:transparent;border:1px solid var(--btn-border);border-radius:999px;padding:7px 14px;cursor:pointer;transition:all .2s ease}
+@media (hover:hover){.subtabs button:hover{background:var(--hover);color:var(--taupe)}}
+.subtabs button[aria-pressed="true"]{background:var(--active-bg);border-color:var(--active-bg);color:var(--active-ink)}
+.subtabs .count{margin-left:6px;font-size:11.5px;opacity:.8}
+.subpanel{display:grid;gap:20px}
+details{border-top:1px solid var(--line);padding:14px 0 0}
+summary{cursor:pointer;font-weight:500;font-size:13.5px;color:var(--taupe-soft)}
+summary:hover{color:var(--taupe)}
+details p,details li{font-size:13.5px;color:var(--taupe-soft);max-width:75ch}
+details p{margin:8px 0 0}
+/* accueil */
+.attention{display:grid;gap:0;background:var(--cream);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);overflow:hidden}
+.attention button{display:grid;grid-template-columns:1fr auto;gap:4px 16px;align-items:center;text-align:left;width:100%;border:0;border-bottom:1px solid var(--line);background:transparent;padding:16px 22px;cursor:pointer;font:inherit;color:inherit;transition:background .15s ease}
+.attention button:last-child{border-bottom:0}
+@media (hover:hover){.attention button:hover{background:var(--hover)}}
+.attention .t{font-weight:500;color:var(--taupe)}
+.attention .s{font-size:13px;color:var(--taupe-soft)}
+.attention svg{width:16px;height:16px;color:var(--taupe-soft);grid-row:1 / span 2;grid-column:2}
+/* automatisations */
+.auto-list{display:grid;gap:16px}
+.auto{display:grid;grid-template-columns:auto 1fr auto;gap:16px;align-items:center}
+.auto .ico{width:40px;height:40px;border-radius:12px;background:var(--active-bg);color:var(--active-ink);display:grid;place-items:center}
+.auto .ico svg{width:18px;height:18px}
+.auto .t{font-weight:500}
+.auto .s{font-size:13px;color:var(--taupe-soft)}
+/* demandes et suivi */
+.form{background:var(--cream);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);padding:22px 24px;display:grid;gap:12px}
+.form .actions,.actions{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.msg{font-size:13px;color:var(--taupe-soft)}
+.msg.ok{color:var(--pos-ink)} .msg.err{color:var(--crit)}
+.mail{display:flex;gap:10px;align-items:center;flex-wrap:wrap;font-size:13.5px;color:var(--taupe-soft)}
+.mail code{font-size:13px;color:var(--taupe);background:var(--neu-bg);padding:5px 10px;border-radius:8px;user-select:all}
+.reply{border-left:2px solid var(--tiffany);padding-left:12px;font-size:13.5px}
+.card .research select{border-radius:10px;padding:7px 12px;font-size:13px;width:auto}
+.card textarea{min-height:72px}
+/* fiche détaillée */
+.sheet-back{position:fixed;inset:0;background:rgba(81,75,69,.18);z-index:40;animation:fadeonly .2s ease}
+@keyframes fadeonly{from{opacity:0}to{opacity:1}}
+.sheet{position:fixed;top:16px;right:16px;bottom:16px;width:min(560px,calc(100% - 32px));background:var(--cream);border:1px solid var(--line);border-radius:18px;z-index:41;
+  display:grid;grid-template-rows:auto 1fr;box-shadow:0 20px 60px rgba(71,61,50,.12);animation:slide .22s ease;overflow:hidden}
+@keyframes slide{from{opacity:0;transform:translateX(12px)}to{opacity:1;transform:none}}
+.sheet-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;padding:24px 26px 14px;border-bottom:1px solid var(--line)}
+.sheet-head h2{font-size:30px}
+.sheet-body{overflow-y:auto;padding:20px 26px 40px;display:grid;gap:18px;align-content:start}
+.sheet-body dl{display:grid;grid-template-columns:max-content 1fr;gap:8px 18px;margin:0;font-size:14px}
+.sheet-body dt{color:var(--taupe-soft);font-weight:500}
+.sheet-body dd{margin:0}
+.people{background:var(--cream);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);overflow:hidden}
+.people.inline{box-shadow:none;background:transparent}
+.prow{display:grid;grid-template-columns:40px 1fr auto;gap:14px;align-items:center;width:100%;border:0;border-bottom:1px solid var(--line);background:transparent;padding:14px 20px;font:inherit;color:inherit;text-align:left;cursor:pointer}
+.prow:last-child{border-bottom:0}
+.people.inline .prow{padding:12px 4px}
+.avatar{width:40px;height:40px;border-radius:50%;background:var(--beige);color:var(--taupe);display:grid;place-items:center;font-size:12.5px;font-weight:500;letter-spacing:.04em}
+.pname{font-size:15px;font-weight:400;color:var(--taupe);line-height:1.35}
+.pmeta{font-size:13px;color:var(--taupe-soft);line-height:1.4}
+.pside{display:flex;align-items:center;gap:10px;color:var(--taupe-soft)}
+.pside svg{width:16px;height:16px;transition:transform .2s ease}
+@media (hover:hover){.prow:hover .pname{color:var(--active-ink)}.prow:hover .pside svg{transform:translateX(2px)}}
+.pdot{width:7px;height:7px;border-radius:50%;background:var(--warn-ink);opacity:.55}
+.pdot.ok{background:var(--pos-ink);opacity:.8}.pdot.mid{background:var(--neu-ink);opacity:.6}
+#sheet.pmode .sheet-head{border-bottom:0;padding:22px 24px 0;align-items:center}
+#sheet.pmode .sheet-head h2{font-family:var(--sans);font-size:25px;font-weight:600;letter-spacing:-.01em;line-height:1.25;color:var(--taupe)}
+#sheet.pmode .sheet-body{padding:4px 24px 32px;gap:0}
+.p-id{display:grid;gap:2px}
+.p-role{font-size:15.5px;font-weight:400;color:var(--taupe);line-height:1.45}
+.p-co{font-size:14.5px;color:var(--taupe-soft);line-height:1.45}
+.p-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}
+.p-act{display:inline-flex;align-items:center;gap:7px;height:34px;padding:0 12px;border:1px solid #E8E1D9;border-radius:10px;font:500 13px var(--sans);color:var(--taupe);background:transparent;text-decoration:none;transition:border-color .2s ease}
+.p-act svg{width:15px;height:15px;color:var(--tiffany-dark)}
+.p-act[aria-disabled="true"]{color:#B8B0A6;border-color:#EFE9E2;cursor:default}
+.p-act[aria-disabled="true"] svg{color:#CBC3B9}
+@media (hover:hover){.p-act:not([aria-disabled="true"]):hover{border-color:var(--tiffany)}}
+.p-sec{display:grid;gap:12px;margin-top:16px;padding-top:16px;border-top:1px solid rgba(81,75,69,.08)}
+.p-sec h4{margin:0;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--taupe-soft)}
+.p-kv{display:grid;grid-template-columns:86px minmax(0,1fr);column-gap:8px;row-gap:16px;align-items:baseline}
+.p-kv .k{font-size:13.5px;color:var(--taupe-soft)}
+.p-kv .v{font-size:15px;font-weight:500;color:var(--taupe);overflow-wrap:anywhere;min-width:0}
+.p-kv .v small{display:block;font-size:12.5px;font-weight:400;color:var(--taupe-soft);margin-top:2px}
+.badge-nf{display:inline-block;font-size:12px;font-weight:500;color:var(--neu-ink);background:var(--neu-bg);border-radius:999px;padding:2px 10px}
+.p-co-name{font-size:15px;font-weight:500;color:var(--taupe)}
+.p-venue{display:grid;grid-template-columns:minmax(0,1fr) auto;column-gap:12px;align-items:center;width:100%;border:0;background:transparent;padding:2px 0;text-align:left;cursor:pointer;font:inherit;color:inherit}
+.p-venue .vn{font-size:15px;font-weight:500;color:var(--taupe)}
+.p-venue .vs{font-size:13px;color:var(--taupe-soft);line-height:1.45}
+.p-venue svg{grid-row:1 / span 3;grid-column:2;width:16px;height:16px;color:var(--taupe-soft)}
+@media (hover:hover){.p-venue:hover .vn{color:var(--active-ink)}}
+.p-sec.quiet .p-kv{row-gap:10px}
+.p-sec.quiet .v{font-weight:400;font-size:14px}
+.p-sec.quiet .k{font-size:13px}
+@media (max-width:900px){#sheet.pmode .sheet-head{padding:18px 24px 0}#sheet.pmode .sheet-body{padding:4px 24px 28px}}
+.contact-lines{display:grid;gap:10px}
+.cline{display:grid;grid-template-columns:120px 1fr auto;gap:12px;align-items:center;font-size:14px;padding:10px 0;border-bottom:1px solid var(--line)}
+.cline:last-child{border-bottom:0}
+.cline .k{color:var(--taupe-soft);font-size:13px}
+.cline .v{overflow-wrap:anywhere}
+.cline .empty-v{color:#A69E94}
+@media (max-width:900px){.cline{grid-template-columns:1fr auto}.cline .k{grid-column:1/-1}}
+.status-ok{color:var(--pos-ink)} .status-warn{color:var(--warn-ink)} .status-muted{color:var(--taupe-soft)}
+.settings-row{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap}
+.lang{display:inline-flex;gap:4px;border:1px solid var(--btn-border);border-radius:10px;padding:3px}
+.lang button{border:0;background:transparent;color:var(--taupe-soft);font:500 12.5px var(--sans);letter-spacing:.06em;padding:6px 14px;border-radius:8px;cursor:pointer}
+.lang button[aria-pressed="true"]{background:var(--active-bg);color:var(--active-ink)}
+/* téléphone */
+@media (max-width:900px){
+  .filters.f4{grid-template-columns:1fr 1fr}
+  .filters.f4 #ct-sort{grid-column:1/-1}
+  .app{grid-template-columns:1fr}
+  .topbar{display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:30;padding:12px 16px;padding-top:calc(12px + env(safe-area-inset-top,0px));
+    background:color-mix(in srgb,var(--ivory) 92%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+  .topbar .mini{display:flex;align-items:center;gap:10px}
+  .topbar img{width:30px;height:30px}
+  .topbar .wordmark{font-size:19px}
+  .topbar button{border:0;background:transparent;color:var(--taupe);padding:8px;border-radius:10px;cursor:pointer}
+  .topbar svg{width:22px;height:22px}
+  .side{position:fixed;left:0;top:0;bottom:0;width:260px;z-index:35;transform:translateX(-100%);transition:transform .22s ease;box-shadow:0 0 40px rgba(71,61,50,.12);padding-top:calc(28px + env(safe-area-inset-top,0px))}
+  .side.open{transform:none}
+  .side-back{position:fixed;inset:0;z-index:34;background:rgba(81,75,69,.18)}
+  main{padding:24px 16px 56px}
+  h1,.h1{font-size:36px} h2,.h2{font-size:28px}
+  .filters{grid-template-columns:1fr 1fr}.filters .q{grid-column:1/-1}
+  .research dl,.sheet-body dl{grid-template-columns:1fr}.research dt,.sheet-body dt{margin-top:4px}
+  .hbar{grid-template-columns:110px 1fr 40px}
+  .sheet{top:0;right:0;bottom:0;width:100%;border-radius:0;border:0}
+  .dd-table thead{display:none}
+  .dd-table tr{display:grid;grid-template-columns:1fr auto;gap:2px 10px;padding:14px 16px;border-bottom:1px solid var(--line);height:auto}
+  .dd-table td{border:0;padding:0;height:auto}
+  .dd-table td.name{grid-column:1/-1}
+  .dd-table td.hide-sm{display:none}
+}
+@media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
+</style>
+<style>
+/* Luna, site autonome : écran de connexion et compléments (charte Luna : Ivory, Cream, Tiffany, Cormorant Garamond, Inter). */
+[hidden]{display:none!important}
+body.luna-locked{overflow:hidden}
+body.luna-locked .app{display:none}
+.luna-login{position:fixed;inset:0;z-index:100;overflow-y:auto;background:var(--ivory);color:var(--taupe);
+  display:grid;place-items:center;padding:calc(24px + env(safe-area-inset-top,0px)) 20px calc(24px + env(safe-area-inset-bottom,0px))}
+.ll-wrap{width:100%;max-width:400px;display:grid;gap:26px;justify-items:center;animation:fade .25s ease}
+.ll-brand{display:grid;justify-items:center;gap:8px}
+.ll-brand img{width:84px;height:84px}
+.ll-brand .wordmark{font-size:30px}
+.ll-card{width:100%;background:var(--cream);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow);padding:26px 24px;display:grid;gap:14px}
+.ll-card h1{font-family:var(--serif);font-weight:500;font-size:34px;line-height:1.1;margin:0;color:var(--taupe);text-wrap:balance}
+.ll-card p{margin:0;font-size:14.5px;color:var(--taupe-soft);line-height:1.55;overflow-wrap:anywhere}
+.ll-card p.ll-account{font-size:13.5px;color:var(--taupe)}
+.ll-card .btn{width:100%;padding:12px 16px;font-size:14.5px;border-radius:12px}
+/* Bouton secondaire, contour seul : aucune couleur de marque. */
+.ll-card .btn.ll-google{min-height:48px;margin-top:4px;background:transparent;border-color:var(--btn-border);color:var(--taupe);font-weight:500}
+.ll-card .btn.ll-google:hover:not(:disabled){background:var(--hover)}
+.ll-card .btn.ll-google:focus-visible{outline:2px solid var(--tiffany);outline-offset:2px}
+.ll-card .btn:disabled{opacity:.65;cursor:default}
+.ll-msg{font-size:13.5px;color:var(--taupe-soft);min-height:0}
+.ll-msg:empty{display:none}
+.ll-msg.err{color:var(--crit)} .ll-msg.ok{color:var(--pos-ink)}
+.ll-foot{font-size:12.5px;color:var(--taupe-soft);text-align:center;margin:0}
+.ll-lang{position:fixed;top:calc(14px + env(safe-area-inset-top,0px));right:16px;z-index:101}
+.ll-checking{display:grid;justify-items:center;gap:14px;color:var(--taupe-soft);font-size:13px}
+.ll-checking img{width:72px;height:72px;animation:ll-pulse 1.6s ease-in-out infinite}
+@keyframes ll-pulse{0%,100%{opacity:.55}50%{opacity:1}}
+@media (hover:none){.ll-card .btn.ll-google:hover:not(:disabled){background:transparent}}
+@media (max-width:420px){.ll-card{padding:22px 18px}.ll-card h1{font-size:30px}}
+/* Page sur téléphone étroit : chaque filtre sur sa ligne, pour qu'aucun choix de liste ne soit coupé. */
+@media (max-width:480px){.filters,.filters.f4{grid-template-columns:1fr}.filters.f4 #ct-sort{grid-column:auto}}
+/* Luna, site autonome : écrans du CRM (chantier 1), charte Luna (Ivory, Cream, Tiffany, Cormorant Garamond, Inter).
+   Conçus d'abord pour le téléphone (390 points de large) : aucun défilement horizontal, aucun texte coupé. */
+.nav-sep{height:1px;background:var(--line);margin:6px 12px}
+/* Écran court (message d'attente, liste vide) : les lignes de la grille de la page ne s'étirent pas, sinon la barre du haut
+   grandit sur un téléphone. Site seulement : la page privée ne change pas. */
+@media (max-width:900px){.app{align-content:start}}
+.crm-panel{padding-bottom:84px}
+.crm-body{display:grid;gap:16px;min-width:0}
+.crm-state{display:grid;gap:12px}
+.crm-state p{margin:0;color:var(--taupe);font-size:14.5px;overflow-wrap:anywhere}
+.crm-loading{margin:0;color:var(--taupe-soft);font-size:13.5px;padding:18px 4px}
+.crm-controls{display:grid;gap:12px;min-width:0}
+.crm-search input{height:48px}
+.crm-filters{border:0;padding:0}
+.crm-filters summary{display:inline-flex;align-items:center;min-height:36px;padding:6px 14px;border:1px solid var(--btn-border);border-radius:999px;font-size:13px;color:var(--taupe)}
+.crm-filter-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px;margin-top:12px;align-items:center}
+.crm-bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.crm-bar select{width:auto;min-width:0;max-width:100%}
+.crm-seg{display:inline-flex;gap:4px;border:1px solid var(--btn-border);border-radius:12px;padding:3px}
+.crm-seg button{border:0;background:transparent;color:var(--taupe-soft);font:500 13.5px var(--sans);padding:8px 16px;border-radius:9px;cursor:pointer}
+.crm-seg button[aria-pressed="true"]{background:var(--active-bg);color:var(--active-ink)}
+.crm-count{margin:0;font-size:13px;color:var(--taupe-soft);overflow-wrap:anywhere}
+.crm-count:empty{display:none}
+.crm-total{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:4px 12px;background:var(--cream);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);padding:14px 18px}
+.crm-total:empty{display:none}
+.crm-total .l{font-size:13px;color:var(--taupe-soft);font-weight:500}
+.crm-total .v{font-size:22px;font-weight:500;color:var(--taupe);font-variant-numeric:tabular-nums}
+.crm-stages{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.crm-stages:empty{display:none}
+.crm-stage{display:grid;gap:1px;text-align:left;border:1px solid var(--line);background:var(--cream);border-radius:14px;padding:10px 13px;font:inherit;color:inherit;cursor:pointer;box-shadow:var(--shadow);min-width:0}
+.crm-stage.static{cursor:default}
+.crm-stage[aria-pressed="true"]{background:var(--active-bg);border-color:var(--active-bg);color:var(--active-ink)}
+.crm-stage .l{font-size:13px;font-weight:500;overflow-wrap:anywhere}
+.crm-stage .n{font-size:21px;font-weight:500;line-height:1.15;font-variant-numeric:tabular-nums}
+.crm-stage .v{font-size:12.5px;color:var(--taupe-soft);font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.crm-stage[aria-pressed="true"] .v{color:var(--active-ink)}
+.crm-list{background:var(--cream);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);overflow:hidden;min-width:0}
+.crm-list.inline{box-shadow:none;border-radius:12px}
+.crm-list .empty{padding:28px 16px}
+.crm-row{display:grid;gap:3px;width:100%;min-width:0;text-align:left;border:0;border-bottom:1px solid var(--line);background:transparent;padding:14px 18px;font:inherit;color:inherit;cursor:pointer}
+.crm-row:last-child,.crm-line:last-child .crm-row{border-bottom:0}
+@media (hover:hover){.crm-row:hover{background:var(--hover)}}
+.crm-row .t{display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px;min-width:0}
+.crm-row .n{font-size:15px;font-weight:500;color:var(--taupe);overflow-wrap:anywhere;min-width:0}
+.crm-row .s{font-size:13px;color:var(--taupe-soft);line-height:1.45;overflow-wrap:anywhere}
+.crm-row .s.late{color:var(--warn-ink)}
+.crm-line{display:grid;border-bottom:1px solid var(--line)}
+.crm-line:last-child{border-bottom:0}
+.crm-line .crm-row{border-bottom:0}
+.crm-line .crm-mini{padding:0 18px 12px}
+/* fiche */
+.crm-sheet-back{position:fixed;inset:0;background:rgba(81,75,69,.18);z-index:50;animation:fadeonly .2s ease}
+.crm-sheet{position:fixed;top:16px;right:16px;bottom:16px;width:min(640px,calc(100% - 32px));background:var(--cream);border:1px solid var(--line);border-radius:18px;z-index:51;display:grid;grid-template-rows:auto 1fr;box-shadow:0 20px 60px rgba(71,61,50,.12);overflow:hidden;animation:slide .22s ease}
+.crm-sheet-head{display:grid;gap:6px;padding:14px 22px 12px;padding-top:calc(14px + env(safe-area-inset-top,0px));border-bottom:1px solid var(--line)}
+.crm-sheet-head .bar{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.crm-sheet-head .bar .btn{padding:7px 14px}
+.crm-sheet-head h2{font-size:28px;overflow-wrap:anywhere;min-height:1.1em}
+.crm-sheet-body{overflow-y:auto;overscroll-behavior:contain;padding:8px 22px 110px;display:grid;gap:0;align-content:start;min-width:0}
+.crm-sheet-body>.chips{margin-top:8px}
+.crm-sec{min-width:0}
+.crm-sec>h4{margin-bottom:2px}
+.crm-kv{display:grid;grid-template-columns:minmax(120px,36%) minmax(0,1fr);gap:8px 14px;margin:0;font-size:14px}
+.crm-kv dt{color:var(--taupe-soft)}
+.crm-kv dd{margin:0;color:var(--taupe);font-weight:500;overflow-wrap:anywhere;min-width:0}
+.crm-sublabel{margin:4px 0 0;font-size:12px;letter-spacing:.06em;text-transform:uppercase;font-weight:500;color:var(--taupe-soft)}
+.crm-subline{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:6px 10px;padding:8px 0;border-bottom:1px solid var(--line);min-width:0}
+.crm-subline:last-child{border-bottom:0}
+.crm-subline .s{font-size:14px;color:var(--taupe);overflow-wrap:anywhere;min-width:0}
+.crm-subline.head .s,.crm-subline.head b{font-size:14.5px}
+.crm-subline small{color:var(--taupe-soft)}
+.crm-brand{display:grid;border:1px solid var(--line);border-radius:12px;padding:4px 14px;background:var(--ivory)}
+.crm-mini{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.crm-acts{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.crm-foot{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px;padding-top:18px;border-top:1px solid var(--line)}
+.crm-stagehead{display:flex;flex-wrap:wrap;align-items:center;gap:10px}
+.crm-note{display:grid;gap:6px;padding:10px 0;border-bottom:1px solid var(--line)}
+.crm-note-head{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center}
+.crm-note-head .s{font-size:12.5px;color:var(--taupe-soft);overflow-wrap:anywhere}
+.crm-note-body{margin:0;font-size:14px;color:var(--taupe);white-space:pre-wrap;overflow-wrap:anywhere}
+.crm-history{list-style:none;margin:0;padding:0;display:grid;gap:0}
+.crm-history li{display:grid;gap:1px;padding:8px 0;border-bottom:1px solid var(--line);min-width:0}
+.crm-history li:last-child{border-bottom:0}
+.crm-history .t{font-size:13.5px;color:var(--taupe);font-weight:500;overflow-wrap:anywhere}
+.crm-history .s{font-size:12.5px;color:var(--taupe-soft);overflow-wrap:anywhere}
+.crm-archived{border-top:0;padding:6px 0 0}
+.crm-archived summary{font-size:13px}
+.crm-warn{display:grid;gap:8px;border:1px solid #EBDCC6;background:#FBF5EC;border-radius:12px;padding:12px 14px;font-size:13.5px;color:var(--taupe);overflow-wrap:anywhere;margin-top:8px}
+.crm-warn .s{color:var(--taupe-soft);font-size:12.5px}
+.crm-warn .linkbtn{justify-self:start;overflow-wrap:anywhere}
+.crm-quote{margin:4px 0;padding:6px 0 6px 12px;border-left:2px solid var(--beige);font-size:13px;color:var(--taupe);white-space:pre-wrap;overflow-wrap:anywhere}
+.btn.sm{padding:6px 11px;font-size:12.5px;border-radius:9px}
+.btn.danger{border-color:#D8B3AC;color:var(--crit)}
+@media (hover:hover){.btn.danger:hover{background:#F6E9E6}}
+/* fenêtre de formulaire */
+.crm-dialog-back{position:fixed;inset:0;background:rgba(81,75,69,.28);z-index:60;animation:fadeonly .2s ease}
+.crm-dialog{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);width:min(560px,calc(100% - 32px));max-height:calc(100% - 48px);background:var(--cream);border:1px solid var(--line);border-radius:18px;z-index:61;display:grid;grid-template-rows:auto minmax(0,1fr);box-shadow:0 24px 70px rgba(71,61,50,.18);overflow:hidden}
+.crm-dialog-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;padding:18px 20px 12px;border-bottom:1px solid var(--line)}
+.crm-dialog-head h2{font-size:25px;overflow-wrap:anywhere;min-width:0}
+.crm-dialog-head .btn{padding:7px 14px;flex:0 0 auto}
+.crm-dialog-body{overflow-y:auto;overscroll-behavior:contain;padding:14px 20px calc(18px + env(safe-area-inset-bottom,0px));display:grid;gap:12px;align-content:start;min-width:0}
+.crm-dialog-body>p{margin:0}
+.crm-form{display:grid;gap:14px;min-width:0}
+.crm-field{display:grid;gap:6px;min-width:0}
+.crm-label{font-size:13.5px;font-weight:500;color:var(--taupe)}
+.crm-label small{font-weight:400;color:var(--taupe-soft)}
+.crm-hint{font-size:12.5px;color:var(--taupe-soft)}
+.crm-form input[type=text],.crm-form input[type=email],.crm-form input[type=tel],.crm-form input[type=url],.crm-form input[type=date],
+.crm-form input[type=datetime-local],.crm-form input[type=search],.crm-periods input[type=number]{width:100%;min-width:0;font:15px var(--sans);color:var(--taupe);background:var(--cream);border:1px solid var(--border);border-radius:12px;padding:10px 14px;min-height:44px}
+.crm-form input:focus,.crm-periods input:focus{outline:0;border-color:var(--tiffany)}
+.crm-form textarea{min-height:110px}
+.crm-check{display:flex;align-items:center;gap:10px;font-size:14px;color:var(--taupe);min-height:36px}
+.crm-check input{width:18px;height:18px;accent-color:var(--tiffany-dark);flex:0 0 auto}
+.crm-checks{display:flex;flex-wrap:wrap;gap:8px}
+.crm-checks label{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--btn-border);border-radius:999px;padding:7px 12px;font-size:13px;color:var(--taupe);cursor:pointer;max-width:100%;overflow-wrap:anywhere}
+.crm-checks input{accent-color:var(--tiffany-dark);flex:0 0 auto}
+.crm-more{border-top:1px solid var(--line);padding:12px 0 0}
+.crm-more>.crm-form{margin-top:12px}
+.crm-actions{display:flex;flex-wrap:wrap;gap:10px;align-items:center;position:sticky;bottom:-18px;background:var(--cream);padding:10px 0 6px;z-index:1}
+.crm-actions .crm-msg{flex:1 0 100%}
+.crm-msg{margin:0;font-size:13.5px;color:var(--taupe-soft);overflow-wrap:anywhere}
+.crm-msg:empty{display:none}
+.crm-msg.err{color:var(--crit)}
+.crm-extra:empty{display:none}
+.crm-picker{display:grid;gap:8px;min-width:0}
+.crm-picks{display:grid;gap:0;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.crm-picks:empty{display:none}
+.crm-pick{display:grid;gap:1px;text-align:left;border:0;border-bottom:1px solid var(--line);background:transparent;padding:10px 14px;font:inherit;color:inherit;cursor:pointer;min-width:0}
+.crm-pick:last-child{border-bottom:0}
+.crm-pick .n{font-size:14.5px;font-weight:500;overflow-wrap:anywhere}
+.crm-pick small{font-size:12.5px;color:var(--taupe-soft)}
+.crm-picked{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:8px;border:1px solid var(--border);border-radius:12px;padding:8px 10px 8px 14px;min-height:44px}
+.crm-picked .n{font-size:15px;font-weight:500;overflow-wrap:anywhere;min-width:0}
+.crm-menu{display:grid;gap:10px}
+.crm-menu .btn{padding:14px 16px;font-size:15px;text-align:left}
+.crm-stage-pick{display:grid;gap:8px}
+.crm-stage-opt{display:flex;justify-content:space-between;align-items:center;gap:10px;text-align:left;border:1px solid var(--btn-border);background:transparent;border-radius:12px;padding:12px 14px;font:inherit;color:var(--taupe);cursor:pointer;min-height:48px}
+.crm-stage-opt small{color:var(--taupe-soft);font-size:12.5px}
+.crm-stage-opt[aria-current="true"]{background:var(--active-bg);border-color:var(--active-bg);color:var(--active-ink);opacity:1}
+.crm-stage-opt:disabled{cursor:default}
+.crm-del{display:grid;gap:8px}
+/* Paramètres */
+.crm-items{list-style:none;margin:0;padding:0;display:grid;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.crm-item{display:grid;gap:8px;padding:10px 14px;border-bottom:1px solid var(--line);min-width:0}
+.crm-item:last-child{border-bottom:0}
+.crm-item-l{display:flex;flex-wrap:wrap;gap:4px 8px;align-items:center;min-width:0}
+.crm-item-l .n{font-size:14.5px;font-weight:500;overflow-wrap:anywhere}
+.crm-item-l .s{font-size:12.5px;color:var(--taupe-soft)}
+.crm-periods{list-style:none;margin:0;padding:0;display:grid}
+.crm-periods li{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:8px 12px;padding:9px 0;border-bottom:1px solid var(--line);font-size:14px}
+.crm-periods li:last-child{border-bottom:0}
+.crm-periods input[type=number]{width:96px;min-height:38px;padding:6px 10px}
+.crm-set{display:grid;gap:12px;min-width:0}
+.crm-set h3{margin:0}
+.crm-set select{max-width:100%}
+/* bouton « + » et messages */
+.crm-fab{position:fixed;right:18px;bottom:calc(18px + env(safe-area-inset-bottom,0px));width:58px;height:58px;border-radius:50%;border:0;background:var(--btn);color:#FFFFFF;box-shadow:0 10px 26px rgba(71,61,50,.22);z-index:55;display:grid;place-items:center;cursor:pointer;font:400 32px/1 var(--sans);padding:0}
+@media (hover:hover){.crm-fab:hover{background:var(--tiffany-dark)}}
+.crm-fab:focus-visible{outline:2px solid var(--tiffany-dark);outline-offset:3px}
+.crm-toast{position:fixed;left:16px;right:16px;bottom:calc(90px + env(safe-area-inset-bottom,0px));margin:0 auto;max-width:520px;background:var(--taupe);color:#FFFFFF;border-radius:12px;padding:12px 16px;font-size:14px;line-height:1.45;z-index:70;box-shadow:0 12px 30px rgba(71,61,50,.2);overflow-wrap:anywhere}
+.crm-toast.err{background:var(--crit)}
+@media (max-width:900px){
+  .crm-sheet{top:0;right:0;bottom:0;width:100%;border-radius:0;border:0}
+  .crm-sheet-head{padding-left:16px;padding-right:16px}
+  .crm-sheet-body{padding-left:16px;padding-right:16px}
+  .crm-sheet-head h2{font-size:26px}
+}
+@media (max-width:600px){
+  .crm-dialog{left:0;right:0;bottom:0;top:auto;transform:none;width:100%;max-height:92%;border-radius:18px 18px 0 0;border-bottom:0}
+  .crm-dialog-head{padding:16px 16px 10px}
+  .crm-dialog-body{padding-left:16px;padding-right:16px}
+  .crm-form input[type=text],.crm-form input[type=email],.crm-form input[type=tel],.crm-form input[type=url],.crm-form input[type=date],
+  .crm-form input[type=datetime-local],.crm-form input[type=search],.crm-form select,.crm-form textarea,.crm-periods input[type=number]{font-size:16px}
+  .crm-kv{grid-template-columns:1fr;gap:1px}
+  .crm-kv dd{margin-bottom:8px}
+  .crm-filter-grid{grid-template-columns:1fr}
+  .crm-row{padding:13px 16px}
+}
+</style>
+<script src="config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.116.0/dist/umd/supabase.js" integrity="sha384-iLddHTLokph6Omwoyid4XKxHaWa6w41BnoEj0q5oOrzmYPpHIKt1wyjReA7s//pP" crossorigin="anonymous"></script>
+<script src="luna-db.js"></script>
+<script src="luna-login.js"></script>
+<script src="luna-crm-db.js"></script>
+<script src="luna-crm.js"></script>
+</head>
+<body class="luna-locked">
+<div class="luna-login" id="luna-login" role="main" aria-labelledby="ll-heading">
+  <div class="lang ll-lang" role="group" aria-label="Language"><button type="button" id="ll-lang-en" aria-pressed="false">EN</button><button type="button" id="ll-lang-fr" aria-pressed="false">FR</button></div>
+  <div class="ll-wrap">
+    <div id="ll-checking" class="ll-checking"><img alt="" src="luna-croissant.png"><span class="wordmark">LUNA</span></div>
+
+    <div id="ll-form" hidden style="display:contents">
+      <div class="ll-brand"><img alt="" src="luna-croissant.png"><div class="wordmark">LUNA</div><div class="tagline">Search Intelligence</div></div>
+      <div class="ll-card">
+        <h1 id="ll-heading" data-li="title"></h1>
+        <p data-li="lead"></p>
+        <button class="btn ll-google" type="button" id="ll-google" data-li="google"></button>
+        <span class="ll-msg" id="ll-form-msg" role="status"></span>
+      </div>
+      <p class="ll-foot" data-li="foot"></p>
+    </div>
+
+    <div id="ll-denied" hidden style="display:contents">
+      <div class="ll-brand"><img alt="" src="luna-croissant.png"><div class="wordmark">LUNA</div></div>
+      <div class="ll-card">
+        <h1 data-li="denied_title"></h1>
+        <p data-li="denied"></p>
+        <p class="ll-account" id="ll-denied-account"></p>
+        <button class="btn ll-google" type="button" id="ll-other" data-li="other"></button>
+      </div>
+    </div>
+
+    <div id="ll-unconf" hidden style="display:contents">
+      <div class="ll-brand"><img alt="" src="luna-croissant.png"><div class="wordmark">LUNA</div></div>
+      <div class="ll-card">
+        <p id="ll-unconf-text"></p>
+        <button class="btn" type="button" id="ll-reload" data-li="reload"></button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="app">
+  <header class="topbar">
+    <div class="mini"><img alt="" src="luna-croissant.png"><span class="wordmark">LUNA</span></div>
+    <button type="button" id="menu-open" aria-label="Menu"><i data-lucide="menu"></i></button>
+  </header>
+
+  <div class="side-back" id="side-back" hidden></div>
+  <aside class="side" id="side">
+    <div class="brand"><img alt="Luna" src="luna-croissant.png"><span class="wordmark">LUNA</span><span class="tagline">Search Intelligence</span></div>
+    <nav class="nav" aria-label="Luna">
+      <button type="button" id="nav-crm-pipeline" data-panel="p-crm-pipeline"><i data-lucide="kanban"></i><span data-ci="nav_pipeline"></span></button>
+      <button type="button" id="nav-crm-companies" data-panel="p-crm-companies"><i data-lucide="briefcase"></i><span data-ci="nav_companies"></span></button>
+      <button type="button" id="nav-crm-contacts" data-panel="p-crm-contacts"><i data-lucide="contact"></i><span data-ci="nav_contacts"></span></button>
+      <div class="nav-sep" role="separator"></div>
+      <button type="button" id="nav-home" data-panel="p-home"><i data-lucide="house"></i><span data-i="nav_home"></span></button>
+      <button type="button" id="nav-search" data-panel="p-search"><i data-lucide="search"></i><span data-i="nav_search"></span></button>
+      <button type="button" id="nav-src" data-panel="p-src"><i data-lucide="layers"></i><span data-i="nav_src"></span></button>
+      <button type="button" id="nav-dir" data-panel="p-dir"><i data-lucide="building-2"></i><span data-i="nav_dir"></span><span class="count" id="c-dir"></span></button>
+      <button type="button" id="nav-ct" data-panel="p-ct"><i data-lucide="users"></i><span data-i="nav_ct"></span><span class="count" id="c-ct"></span></button>
+      <button type="button" id="nav-opp" data-panel="p-opp"><i data-lucide="target"></i><span data-i="nav_opp"></span><span class="count" id="c-opp"></span></button>
+      <button type="button" id="nav-auto" data-panel="p-auto"><i data-lucide="workflow"></i><span data-i="nav_auto"></span></button>
+      <button type="button" id="nav-ana" data-panel="p-ana"><i data-lucide="chart-no-axes-column"></i><span data-i="nav_ana"></span></button>
+    </nav>
+    <div class="spacer"></div>
+    <nav class="nav" aria-label="Luna">
+      <button type="button" id="nav-req" data-panel="p-req"><i data-lucide="message-square"></i><span data-i="nav_req"></span><span class="count" id="c-req"></span></button>
+      <button type="button" id="nav-set" data-panel="p-set"><i data-lucide="settings"></i><span data-i="nav_set"></span></button>
+    </nav>
+  </aside>
+
+  <main>
+    <section class="panel crm-panel" id="p-crm-pipeline" hidden>
+      <div class="page-head"><h2 data-ci="pt_pipeline"></h2><p class="lead" data-ci="lead_pipeline"></p></div>
+      <div class="crm-body" id="crm-pipeline"></div>
+    </section>
+
+    <section class="panel crm-panel" id="p-crm-companies" hidden>
+      <div class="page-head"><h2 data-ci="pt_companies"></h2><p class="lead" data-ci="lead_companies"></p></div>
+      <div class="crm-body" id="crm-companies"></div>
+    </section>
+
+    <section class="panel crm-panel" id="p-crm-contacts" hidden>
+      <div class="page-head"><h2 data-ci="pt_contacts"></h2><p class="lead" data-ci="lead_contacts"></p></div>
+      <div class="crm-body" id="crm-contacts"></div>
+    </section>
+
+    <section class="panel" id="p-home" hidden>
+      <div class="page-head"><span class="eyebrow" id="home-date"></span><h1 id="home-hello"></h1><p class="lead" data-i="home_lead"></p></div>
+      <div class="status" id="status"><span class="pill" data-i="loading"></span></div>
+      <div class="searchbar"><i data-lucide="search"></i><input type="search" id="home-q" data-ph="search_all" aria-label="Search"></div>
+      <div class="kpis" id="home-kpis"></div>
+      <h2 class="section-title" data-i="home_attention"></h2>
+      <div class="attention" id="home-attention"></div>
+    </section>
+
+    <section class="panel" id="p-search" hidden>
+      <div class="page-head"><h2 data-i="pt_search"></h2><p class="lead" data-i="lead_search"></p></div>
+      <div class="searchbar"><i data-lucide="search"></i><input type="search" id="search-q" data-ph="search_all" aria-label="Search"></div>
+      <div id="search-results" style="display:grid;gap:24px"></div>
+    </section>
+
+    <section class="panel" id="p-opp" hidden>
+      <div class="page-head"><h2 data-i="pt_opp"></h2><p class="lead" data-i="lead_opp"></p></div>
+      <div class="kpis" id="opp-kpis"></div>
+      <div class="filters">
+        <input class="q" type="search" id="opp-q" data-ph="search_opp" aria-label="Search">
+        <select id="opp-prio" aria-label="Priority"></select>
+        <select id="opp-stat" aria-label="Status"></select>
+      </div>
+      <label class="check"><input type="checkbox" id="opp-side"> <span data-i="show_side"></span></label>
+      <div id="opp-list" style="display:grid;gap:16px"></div>
+      <div class="pager"><span id="opp-info"></span><span style="display:flex;gap:8px"><button class="btn" id="opp-prev" data-i="prev"></button><button class="btn" id="opp-next" data-i="next"></button></span></div>
+      <details><summary data-i="prio_how"></summary><p data-i="prio_rules"></p></details>
+    </section>
+
+    <section class="panel" id="p-dir" hidden>
+      <div class="page-head"><h2 data-i="pt_dir"></h2><p class="lead" data-i="lead_dir"></p></div>
+      <div class="filters">
+        <input class="q" type="search" id="dir-q" data-ph="search_dir" aria-label="Search">
+        <select id="dir-type" aria-label="Type"></select>
+        <select id="dir-people" aria-label="People"></select>
+      </div>
+      <div class="tablebox">
+        <table class="dd-table dir-table">
+          <thead><tr><th data-i="th_venue"></th><th data-i="type"></th><th data-i="place"></th><th data-i="th_people"></th><th data-i="th_prio"></th></tr></thead>
+          <tbody id="dir-body"></tbody>
+        </table>
+      </div>
+      <div class="pager"><span id="dir-info"></span><span style="display:flex;gap:8px"><button class="btn" id="dir-prev" data-i="prev"></button><button class="btn" id="dir-next" data-i="next"></button></span></div>
+    </section>
+
+    <section class="panel" id="p-ct" hidden>
+      <div class="page-head"><h2 data-i="pt_ct"></h2><p class="lead" data-i="lead_ct"></p></div>
+      <div class="filters f4">
+        <input class="q" type="search" id="ct-q" data-ph="search_ct" aria-label="Search">
+        <select id="ct-role" aria-label="Role"></select>
+        <select id="ct-has" aria-label="Details"></select>
+        <select id="ct-sort" aria-label="Sort"></select>
+      </div>
+      <div class="people" id="ct-list"></div>
+    </section>
+
+    <section class="panel" id="p-src" hidden>
+      <div class="page-head"><h2 data-i="pt_src"></h2><p class="lead" data-i="lead_src"></p></div>
+      <div class="subtabs" role="group" aria-label="Sources">
+        <button type="button" data-sub="p-pistes" aria-pressed="true"><span data-i="sub_pistes"></span><span class="count" id="c-pistes"></span></button>
+        <button type="button" data-sub="p-press" aria-pressed="false"><span data-i="sub_press"></span><span class="count" id="c-press"></span></button>
+        <button type="button" data-sub="p-ver" aria-pressed="false"><span data-i="sub_ver"></span><span class="count" id="c-ver"></span></button>
+        <button type="button" data-sub="p-dd" aria-pressed="false"><span data-i="sub_dd"></span><span class="count" id="c-dd"></span></button>
+      </div>
+      <div class="subpanel" id="p-pistes">
+        <p class="lead" data-i="lead_pistes"></p>
+        <div id="pistes-list" style="display:grid;gap:16px"></div>
+      </div>
+      <div class="subpanel" id="p-ver" hidden>
+        <p class="lead" data-i="lead_ver"></p>
+        <div class="kpis" id="ver-kpis"></div>
+        <div class="filters">
+          <input class="q" type="search" id="ver-q" data-ph="search_name" aria-label="Search">
+          <select id="ver-id" aria-label="Verification"></select>
+          <select id="ver-new" aria-label="Company"></select>
+        </div>
+        <div class="tablebox">
+          <table class="dd-table">
+            <thead><tr><th data-i="th_venue"></th><th data-i="th_activity"></th><th data-i="th_added"></th><th data-i="th_check"></th><th>Google Maps</th></tr></thead>
+            <tbody id="ver-body"></tbody>
+          </table>
+        </div>
+      </div>
+      <div class="subpanel" id="p-press" hidden>
+        <p class="lead" id="press-lead"></p>
+        <div class="kpis" id="press-kpis"></div>
+        <div class="filters">
+          <input class="q" type="search" id="press-q" data-ph="search_press" aria-label="Search">
+          <select id="press-status" aria-label="Status"></select>
+          <select id="press-link" aria-label="Cross-check"></select>
+        </div>
+        <div id="press-list" style="display:grid;gap:16px"></div>
+        <details><summary data-i="articles_read"></summary><div id="press-articles"></div></details>
+      </div>
+      <div class="subpanel" id="p-dd" hidden>
+        <p class="lead" id="dd-lead"></p>
+        <div class="kpis" id="dd-kpis"></div>
+        <div class="chart"><h4 data-i="chart_title"></h4><div class="bars" id="dd-bars"></div></div>
+        <div class="filters">
+          <input class="q" type="search" id="dd-q" data-ph="search_dd" aria-label="Search">
+          <select id="dd-act" aria-label="Activity"></select>
+          <select id="dd-month" aria-label="Month"></select>
+        </div>
+        <label class="check"><input type="checkbox" id="dd-new"> <span data-i="only_new"></span></label>
+        <div class="tablebox">
+          <table class="dd-table">
+            <thead><tr><th data-i="th_trade"></th><th data-i="th_activity"></th><th data-i="th_added"></th><th data-i="th_licence"></th><th class="hide-sm" data-i="th_form"></th><th class="hide-sm" data-i="th_licno"></th></tr></thead>
+            <tbody id="dd-body"></tbody>
+          </table>
+        </div>
+        <div class="pager"><span id="dd-info"></span><span style="display:flex;gap:8px"><button class="btn" id="dd-prev" data-i="prev"></button><button class="btn" id="dd-next" data-i="next"></button></span></div>
+        <details><summary data-i="read_first"></summary><div id="dd-notes"></div></details>
+      </div>
+    </section>
+
+    <section class="panel" id="p-auto" hidden>
+      <div class="page-head"><h2 data-i="pt_auto"></h2><p class="lead" data-i="lead_auto"></p></div>
+      <div class="auto-list" id="auto-list"></div>
+      <p class="note" id="foot"></p>
+    </section>
+
+    <section class="panel" id="p-ana" hidden>
+      <div class="page-head"><h2 data-i="pt_ana"></h2><p class="lead" data-i="lead_ana"></p></div>
+      <div class="chart"><h4 data-i="ana_prio"></h4><div class="hbars" id="ana-prio"></div></div>
+      <div class="chart"><h4 data-i="ana_follow"></h4><div class="hbars" id="ana-follow"></div></div>
+      <div class="chart"><h4 data-i="ana_sources"></h4><div class="hbars" id="ana-sources"></div></div>
+      <h2 class="section-title" data-i="tests_title"></h2>
+      <div id="p-tests" style="display:grid;gap:16px">
+        <p class="lead" data-i="lead_tests"></p>
+        <div id="tests-body" style="display:grid;gap:16px"></div>
+      </div>
+    </section>
+
+    <section class="panel" id="p-req" hidden>
+      <div class="page-head"><h2 data-i="pt_req"></h2><p class="lead" data-i="lead_req"></p></div>
+      <form class="form" id="req-form">
+        <label for="req-text" class="label" data-i="req_label"></label>
+        <textarea id="req-text" data-ph="req_ph" maxlength="4000"></textarea>
+        <div class="actions"><button class="btn primary" type="submit" id="req-send" data-i="req_send"></button><span class="msg" id="req-msg" role="status"></span></div>
+      </form>
+      <div class="mail" hidden><span data-i="req_mail"></span><code id="req-address"></code><button class="btn" type="button" id="req-copy" data-i="copy"></button></div>
+      <div id="req-list" style="display:grid;gap:16px"></div>
+    </section>
+
+    <section class="panel" id="p-set" hidden>
+      <div class="page-head"><h2 data-i="pt_set"></h2></div>
+      <div class="card">
+        <div class="settings-row"><div><h3 data-i="set_lang"></h3><p class="note" data-i="set_lang_note"></p></div>
+          <div class="lang" role="group" aria-label="Language"><button type="button" id="lang-en" aria-pressed="false">EN</button><button type="button" id="lang-fr" aria-pressed="false">FR</button></div></div>
+      </div>
+      <div class="card"><h3 data-i="set_access"></h3><p class="note" data-i="set_access_note"></p></div>
+      <div class="card"><div class="settings-row"><div><h3 data-li="session"></h3><p class="note" id="luna-session-email"></p></div><button class="btn" type="button" id="luna-signout" data-li="signout"></button></div></div>
+      <div class="card crm-set" id="crm-set-lists"></div>
+      <div class="card crm-set" id="crm-set-review" hidden></div>
+      <div class="card"><h3 data-i="set_rules"></h3><p class="note" data-i="set_rules_note"></p></div>
+    </section>
+  </main>
+
+  <div class="crm-sheet-back" id="crm-sheet-back" hidden></div>
+  <aside class="crm-sheet" id="crm-sheet" role="dialog" aria-modal="true" aria-labelledby="crm-sheet-title" hidden>
+    <div class="crm-sheet-head">
+      <div class="bar"><button class="btn" type="button" id="crm-sheet-back-btn" data-ci="back" hidden></button><span></span><button class="btn" type="button" id="crm-sheet-close" data-ci="close"></button></div>
+      <h2 id="crm-sheet-title"></h2>
+    </div>
+    <div class="crm-sheet-body" id="crm-sheet-body"></div>
+  </aside>
+  <div class="crm-dialog-back" id="crm-dialog-back" hidden></div>
+  <div class="crm-dialog" id="crm-dialog" role="dialog" aria-modal="true" aria-labelledby="crm-dialog-title" hidden>
+    <div class="crm-dialog-head"><h2 id="crm-dialog-title"></h2><button class="btn" type="button" id="crm-dialog-close" data-ci="close"></button></div>
+    <div class="crm-dialog-body" id="crm-dialog-body"></div>
+  </div>
+  <button class="crm-fab" type="button" id="crm-fab" data-ci-label="add_menu" hidden><span aria-hidden="true">+</span></button>
+  <div class="crm-toast" id="crm-toast" role="status" aria-live="polite" hidden></div>
+  <div class="sheet-back" id="sheet-back" hidden></div>
+  <aside class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheet-title" hidden>
+    <div class="sheet-head"><h2 id="sheet-title"></h2><button class="btn" type="button" id="sheet-close" data-i="close"></button></div>
+    <div id="sheet-body" class="sheet-body"></div>
+  </aside>
+</div>
+
+<script>
+(function(){
+  const $ = s => document.querySelector(s);
+  const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
+  const link = (url, text) => { const a = el("a", null, text || url); if (/^https?:\/\//.test(url)) { a.href = url; a.target = "_blank"; a.rel = "noopener noreferrer"; } return a; };
+  const store = { get(k){ try { return localStorage.getItem(k); } catch(e) { return null; } }, set(k,v){ try { localStorage.setItem(k,v); } catch(e) {} } };
+
+  const T = {
+    en: {
+      title:"Luna", subtitle:"Search Intelligence", loading:"Loading data…",
+      tab_pistes:"Leads", tab_ver:"Verified", tab_press:"Press", tab_tests:"Tests", tab_req:"Requests", tab_opp:"Opportunities", tab_src:"Sources",
+      lead_src:"Where the opportunities come from. Each source feeds the Opportunities list, where duplicates are merged: use this page to check where a venue comes from.",
+      tab_dir:"Venues", tab_ct:"People found",
+      lead_dir:"Directory of every venue known to Luna. Click a venue to see everything about it, including the people identified there.",
+      lead_ct:"Directory of people identified in these venues and groups. A person only appears here once David has validated them; an email or phone number shows how reliable it is.",
+      search_dir:"Search a venue, place, concept or group", search_ct:"Search a name, position, group or venue",
+      th_people:"People", th_prio:"Priority", th_name:"Name", th_position:"Position", th_email:"Email", th_phone:"Phone", close:"Close",
+      all_types:"All types", with_people:"With people identified", without_people:"Without people yet", all_people:"All venues",
+      all_roles:"All positions", fam_direction:"Leadership", fam_exploitation:"F&B operations", fam_projet:"Projects and pre-opening", fam_marketing:"Marketing and communications",
+      has_any:"All people", has_email:"With an email", has_phone:"With a phone number",
+      no_contacts:"No validated person yet. The first people found are being checked; they will appear here once David validates them.",
+      people_title:"People identified", no_people:"No validated person yet for this venue.", follow_title:"Follow-up", edit_follow:"Edit follow-up",
+      verified_place:"Place confirmed on Google Maps", probable_place:"Place probable on Google Maps", new_company:"Company created in 2026",
+      em_VERIFIED_PUBLISHED:"verified (published by the company)", em_SMTP_CONFIRMED:"verified (mail server)", em_CORROBORATED:"corroborated by several sources",
+      em_INFERRED_PATTERN:"guessed from the company's email pattern, not verified", em_CATCH_ALL_UNCERTAIN:"uncertain (server accepts every address)", em_UNVERIFIED:"not verified",
+      ph_VERIFIED:"verified", ph_PROVIDER:"from a data provider, not verified", ph_UNVERIFIED:"not verified",
+      validated_on:(d,w) => `Validated on ${d}${w ? " by " + w : ""}`,
+      nav_home:"Home", nav_search:"Search", nav_src:"Sources", nav_dir:"Projects", nav_ct:"People found", nav_opp:"Opportunities", nav_auto:"Automations", nav_ana:"Analytics", nav_req:"Requests", nav_set:"Settings",
+      pt_search:"Search", pt_src:"Sources", pt_dir:"Projects", pt_ct:"People found", pt_opp:"Opportunities", pt_auto:"Automations", pt_ana:"Analytics", pt_req:"Requests", pt_set:"Settings",
+      hello:n => n ? `Good morning, ${n}` : "Good morning", hello_pm:n => n ? `Good afternoon, ${n}` : "Good afternoon", hello_ev:n => n ? `Good evening, ${n}` : "Good evening",
+      home_lead:"Here is what deserves your attention today.", home_attention:"Worth your attention",
+      search_all:"Search a company, a contact, a market or a topic…", lead_search:"One search across every venue, person found and press announcement known to Luna.",
+      res_venues:"Venues", res_contacts:"People found", res_press:"Press", no_results:"Nothing matches this search yet.", type_more:"Type at least two letters.",
+      k_new_contacts:"New people found this week", k_active_opps:"Active opportunities", k_searches:"Venues screened", k_signals:"Opening signals",
+      att_high:(n,p) => `${n}`, att_high_s:o => `High priority, not contacted yet${o ? " · " + o : ""}`,
+      att_req:n => `${n} request(s) waiting for David`, att_req_s:"Open the requests", att_ct:n => `${n} new person(s) validated`, att_ct_s:"Open people found",
+      att_none:"Nothing urgent today.",
+      lead_auto:"What Luna does on its own, without anyone having to think about it.",
+      au_collect:"Automatic collection", au_collect_s:(d,n) => `Every hour, ${n || ""} sources${d ? " · last run " + d : ""}`,
+      au_digest:"Email summary", au_digest_s:"Every day at 9:00 and 18:00, then this page is updated",
+      au_press:"Press review", au_press_s:"Every Monday at 8:15, What's On and DOTW News only",
+      au_dd:"Official registers (Data Dubai)", au_dd_s:d => `Every Monday at 7:30 · next check ${d}`,
+      au_req:"Requests", au_req_s:"Collected at 9:00 and 18:00 and passed on to David",
+      lead_ana:"A calm view of where the work stands.", ana_prio:"Opportunities by priority", ana_follow:"Follow-up", ana_sources:"Where the opportunities come from",
+      set_lang:"Language", set_lang_note:"Luna opens in the language of your device; you can change it here.",
+      set_access:"Access", set_access_note:"This page is private. Only the people registered by David can open it; each person signs in with their own Google account. To add someone, ask David.",
+      set_rules:"Data rules", set_rules_note:"No one appears before David validates them. A guessed email is never shown as verified. Nothing is collected from LinkedIn, and Google Maps details are never stored.",
+      lv_confirme:"Confirmed by a public source", lv_probable:"Probable", lv_apollo:"From Apollo only",
+      pp_identity:"Contact details", pp_first:"First name", pp_last:"Last name", pp_company:"Company", pp_missing:"Not found yet",
+      pp_venues:"Related venues", pp_group_note:o => `Works at group level (${o}): the exact venue is not proven.`, pp_source:"Source", pp_found:"Found through",
+      pp_validated:"Validation", pp_no_details:"Email and phone have not been searched yet. They will be added on request, with their reliability shown.",
+      sort_alpha:"Alphabetical", sort_recent:"Recently added", act_email:"Email", act_call:"Call", pp_contact:"Contact", pp_company_t:"Company",
+      pp_group1:"Group-level relationship", pp_group2:"Exact venue not confirmed", pp_venue_level:"Venue-level relationship", pp_verif:"Verification",
+      sub_pistes:"Found by Luna", sub_press:"Press", sub_ver:"Verified on Google Maps", sub_dd:"Data Dubai (raw list)", tests_title:"Data quality tests",
+      lead_opp:"One list of every opportunity, without duplicates: Luna's leads, press announcements and venues verified on Google Maps. Set a status and add notes: they are saved for everyone who opens this page.",
+      search_opp:"Search a name, place or concept", show_side:"Show businesses that only added a café to another activity (gym, grocery, salon)",
+      k_opp:"opportunities", k_high:"high priority", k_followed:"being followed", k_won:"won",
+      pr_all:"All priorities", pr_haute:"High", pr_moyenne:"Medium", pr_basse:"Low", pr_label:p => ({haute:"High priority", moyenne:"Medium priority", basse:"Low priority"})[p],
+      rs_annonce:"announced, not open yet", rs_recent:"opened recently", rs_ouvert_avant:"already open for a while", rs_ancienne:"older company", rs_probable:"place not certain", rs_ferme:"closed", rs_secondaire:"café added to another business",
+      et_annonce:"Announced", et_ouvert_recemment:"Recently opened", et_ouvert:"Open", et_ferme:"Closed", et_inconnu:"Status unknown",
+      src_renata:"Luna", src_presse:"Press", src_data_dubai:"Data Dubai", src_google_maps:"Google Maps",
+      cs_all:"All statuses", cs_a_contacter:"To contact", cs_contacte:"Contacted", cs_rendez_vous:"Meeting set", cs_proposition:"Proposal sent", cs_gagne:"Won", cs_perdu:"Lost", cs_pas_pertinent:"Not relevant",
+      follow:"Follow-up", note_ph:"Notes: who to call, what was said, next step…", save:"Save", saved:"Saved", save_fail:"Could not save. You may only have read access to this page.",
+      last_edit:(d,w) => `Last change ${d}${w ? " by " + w : ""}`, type:"Type", licence_no:"Licence",
+      prio_how:"How priority is set",
+      prio_rules:"High: the venue is announced but not open yet, the best time to offer services. Medium: opened recently (press, or a company created in 2026 with its activity added since May). Low: open for a while, an older company that only added an activity, a place not certain, a closed venue, or a café added to another kind of business.",
+      lead_pistes:"Venues spotted by Luna's own collection over the last 60 days. A lead stays « to be confirmed » while only one type of source mentions it.",
+      lead_ver:"Restaurants, coffee shops and lounges from the official Data Dubai list whose real location was found on Google Maps, then checked one by one by the team. The link opens the Google Maps listing: Luna keeps nothing else from it. A company that is older and only added an activity in 2026 is not necessarily a new opening.",
+      lead_tests:"Test on 50 venues drawn at random from the Data Dubai list: can we find their area, their cuisine and their online presence?",
+      lead_req:"Ask for a change to this page, more research on a venue, or a new kind of search. Every request is read and confirmed by David before the team works on it; its progress shows below.",
+      req_label:"Your request", req_ph:"For example: please find the opening date and the operator of La Maison Ani at Mall of the Emirates.", req_send:"Send request",
+      req_sent:"Request sent. It appears below and David will be notified.", req_empty:"Please write your request first.",
+      req_fail:"This page could not save your request. Please send it by email instead, to the address below.",
+      req_mail:"You can also email your request to", copy:"Copy", copied:"Copied", no_req:"No request yet.",
+      st_recue:"Received", st_transmise:"Sent to David", st_validee:"Approved", st_en_cours:"In progress", st_faite:"Done", st_refusee:"Declined",
+      from:"From", reply:"Reply",
+      unconfirmed:"To be confirmed: one source only", confirmed_many:"Confirmed by several sources", name_check:"Name to check: a job title, not a venue name", dup:"Probable duplicate",
+      where_found:"Where Luna found it", research:"Additional research of", place:"Location", opening:"Opening", clue:"Clue",
+      concept:"Concept", operator:"Operator", address:"Address", status:"Status", seen_on:"seen on", spotted_date:"date spotted",
+      no_leads:"No lead over the last 60 days.",
+      k_confirmed:"venues confirmed", k_probable:"probable, to be confirmed", k_batches:"verification batches done", k_passed:"venues checked on Google Maps",
+      all:"All", only_confirmed:"Confirmed only", only_probable:"Probable only", all_companies:"All companies", new_companies:"Companies created in 2026", older_companies:"Older companies",
+      th_venue:"Venue", th_activity:"Activity", th_added:"Activity added", th_check:"Verification", th_trade:"Trade name", th_licence:"Licence created", th_form:"Legal form", th_licno:"Licence no.",
+      v_confirmed:"Confirmed", v_probable:"Probable", open_yes:"Open", open_soon:"Opening soon", open_closed:"Closed", open_unknown:"Status unknown",
+      co_new:"Company created in 2026", co_old:"Older company", see_listing:"Open listing", no_link:"No link", none_match:"No venue matches these filters.", checking:"Verification in progress.",
+      press_lead:d => `Openings announced or very recent in Dubai, collected from the press on ${d}, then compared with Luna and with the official list.`,
+      k_press:"venues collected", k_announced:"announced, not open yet", k_known:"already known to Luna", k_dd:"found in Data Dubai",
+      ps_all:"Announced and opened", ps_ann:"Announced only", ps_open:"Recently opened", pl_all:"All", pl_dd:"Found in Data Dubai", pl_renata:"Known to Luna", pl_new:"Unknown to Luna",
+      announced:"Announced", opened:"Recently opened", known:"Known to Luna", lic_found:"Licence found", lic_prob:"Probable licence", activity_of:"activity of",
+      articles_read:"Articles read", refused:" (page refused, not read)",
+      dd_lead:d => `Licences of restaurants, cafés, hotels and lounges activated in Dubai since January, from the official registers. Data as of ${d}: the date of the latest published files.`,
+      k_venues:"venues", k_new2026:"companies created in 2026", k_rest:"restaurants", k_coffee:"coffee shops",
+      chart_title:"Activities added per month", all_act:"All activities", all_months:"All months", only_new:"Only companies created in 2026",
+      search_name:"Search a name or licence number", search_press:"Search a name, place or concept", search_dd:"Search a name or licence number",
+      page_info:(n,p,t) => `${n} venue(s), page ${p} of ${t}`, prev:"Previous", next:"Next", read_first:"Read before using this list", company:"Company", fresh:"new",
+      t_web_exact:"certain identity through web search", t_web_prob:"probable through the web", t_maps_exact:"certain identity through Google Maps", t_maps_prob:"probable through Google Maps",
+      t_maps_prop:"with a Google Maps suggestion", t_pending:"verification in progress",
+      t_maps_note:m => `Google Maps suggested a place for ${m.propositions} venues, but ${m.faux} of these suggestions were another venue: every suggestion must be checked. For the ${m.exact} confirmed venues, the address is known ${m.exact_adresse} times, the website ${m.exact_site} times, and the precise cuisine only ${m.exact_cuisine} time(s). Google's terms forbid keeping this information: the page keeps none of it.`,
+      t_renata:(n,note) => `Luna's database: ${n} venue known. Luna's database only goes back to 15/09/2026, so this figure measures nothing.`,
+      t_web_head:["Found online","Area","Cuisine","Identity"], t_certain:"Certain", t_prob:"Probable", t_false:"False", t_wrong:" (wrong)", t_unverified:" (not verified)",
+      t_web_note:(n,c) => `Above, the ${n} venues found through web search. The Google Maps check showed that 3 of these results actually described another outlet with the same name. Cost of the web search: ${c} dollar. The Google Maps search stayed within the free monthly allowance.`,
+      st_errors:n => `${n} source(s) failing`, st_running:n => `Collection running, ${n} sources`, st_last:d => `Last run: ${d}`, st_updated:d => `Page updated ${d}`,
+      foot:d => `Email summaries at 9:00 and 18:00. Next check of the Data Dubai files: ${d}. Dubai time.`,
+      nodb:"Data is not available. Reload the page or sign in again.", dberr:"Data reading interrupted, please reload the page.",
+      months:["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]
+    },
+    fr: {
+      title:"Luna", subtitle:"Search Intelligence", loading:"Chargement des données…",
+      tab_pistes:"Pistes", tab_ver:"Vérifiés", tab_press:"Presse", tab_tests:"Tests", tab_req:"Demandes", tab_opp:"Opportunités", tab_src:"Sources",
+      lead_src:"D'où viennent les opportunités. Chaque source alimente la liste des Opportunités, où les doublons sont fusionnés : cette page sert à vérifier d'où vient un établissement.",
+      tab_dir:"Établissements", tab_ct:"Personnes repérées",
+      lead_dir:"Répertoire de tous les établissements connus de Luna. Cliquez sur un établissement pour tout voir, y compris les personnes identifiées qui y travaillent.",
+      lead_ct:"Répertoire des personnes identifiées dans ces établissements et ces groupes. Une personne n'apparaît ici qu'après validation par David ; chaque email ou téléphone indique sa fiabilité.",
+      search_dir:"Chercher un établissement, un lieu, un concept, un groupe", search_ct:"Chercher un nom, un poste, un groupe, un établissement",
+      th_people:"Personnes", th_prio:"Priorité", th_name:"Nom", th_position:"Poste", th_email:"Email", th_phone:"Téléphone", close:"Fermer",
+      all_types:"Tous les types", with_people:"Avec des personnes identifiées", without_people:"Sans personne pour l'instant", all_people:"Tous les établissements",
+      all_roles:"Tous les postes", fam_direction:"Direction", fam_exploitation:"Exploitation F&B", fam_projet:"Projets et pré-ouverture", fam_marketing:"Marketing et communication",
+      has_any:"Toutes les personnes", has_email:"Avec un email", has_phone:"Avec un téléphone",
+      no_contacts:"Aucune personne validée pour l'instant. Les premières personnes trouvées sont en cours de vérification ; elles apparaîtront ici dès que David les aura validées.",
+      people_title:"Personnes identifiées", no_people:"Aucune personne validée pour cet établissement.", follow_title:"Suivi", edit_follow:"Modifier le suivi",
+      verified_place:"Lieu confirmé sur Google Maps", probable_place:"Lieu probable sur Google Maps", new_company:"Société créée en 2026",
+      em_VERIFIED_PUBLISHED:"vérifié (publié par l'entreprise)", em_SMTP_CONFIRMED:"vérifié (serveur de messagerie)", em_CORROBORATED:"confirmé par plusieurs sources",
+      em_INFERRED_PATTERN:"deviné d'après le format des emails de l'entreprise, non vérifié", em_CATCH_ALL_UNCERTAIN:"incertain (le serveur accepte toutes les adresses)", em_UNVERIFIED:"non vérifié",
+      ph_VERIFIED:"vérifié", ph_PROVIDER:"issu d'un fournisseur, non vérifié", ph_UNVERIFIED:"non vérifié",
+      validated_on:(d,w) => `Validé le ${d}${w ? " par " + w : ""}`,
+      nav_home:"Accueil", nav_search:"Recherche", nav_src:"Sources", nav_dir:"Projets", nav_ct:"Personnes repérées", nav_opp:"Opportunités", nav_auto:"Automatisations", nav_ana:"Analyses", nav_req:"Demandes", nav_set:"Paramètres",
+      pt_search:"Recherche", pt_src:"Sources", pt_dir:"Projets", pt_ct:"Personnes repérées", pt_opp:"Opportunités", pt_auto:"Automatisations", pt_ana:"Analyses", pt_req:"Demandes", pt_set:"Paramètres",
+      hello:n => n ? `Bonjour, ${n}` : "Bonjour", hello_pm:n => n ? `Bonjour, ${n}` : "Bonjour", hello_ev:n => n ? `Bonsoir, ${n}` : "Bonsoir",
+      home_lead:"Voici ce qui mérite votre attention aujourd'hui.", home_attention:"À regarder aujourd'hui",
+      search_all:"Rechercher une entreprise, un contact, un marché ou un sujet…", lead_search:"Une seule recherche dans tous les établissements, personnes repérées et annonces de presse connus de Luna.",
+      res_venues:"Établissements", res_contacts:"Personnes repérées", res_press:"Presse", no_results:"Rien ne correspond encore à cette recherche.", type_more:"Tapez au moins deux lettres.",
+      k_new_contacts:"Nouvelles personnes repérées cette semaine", k_active_opps:"Opportunités actives", k_searches:"Établissements passés au crible", k_signals:"Signaux d'ouverture",
+      att_high:(n,p) => `${n}`, att_high_s:o => `Priorité haute, pas encore contacté${o ? " · " + o : ""}`,
+      att_req:n => `${n} demande(s) en attente de David`, att_req_s:"Ouvrir les demandes", att_ct:n => `${n} nouvelle(s) personne(s) validée(s)`, att_ct_s:"Ouvrir les personnes repérées",
+      att_none:"Rien d'urgent aujourd'hui.",
+      lead_auto:"Ce que Luna fait toute seule, sans que personne ait à y penser.",
+      au_collect:"Collecte automatique", au_collect_s:(d,n) => `Toutes les heures, ${n || ""} sources${d ? " · dernier passage " + d : ""}`,
+      au_digest:"Point par email", au_digest_s:"Chaque jour à 9 h et 18 h, puis mise à jour de cette page",
+      au_press:"Relevé de presse", au_press_s:"Chaque lundi à 8 h 15, What's On et DOTW News seulement",
+      au_dd:"Registres officiels (Data Dubai)", au_dd_s:d => `Chaque lundi à 7 h 30 · prochaine vérification ${d}`,
+      au_req:"Demandes", au_req_s:"Relevées à 9 h et 18 h et transmises à David",
+      lead_ana:"Une vue calme de l'avancement.", ana_prio:"Opportunités par priorité", ana_follow:"Suivi", ana_sources:"D'où viennent les opportunités",
+      set_lang:"Langue", set_lang_note:"Luna s'ouvre dans la langue de votre appareil ; vous pouvez la changer ici.",
+      set_access:"Accès", set_access_note:"Cette page est privée. Seules les personnes inscrites par David peuvent l'ouvrir ; chacune se connecte avec son propre compte Google. Pour ajouter quelqu'un, demandez à David.",
+      set_rules:"Règles sur les données", set_rules_note:"Personne n'apparaît avant la validation de David. Un email deviné n'est jamais présenté comme vérifié. Rien n'est collecté sur LinkedIn, et les informations de Google Maps ne sont jamais conservées.",
+      lv_confirme:"Confirmé par une source publique", lv_probable:"Probable", lv_apollo:"Selon Apollo seulement",
+      pp_identity:"Coordonnées", pp_first:"Prénom", pp_last:"Nom", pp_company:"Société", pp_missing:"Pas encore trouvé",
+      pp_venues:"Établissements liés", pp_group_note:o => `Travaille au niveau du groupe (${o}) : l'établissement précis n'est pas prouvé.`, pp_source:"Source", pp_found:"Trouvé par",
+      pp_validated:"Validation", pp_no_details:"L'email et le téléphone n'ont pas encore été cherchés. Ils seront ajoutés sur demande, avec leur niveau de fiabilité.",
+      sort_alpha:"Ordre alphabétique", sort_recent:"Récemment ajoutés", act_email:"Email", act_call:"Appeler", pp_contact:"Contact", pp_company_t:"Société",
+      pp_group1:"Relation au niveau du groupe", pp_group2:"Établissement précis non confirmé", pp_venue_level:"Relation au niveau de l'établissement", pp_verif:"Vérification",
+      sub_pistes:"Trouvées par Luna", sub_press:"Presse", sub_ver:"Vérifiées sur Google Maps", sub_dd:"Data Dubai (liste brute)", tests_title:"Tests de qualité des données",
+      lead_opp:"Une seule liste de toutes les opportunités, sans doublons : pistes de Luna, annonces de la presse et établissements vérifiés sur Google Maps. Choisissez un statut et ajoutez des notes : ils sont enregistrés pour tous ceux qui ouvrent cette page.",
+      search_opp:"Chercher un nom, un lieu, un concept", show_side:"Afficher les commerces qui ont seulement ajouté un café à une autre activité (salle de sport, épicerie, salon)",
+      k_opp:"opportunités", k_high:"priorité haute", k_followed:"en cours de suivi", k_won:"gagnées",
+      pr_all:"Toutes les priorités", pr_haute:"Haute", pr_moyenne:"Moyenne", pr_basse:"Basse", pr_label:p => ({haute:"Priorité haute", moyenne:"Priorité moyenne", basse:"Priorité basse"})[p],
+      rs_annonce:"annoncé, pas encore ouvert", rs_recent:"ouvert récemment", rs_ouvert_avant:"ouvert depuis un moment", rs_ancienne:"société plus ancienne", rs_probable:"lieu pas certain", rs_ferme:"fermé", rs_secondaire:"café ajouté à un autre commerce",
+      et_annonce:"Annoncé", et_ouvert_recemment:"Ouvert récemment", et_ouvert:"Ouvert", et_ferme:"Fermé", et_inconnu:"État inconnu",
+      src_renata:"Luna", src_presse:"Presse", src_data_dubai:"Data Dubai", src_google_maps:"Google Maps",
+      cs_all:"Tous les statuts", cs_a_contacter:"À contacter", cs_contacte:"Contacté", cs_rendez_vous:"Rendez-vous pris", cs_proposition:"Proposition envoyée", cs_gagne:"Gagné", cs_perdu:"Perdu", cs_pas_pertinent:"Pas pertinent",
+      follow:"Suivi", note_ph:"Notes : qui appeler, ce qui a été dit, prochaine étape…", save:"Enregistrer", saved:"Enregistré", save_fail:"Enregistrement impossible. Vous n'avez peut-être qu'un accès en lecture à cette page.",
+      last_edit:(d,w) => `Dernière modification le ${d}${w ? " par " + w : ""}`, type:"Type", licence_no:"Licence",
+      prio_how:"Comment la priorité est fixée",
+      prio_rules:"Haute : l'établissement est annoncé mais pas encore ouvert, le meilleur moment pour proposer des services. Moyenne : ouvert récemment (presse, ou société créée en 2026 dont l'activité a été ajoutée depuis mai). Basse : ouvert depuis un moment, société plus ancienne qui a seulement ajouté une activité, lieu pas certain, établissement fermé, ou café ajouté à un autre type de commerce.",
+      lead_pistes:"Établissements repérés par la collecte de Luna ces 60 derniers jours. Une piste reste « à confirmer » tant qu'une seule catégorie de source la signale.",
+      lead_ver:"Restaurants, coffee shops et lounges de la liste Data Dubai dont l'adresse réelle a été retrouvée sur Google Maps, puis vérifiée un par un par l'équipe. Le lien ouvre la fiche Google Maps : Luna n'en conserve rien d'autre. Une « société plus ancienne » a seulement ajouté une activité en 2026 : ce n'est pas forcément une nouvelle ouverture.",
+      lead_tests:"Test sur 50 établissements tirés au hasard dans la liste Data Dubai : peut-on retrouver leur quartier, leur cuisine et leur présence en ligne ?",
+      lead_req:"Demandez une modification de cette page, une recherche complémentaire sur un établissement ou un nouveau type de recherche. Chaque demande est lue et validée par David avant que l'équipe s'en occupe ; son avancement s'affiche ci-dessous.",
+      req_label:"Votre demande", req_ph:"Par exemple : trouver la date d'ouverture et l'exploitant de La Maison Ani au Mall of the Emirates.", req_send:"Envoyer la demande",
+      req_sent:"Demande envoyée. Elle apparaît ci-dessous et David sera prévenu.", req_empty:"Écrivez d'abord votre demande.",
+      req_fail:"La page n'a pas pu enregistrer la demande. Envoyez-la plutôt par email, à l'adresse ci-dessous.",
+      req_mail:"Vous pouvez aussi envoyer votre demande par email à", copy:"Copier", copied:"Copié", no_req:"Aucune demande pour l'instant.",
+      st_recue:"Reçue", st_transmise:"Transmise à David", st_validee:"Validée", st_en_cours:"En cours", st_faite:"Faite", st_refusee:"Refusée",
+      from:"De", reply:"Réponse",
+      unconfirmed:"À confirmer : une seule source", confirmed_many:"Confirmée par plusieurs sources", name_check:"Nom à vérifier : intitulé de poste, pas un nom d'établissement", dup:"Doublon probable",
+      where_found:"Où Luna l'a trouvé", research:"Recherche complémentaire du", place:"Lieu", opening:"Ouverture", clue:"Indice",
+      concept:"Concept", operator:"Exploitant", address:"Adresse", status:"Statut", seen_on:"vu le", spotted_date:"date de repérage",
+      no_leads:"Aucune piste sur les 60 derniers jours.",
+      k_confirmed:"établissements confirmés", k_probable:"probables, à confirmer", k_batches:"lots de vérification terminés", k_passed:"établissements passés sur Google Maps",
+      all:"Tous", only_confirmed:"Confirmés seulement", only_probable:"Probables seulement", all_companies:"Toutes les sociétés", new_companies:"Sociétés créées en 2026", older_companies:"Sociétés plus anciennes",
+      th_venue:"Établissement", th_activity:"Activité", th_added:"Activité ajoutée", th_check:"Vérification", th_trade:"Nom commercial", th_licence:"Licence créée", th_form:"Forme", th_licno:"Licence n°",
+      v_confirmed:"Confirmé", v_probable:"Probable", open_yes:"Ouvert", open_soon:"Ouverture prochaine", open_closed:"Fermé", open_unknown:"État inconnu",
+      co_new:"Société créée en 2026", co_old:"Société plus ancienne", see_listing:"Voir la fiche", no_link:"Lien indisponible", none_match:"Aucun établissement ne correspond à ces filtres.", checking:"La vérification est en cours.",
+      press_lead:d => `Ouvertures annoncées ou toutes récentes à Dubai, relevées dans la presse le ${d}, puis comparées avec Luna et avec la liste officielle.`,
+      k_press:"établissements relevés", k_announced:"annoncés, pas encore ouverts", k_known:"déjà connus de Luna", k_dd:"retrouvés dans Data Dubai",
+      ps_all:"Annoncés et ouverts", ps_ann:"Annoncés seulement", ps_open:"Ouverts récemment", pl_all:"Tous", pl_dd:"Trouvés dans Data Dubai", pl_renata:"Connus de Luna", pl_new:"Inconnus de Luna",
+      announced:"Annoncé", opened:"Ouvert récemment", known:"Connu de Luna", lic_found:"Licence trouvée", lic_prob:"Licence probable", activity_of:"activité du",
+      articles_read:"Articles lus", refused:" (page refusée, non lue)",
+      dd_lead:d => `Licences de restaurants, cafés, hôtels et lounges activées à Dubai depuis janvier, d'après les registres officiels. Données au ${d} : c'est la date des derniers fichiers publiés.`,
+      k_venues:"établissements", k_new2026:"sociétés créées en 2026", k_rest:"restaurants", k_coffee:"coffee shops",
+      chart_title:"Activités ajoutées par mois", all_act:"Toutes les activités", all_months:"Tous les mois", only_new:"Seulement les sociétés créées en 2026",
+      search_name:"Chercher un nom ou un numéro de licence", search_press:"Chercher un nom, un lieu, un concept", search_dd:"Chercher un nom ou un numéro de licence",
+      page_info:(n,p,t) => `${n} établissement(s), page ${p} sur ${t}`, prev:"Précédent", next:"Suivant", read_first:"À lire avant d'utiliser cette liste", company:"Société", fresh:"nouvelle",
+      t_web_exact:"identité certaine par la recherche web", t_web_prob:"probables par le web", t_maps_exact:"identité certaine par Google Maps", t_maps_prob:"probables par Google Maps",
+      t_maps_prop:"avec une proposition Google Maps", t_pending:"vérification en cours",
+      t_maps_note:m => `Google Maps a proposé un lieu pour ${m.propositions} établissements, mais ${m.faux} de ces propositions étaient un autre établissement : chaque proposition doit être vérifiée. Pour les ${m.exact} établissements confirmés, l'adresse est connue ${m.exact_adresse} fois, le site ${m.exact_site} fois, et le type de cuisine précis ${m.exact_cuisine} fois seulement. Les conditions de Google interdisent de conserver ces informations : la page n'en garde aucune.`,
+      t_renata:(n,note) => `Base de Luna : ${n} établissement connu. ${note}`,
+      t_web_head:["Trouvé en ligne","Quartier","Cuisine","Identité"], t_certain:"Certaine", t_prob:"Probable", t_false:"Fausse", t_wrong:" (faux)", t_unverified:" (non vérifié)",
+      t_web_note:(n,c) => `Ci-dessus, les ${n} établissements trouvés par la recherche web. La vérification par Google Maps a montré que 3 de ces résultats décrivaient en réalité un autre point de vente du même nom. Coût de la recherche web : ${c} dollar. La recherche Google Maps est restée dans la part gratuite du mois.`,
+      st_errors:n => `${n} source(s) en erreur`, st_running:n => `Collecte en marche, ${n} sources`, st_last:d => `Dernier passage : ${d}`, st_updated:d => `Page mise à jour le ${d}`,
+      foot:d => `Points par email à 9 h et 18 h. Prochaine vérification des fichiers Data Dubai : ${d}. Heures de Dubai.`,
+      nodb:"Les données ne sont pas accessibles. Rechargez la page ou reconnectez-vous.", dberr:"Lecture des données interrompue, rechargez la page.",
+      months:["janv.","févr.","mars","avr.","mai","juin","juil.","août","sept.","oct.","nov.","déc."]
+    }
+  };
+  const ACT_EN = {"Restaurant":"Restaurant","Coffee shop":"Coffee shop","Cafétéria":"Cafeteria","Café de spécialité":"Specialty coffee","Karaoké et lounge":"Karaoke and lounge",
+    "Restaurant flottant":"Floating restaurant","Coffee shop flottant":"Floating coffee shop","Restaurant et épicerie":"Restaurant and grocery","Centre multi-restaurants":"Food court",
+    "Cuisine sans salle (cloud kitchen)":"Cloud kitchen","Food truck":"Food truck","Hôtel":"Hotel","Hôtel économique":"Budget hotel","Appartements hôteliers":"Hotel apartments",
+    "Lieu de divertissement d'hôtel":"Hotel entertainment venue"};
+  const FORM_EN = {"SARL à associé unique":"Single-owner LLC","Entreprise individuelle":"Sole establishment","SARL":"LLC","Succursale (autre émirat)":"Branch (other emirate)",
+    "Société civile":"Civil company","Succursale étrangère":"Foreign company branch","Succursale (zone franche)":"Branch (free zone)","Société en nom collectif":"Partnership"};
+
+  let lang = store.get("renata-lang") || ((navigator.language || "en").toLowerCase().startsWith("fr") ? "fr" : "en");
+  const t = k => (T[lang][k] !== undefined ? T[lang][k] : T.en[k]);
+  const nf = () => new Intl.NumberFormat(lang === "fr" ? "fr-FR" : "en-GB");
+  const act = s => lang === "fr" ? s : String(s||"").split(",").map(x => ACT_EN[x.trim()] || x.trim()).join(", ");
+  const form = s => lang === "fr" ? s : (FORM_EN[s] || s);
+  const when = s => lang === "fr" ? s : String(s||"").replace(" à ", " at ").replace(/^lundi/, "Monday");
+  const fmtDate = s => { if (!s) return ""; const str = String(s); if (/^\d{2}\/\d{2}\/\d{4}$/.test(str)) return str; const [y,m,d] = str.slice(0,10).split("-"); return d ? `${d}/${m}/${y}` : str; };
+
+  function applyStatic(){
+    document.documentElement.lang = lang;
+    document.title = t("title");
+    document.querySelectorAll("[data-i]").forEach(e => { const v = t(e.dataset.i); if (typeof v === "string") e.textContent = v; });
+    document.querySelectorAll("[data-ph]").forEach(e => { e.placeholder = t(e.dataset.ph); });
+    $("#lang-en").setAttribute("aria-pressed", lang === "en"); $("#lang-fr").setAttribute("aria-pressed", lang === "fr");
+    const opts = (sel, pairs) => { const cur = sel.value; sel.replaceChildren(...pairs.map(([v,l]) => { const o = el("option", null, l); o.value = v; return o; })); sel.value = pairs.some(p => p[0] === cur) ? cur : ""; };
+    opts($("#ver-id"), [["",t("all")],["EXACT",t("only_confirmed")],["PROBABLE",t("only_probable")]]);
+    opts($("#ver-new"), [["",t("all_companies")],["Oui",t("new_companies")],["Non",t("older_companies")]]);
+    opts($("#press-status"), [["",t("ps_all")],["annonce",t("ps_ann")],["ouvert_recemment",t("ps_open")]]);
+    opts($("#press-link"), [["",t("pl_all")],["dd",t("pl_dd")],["renata",t("pl_renata")],["new",t("pl_new")]]);
+    opts($("#opp-prio"), [["",t("pr_all")],["haute",t("pr_haute")],["moyenne",t("pr_moyenne")],["basse",t("pr_basse")]]);
+    opts($("#opp-stat"), [["",t("cs_all")], ...CS.map(c => [c, t("cs_" + c)])]);
+    opts($("#dir-people"), [["",t("all_people")],["yes",t("with_people")],["no",t("without_people")]]);
+    opts($("#ct-role"), [["",t("all_roles")], ...FAM.map(f => [f, t("fam_" + f)])]);
+    opts($("#ct-has"), [["",t("has_any")],["email",t("has_email")],["phone",t("has_phone")]]);
+    opts($("#ct-sort"), [["",t("sort_alpha")],["recent",t("sort_recent")]]);
+  }
+  const CS = ["a_contacter","contacte","rendez_vous","proposition","gagne","perdu","pas_pertinent"];
+  const FAM = ["direction","exploitation","projet","marketing"];
+  function setLang(l){ lang = l; store.set("renata-lang", l); applyStatic(); ddBuilt = false; render(); }
+  $("#lang-en").addEventListener("click", () => setLang("en"));
+  $("#lang-fr").addEventListener("click", () => setLang("fr"));
+
+  const tabs = [...document.querySelectorAll(".nav button[data-panel]")].map(b => [b.id, b.dataset.panel]);
+  function show(id){ tabs.forEach(([tb,p]) => { const on = tb === id; if (on) $("#"+tb).setAttribute("aria-current","page"); else $("#"+tb).removeAttribute("aria-current"); $("#"+p).hidden = !on; });
+    store.set("luna-nav", id); closeMenu(); window.scrollTo({top:0}); }
+  tabs.forEach(([tb]) => $("#"+tb).addEventListener("click", () => show(tb)));
+  function openMenu(){ $("#side").classList.add("open"); $("#side-back").hidden = false; }
+  function closeMenu(){ $("#side").classList.remove("open"); $("#side-back").hidden = true; }
+  $("#menu-open").addEventListener("click", openMenu); $("#side-back").addEventListener("click", closeMenu);
+  const subs = ["p-pistes","p-press","p-ver","p-dd"];
+  function showSub(id){ document.querySelectorAll(".subtabs button").forEach(b => b.setAttribute("aria-pressed", b.dataset.sub === id)); subs.forEach(s => { $("#"+s).hidden = s !== id; }); store.set("renata-sub", id); }
+  document.querySelectorAll(".subtabs button").forEach(b => b.addEventListener("click", () => showSub(b.dataset.sub)));
+  const hashMap = {accueil:["nav-home"], home:["nav-home"], recherche:["nav-search"], search:["nav-search"], opportunites:["nav-opp"], opportunities:["nav-opp"], sources:["nav-src"],
+    projets:["nav-dir"], projects:["nav-dir"], contacts:["nav-ct"], pistes:["nav-src","p-pistes"], leads:["nav-src","p-pistes"], verifies:["nav-src","p-ver"], verified:["nav-src","p-ver"],
+    presse:["nav-src","p-press"], press:["nav-src","p-press"], datadubai:["nav-src","p-dd"], automatisations:["nav-auto"], analyses:["nav-ana"], tests:["nav-ana"], demandes:["nav-req"], requests:["nav-req"], parametres:["nav-set"]}[location.hash.slice(1)];
+  const saved = store.get("luna-nav"), savedSub = store.get("renata-sub");
+  show(hashMap ? hashMap[0] : (tabs.some(([tb]) => tb === saved) ? saved : "nav-home"));
+  showSub(hashMap && hashMap[1] ? hashMap[1] : (subs.includes(savedSub) ? savedSub : "p-pistes"));
+
+  const docs = {}; let requests = []; let dbReady = false;
+  const kpis = (box, list) => { box.replaceChildren(); list.forEach(([n,l,ic]) => { const k = el("div","kpi");
+    if (ic) { const i = el("div","kico"); const g = document.createElement("i"); g.setAttribute("data-lucide", ic); i.append(g); k.append(i); }
+    k.append(el("div","l",l), el("div","n",n)); box.append(k); }); if (window.lucide) try { window.lucide.createIcons({attrs:{"stroke-width":1.5}}); } catch(e) {} };
+
+  function render(){ renderStatus(); renderHome(); renderAuto(); renderAna(); renderSearch(); renderOpp(); renderDir(); renderCt(); renderPistes(); renderVer(); renderPress(); renderDD(); renderTests(); renderReq(); }
+
+  // Opportunités et suivi commercial
+  let suivi = {}, oppPage = 0, oppBuilt = false; const OPP_PER = 25;
+  const dateTime = iso => { const d = new Date(iso); return isNaN(d) ? "" : d.toLocaleString(lang === "fr" ? "fr-FR" : "en-GB", {timeZone:"Asia/Dubai", day:"2-digit", month:"short", hour:"2-digit", minute:"2-digit"}); };
+
+  // Répertoires : établissements et contacts
+  let contacts = [], dirPage = 0, dirBuilt = false, ctBuilt = false; const DIR_PER = 30;
+  const peopleOf = o => contacts.filter(c => (c.etablissements || []).includes(o.id));
+  const sepC = () => lang === "fr" ? " : " : ": ";
+  function renderDir(){
+    const d = oppDoc(); if (!d) return;
+    const all = (d.opportunites || []).slice().sort((a,b) => a.nom.localeCompare(b.nom));
+    $("#c-dir").textContent = all.length;
+    const sel = $("#dir-type"), cur = sel.value; const types = [...new Set(all.map(o => o.type).filter(Boolean))].sort();
+    sel.replaceChildren(el("option",null,t("all_types"))); sel.firstChild.value = "";
+    types.forEach(ty => { const op = el("option",null,act(ty)); op.value = ty; sel.append(op); }); sel.value = types.includes(cur) ? cur : "";
+    if (!dirBuilt) {
+      ["dir-q","dir-type","dir-people"].forEach(id => $("#"+id).addEventListener("input", () => { dirPage = 0; renderDirList(); }));
+      $("#dir-prev").addEventListener("click", () => { dirPage = Math.max(0, dirPage-1); renderDirList(); });
+      $("#dir-next").addEventListener("click", () => { dirPage++; renderDirList(); });
+      dirBuilt = true;
+    }
+    renderDirList();
+  }
+  function renderDirList(){
+    const d = oppDoc(); if (!d) return;
+    const pick = (o, k) => lang === "en" ? (o[k + "_en"] || o[k]) : o[k];
+    const q = $("#dir-q").value.trim().toLowerCase(), ty = $("#dir-type").value, pp = $("#dir-people").value;
+    const list = (d.opportunites || []).slice().sort((a,b) => a.nom.localeCompare(b.nom)).filter(o => (!ty || o.type === ty)
+      && (!pp || (pp === "yes") === (peopleOf(o).length > 0))
+      && (!q || [o.nom, pick(o,"lieu"), pick(o,"concept"), o.exploitant, o.licence].join(" ").toLowerCase().includes(q)));
+    const pages = Math.max(1, Math.ceil(list.length / DIR_PER)); dirPage = Math.min(dirPage, pages-1);
+    const body = $("#dir-body"); body.replaceChildren();
+    if (!list.length) { const tr = el("tr"); const td = el("td","empty",t("none_match")); td.colSpan = 5; tr.append(td); body.append(tr); }
+    list.slice(dirPage*DIR_PER, dirPage*DIR_PER+DIR_PER).forEach(o => {
+      const tr = el("tr"); tr.tabIndex = 0; tr.setAttribute("role","button");
+      const n = peopleOf(o).length;
+      tr.append(el("td","name",o.nom), el("td","act",o.type ? act(o.type) : ""), el("td",null,pick(o,"lieu") || ""), el("td","num", n ? String(n) : ""), el("td",null,t("pr_" + o.priorite)));
+      tr.addEventListener("click", () => openVenue(o));
+      tr.addEventListener("keydown", ev => { if (ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); openVenue(o); } });
+      body.append(tr);
+    });
+    $("#dir-info").textContent = t("page_info")(nf().format(list.length), dirPage+1, pages);
+    $("#dir-prev").disabled = dirPage === 0; $("#dir-next").disabled = dirPage >= pages-1;
+  }
+  function statusLine(value, status, prefix){
+    const wrap = el("span"); if (!value) return wrap;
+    const code = el("code", null, value); code.style.fontFamily = "var(--mono)"; code.style.fontSize = "12.5px"; code.style.userSelect = "all";
+    wrap.append(code);
+    if (status) { const ok = /VERIFIED|SMTP|CORROBORATED/.test(status) && status !== "UNVERIFIED"; const lab = t(prefix + status);
+      wrap.append(el("span", ok ? "status-ok" : status === "UNVERIFIED" ? "status-muted" : "status-warn", " · " + (typeof lab === "string" ? lab : status))); }
+    return wrap;
+  }
+
+  // Contacts : liste fine et fiche personne
+  const splitName = full => { const parts = String(full || "").trim().split(/\s+/); return {prenom: parts[0] || "", nom: parts.slice(1).join(" ")}; };
+  const initials = full => { const n = splitName(full); return ((n.prenom[0] || "") + (n.nom[0] || "")).toUpperCase(); };
+  const lvDot = c => c.niveau === "confirme" ? "pdot ok" : c.niveau === "probable" ? "pdot mid" : "pdot";
+  function personRow(c, inline){
+    const b = el("button","prow"); b.type = "button";
+    const av = el("span","avatar", initials(c.nom));
+    const mid = el("span"); mid.append(el("div","pname", c.nom || ""), el("div","pmeta", [c.poste, c.organisation].filter(Boolean).join(" · ")));
+    const side = el("span","pside"); const dot = el("span", lvDot(c)); dot.title = t("lv_" + (c.niveau || "apollo")); side.append(dot, icon("chevron-right"));
+    b.append(av, mid, side); b.addEventListener("click", () => openPerson(c));
+    return b;
+  }
+  function personCard(c){ const wrap = el("div","people inline"); wrap.append(personRow(c, true)); return wrap; }
+  function openPerson(c){
+    const d = oppDoc(); const byId = {}; (d ? d.opportunites : []).forEach(o => byId[o.id] = o);
+    $("#sheet").classList.add("pmode");
+    $("#sheet-title").textContent = c.nom || "";
+    const b = $("#sheet-body"); b.replaceChildren();
+    // 1. identité
+    const id = el("div","p-id");
+    if (c.poste) id.append(el("div","p-role", c.poste));
+    if (c.organisation) id.append(el("div","p-co", c.organisation));
+    b.append(id);
+    // 2. actions rapides : désactivées proprement si l'information manque
+    const acts = el("div","p-actions");
+    const phoneDigits = String(c.telephone || "").replace(/[^\d]/g, "");
+    [["mail", t("act_email"), c.email ? "mailto:" + c.email : ""], ["phone", t("act_call"), c.telephone ? "tel:" + String(c.telephone).replace(/\s+/g, "") : ""],
+     ["message-circle", "WhatsApp", phoneDigits ? "https://wa.me/" + phoneDigits : ""]].forEach(([ic, label, href]) => {
+      const a = el("a","p-act"); a.append(icon(ic), document.createTextNode(label));
+      if (href) { a.href = href; if (href.startsWith("https://")) { a.target = "_blank"; a.rel = "noopener noreferrer"; } } else { a.setAttribute("aria-disabled","true"); a.setAttribute("role","link"); }
+      acts.append(a); });
+    b.append(acts);
+    const section = (title, quiet) => { const sec = el("section","p-sec" + (quiet ? " quiet" : "")); sec.append(el("h4",null,title)); return sec; };
+    const kv = rows => { const g = el("div","p-kv"); rows.forEach(([k, v]) => { g.append(el("span","k",k)); const cell = el("span","v"); if (v instanceof Node) cell.append(v); else cell.textContent = v; g.append(cell); }); return g; };
+    const valueOrMissing = (value, status, prefix) => { const f = document.createDocumentFragment();
+      if (!value) { f.append(el("span","badge-nf", t("pp_missing"))); return f; }
+      f.append(document.createTextNode(value));
+      if (status) { const lab = t(prefix + status); f.append(el("small", null, typeof lab === "string" ? lab : status)); }
+      return f; };
+    // 3. contact
+    const sc = section(t("pp_contact"));
+    sc.append(kv([[t("th_email"), valueOrMissing(c.email, c.email_statut, "em_")], [t("th_phone"), valueOrMissing(c.telephone, c.telephone_statut, "ph_")]]));
+    b.append(sc);
+    // 4. société
+    if (c.organisation || c.poste) { const sco = section(t("pp_company_t"));
+      if (c.organisation) { const nm = el("button","linkbtn p-co-name", c.organisation); nm.type = "button";
+        nm.addEventListener("click", () => { closeSheet(); $("#search-q").value = c.organisation; show("nav-search"); renderSearch(); }); sco.append(nm); }
+      if (c.poste) sco.append(el("div","p-co", c.poste));
+      sco.style.gap = "4px"; sco.firstChild.style.marginBottom = "8px"; b.append(sco); }
+    // 5. établissements liés
+    const venues = (c.etablissements || []).map(x => byId[x]).filter(Boolean);
+    if (venues.length) { const sv = section(t("pp_venues"));
+      venues.forEach(o => { const bt = el("button","p-venue"); bt.type = "button"; bt.append(el("span","vn", o.nom));
+        if (c.couche === "groupe") { bt.append(el("span","vs", t("pp_group1")), el("span","vs", t("pp_group2"))); } else bt.append(el("span","vs", t("pp_venue_level")));
+        bt.append(icon("chevron-right")); bt.addEventListener("click", () => openVenue(o)); sv.append(bt); });
+      b.append(sv); }
+    // 6. source, discrète
+    const ss = section(t("pp_source"), true);
+    const rows = [[t("pp_found"), c.source || "Apollo"], [t("pp_verif"), t("lv_" + (c.niveau || "apollo"))]];
+    if (c.valide_le) rows.push([t("pp_validated"), `${fmtDate(c.valide_le)}${c.valide_par ? " · " + c.valide_par : ""}`]);
+    ss.append(kv(rows)); b.append(ss);
+    $("#sheet").hidden = false; $("#sheet-back").hidden = false; $("#sheet-close").focus(); refreshIcons();
+  }
+  function openVenue(o){
+    $("#sheet").classList.remove("pmode");
+    const pick = k => lang === "en" ? (o[k + "_en"] || o[k]) : o[k];
+    $("#sheet-title").textContent = o.nom;
+    const b = $("#sheet-body"); b.replaceChildren();
+    const chips = el("div","chips");
+    chips.append(el("span","chip " + (o.priorite === "haute" ? "good" : o.priorite === "moyenne" ? "" : "muted"), `${t("pr_label")(o.priorite)} · ${t("rs_" + o.raison)}`));
+    chips.append(el("span","chip muted", t("et_" + o.etat) || o.etat));
+    if (o.verification) chips.append(el("span","chip muted", o.verification === "EXACT" ? t("verified_place") : t("probable_place")));
+    if (o.nouvelle_societe === "Oui") chips.append(el("span","chip muted", t("new_company")));
+    b.append(chips);
+    const dl = el("dl");
+    [["type", o.type ? act(o.type) : ""],["place",pick("lieu")],["concept",pick("concept")],["operator",o.exploitant],["opening",pick("ouverture")],
+     ["licence_no", o.licence ? `${o.licence}${o.activite_ajoutee_le ? " (" + fmtDate(o.activite_ajoutee_le) + ")" : ""}` : ""]]
+      .forEach(([k,v]) => { if (v) dl.append(el("dt",null,t(k)), el("dd",null,v)); });
+    b.append(dl);
+    const links = (o.sources || []).filter(s => s.url);
+    if (links.length) { const src = el("div","src"); src.append(el("div","label",t("where_found"))); const ul = el("ul");
+      links.forEach(s => { const li = el("li"); li.append(link(s.url, s.type === "google_maps" ? t("see_listing") : (s.libelle || s.url))); ul.append(li); }); src.append(ul); b.append(src); }
+    const ppl = el("div"); ppl.style.display = "grid"; ppl.style.gap = "8px"; ppl.append(el("div","label",t("people_title")));
+    const ps = peopleOf(o); if (!ps.length) ppl.append(el("p","note",t("no_people"))); ps.forEach(c => ppl.append(personCard(c)));
+    b.append(ppl);
+    const fu = el("div"); fu.style.display = "grid"; fu.style.gap = "6px"; fu.append(el("div","label",t("follow_title")));
+    const cur = suivi[o.id] || {};
+    fu.append(el("span",null,t("cs_" + (cur.statut || "a_contacter"))));
+    if (cur.note) fu.append(el("p","note",cur.note));
+    const eb = el("button","btn",t("edit_follow")); eb.type = "button";
+    eb.addEventListener("click", () => { closeSheet(); show("nav-opp"); $("#opp-side").checked = true; $("#opp-q").value = o.nom; oppPage = 0; renderOppList(); });
+    fu.append(eb); b.append(fu);
+    $("#sheet").hidden = false; $("#sheet-back").hidden = false; $("#sheet-close").focus();
+  }
+  function closeSheet(){ $("#sheet").hidden = true; $("#sheet-back").hidden = true; }
+  $("#sheet-close").addEventListener("click", closeSheet);
+  $("#sheet-back").addEventListener("click", closeSheet);
+  document.addEventListener("keydown", ev => { if (ev.key === "Escape" && !$("#sheet").hidden) closeSheet(); });
+
+  function renderCt(){
+    $("#c-ct").textContent = contacts.length || "";
+    if (!ctBuilt) { ["ct-q","ct-role","ct-has","ct-sort"].forEach(id => $("#"+id).addEventListener("input", renderCt)); ctBuilt = true; }
+    const q = $("#ct-q").value.trim().toLowerCase(), fam = $("#ct-role").value, has = $("#ct-has").value;
+    const d = oppDoc(); const byId = {}; (d ? d.opportunites : []).forEach(o => byId[o.id] = o);
+    const list = contacts.filter(c => (!fam || c.famille === fam) && (!has || (has === "email" ? !!c.email : !!c.telephone))
+      && (!q || [c.nom, c.poste, c.organisation, ...(c.etablissements || []).map(id => (byId[id] || {}).nom)].join(" ").toLowerCase().includes(q)))
+      .sort((a,b) => String(a.nom).localeCompare(String(b.nom)));
+    const box = $("#ct-list"); box.replaceChildren();
+    if (!list.length) { box.append(el("div","empty", contacts.length ? t("none_match") : t("no_contacts"))); return; }
+    const byName = (a,b) => String(a.nom || "").localeCompare(String(b.nom || ""), lang === "fr" ? "fr" : "en", {sensitivity:"base"});
+    const recent = $("#ct-sort").value === "recent";
+    list.sort((a,b) => recent ? (String(b.valide_le || "").localeCompare(String(a.valide_le || "")) || byName(a,b)) : byName(a,b)).forEach(c => box.append(personRow(c)));
+    refreshIcons();
+  }
+
+  // Nouvelle charte : accueil, recherche, automatisations, analyses, navigation latérale
+  const icon = n => { const i = document.createElement("i"); i.setAttribute("data-lucide", n); return i; };
+  const refreshIcons = () => { try { if (window.lucide) window.lucide.createIcons({attrs:{"stroke-width":1.5}}); } catch(e) {} };
+  let viewerName = "";
+  // Le lecteur est reconnu quel que soit le propriétaire. D'abord le prénom exact quand il est fourni (site autonome :
+  // nom du membre dans la base) ; sinon le rôle de partage dans Claude : la propriétaire (Luna), l'éditeur
+  // (« peut modifier » : David), les autres lecteurs (« peut utiliser » : Renata). "" sans capacité user.
+  async function viewerRole(){
+    if (!userRef) return "";
+    try { const n = typeof userRef.name === "function" ? await userRef.name() : ""; if (["David","Renata","Luna"].includes(n)) return n; } catch(e) {}
+    try { if (await userRef.isOwner()) return "Luna"; return (await userRef.canEdit()) ? "David" : "Renata"; } catch(e) { return ""; }
+  }
+  function greeting(){
+    const h = Number(new Intl.DateTimeFormat("en-GB",{hour:"numeric",hourCycle:"h23",timeZone:"Asia/Dubai"}).format(new Date()));
+    $("#home-hello").textContent = (h < 12 ? t("hello") : h < 18 ? t("hello_pm") : t("hello_ev"))(viewerName);
+    $("#home-date").textContent = new Date().toLocaleDateString(lang === "fr" ? "fr-FR" : "en-GB", {weekday:"long", day:"numeric", month:"long", timeZone:"Asia/Dubai"});
+  }
+  function renderHome(){
+    greeting();
+    const d = oppDoc(); const all = d ? d.opportunites : []; const f = nf();
+    const st = o => (suivi[o.id] || {}).statut || "a_contacter";
+    const weekAgo = Date.now() - 7*864e5;
+    const newCt = contacts.filter(c => c.valide_le && Date.parse(c.valide_le) >= weekAgo).length;
+    const active = all.filter(o => !o.secondaire && !["perdu","pas_pertinent","gagne"].includes(st(o))).length;
+    const screened = (docs.verifies && docs.verifies.a_verifier) || 0;
+    const signals = ((docs.pistes && docs.pistes.pistes) || []).length + ((docs.presse && docs.presse.etablissements) || []).length;
+    kpis($("#home-kpis"), [[f.format(newCt),t("k_new_contacts"),"users"],[f.format(active),t("k_active_opps"),"target"],[f.format(screened),t("k_searches"),"search"],[f.format(signals),t("k_signals"),"radar"]]);
+    const box = $("#home-attention"); box.replaceChildren();
+    const item = (title, sub, go) => { const b = el("button"); b.type = "button"; b.append(el("span","t",title), el("span","s",sub), icon("arrow-right")); b.addEventListener("click", go); box.append(b); };
+    const pend = requests.filter(r => ["recue","transmise"].includes(r.statut)).length;
+    if (pend) item(t("att_req")(pend), t("att_req_s"), () => show("nav-req"));
+    if (newCt) item(t("att_ct")(newCt), t("att_ct_s"), () => show("nav-ct"));
+    all.filter(o => o.priorite === "haute" && st(o) === "a_contacter").slice(0, 5)
+      .forEach(o => item(o.nom, t("att_high_s")(lang === "en" ? (o.lieu_en || o.lieu) : o.lieu), () => openVenue(o)));
+    if (!box.children.length) box.append(el("div","empty",t("att_none")));
+    refreshIcons();
+  }
+  let searchBuilt = false;
+  function renderSearch(){
+    if (!searchBuilt) {
+      $("#search-q").addEventListener("input", renderSearch);
+      $("#home-q").addEventListener("keydown", ev => { if (ev.key === "Enter") { $("#search-q").value = $("#home-q").value; show("nav-search"); renderSearch(); } });
+      searchBuilt = true;
+    }
+    const q = $("#search-q").value.trim().toLowerCase(); const box = $("#search-results"); box.replaceChildren();
+    if (q.length < 2) { box.append(el("p","note",t("type_more"))); return; }
+    const d = oppDoc(); const venues = (d ? d.opportunites : []).filter(o => [o.nom, o.lieu, o.lieu_en, o.concept, o.concept_en, o.exploitant, o.type, o.licence].join(" ").toLowerCase().includes(q)).slice(0, 12);
+    const people = contacts.filter(c => [c.nom, c.poste, c.organisation].join(" ").toLowerCase().includes(q)).slice(0, 12);
+    const press = ((docs.presse && docs.presse.etablissements) || []).filter(x => [x.nom, x.lieu, x.concept, x.concept_en, x.exploitant].join(" ").toLowerCase().includes(q)).slice(0, 12);
+    const group = (title, rows) => { if (!rows.length) return; const g = el("div"); g.style.display = "grid"; g.style.gap = "10px"; g.append(el("div","label",`${title} (${rows.length})`)); const a = el("div","attention"); rows.forEach(r => a.append(r)); g.append(a); box.append(g); };
+    const row = (title, sub, go) => { const b = el("button"); b.type = "button"; b.append(el("span","t",title), el("span","s",sub || ""), icon("arrow-right")); b.addEventListener("click", go); return b; };
+    group(t("res_venues"), venues.map(o => row(o.nom, [o.type ? act(o.type) : "", lang === "en" ? (o.lieu_en || o.lieu) : o.lieu, o.exploitant].filter(Boolean).join(" · "), () => openVenue(o))));
+    const byId = {}; (d ? d.opportunites : []).forEach(o => byId[o.id] = o);
+    group(t("res_contacts"), people.map(c => row(c.nom, [c.poste, c.organisation].filter(Boolean).join(" · "), () => openPerson(c))));
+    group(t("res_press"), press.map(x => row(x.nom, [lang === "en" ? (x.concept_en || x.concept) : x.concept, x.lieu].filter(Boolean).join(" · "), () => { show("nav-src"); showSub("p-press"); $("#press-q").value = x.nom; renderPressList(); })));
+    if (!box.children.length) box.append(el("div","empty",t("no_results")));
+    refreshIcons();
+  }
+  function renderAuto(){
+    const st = docs.etat || {}; const box = $("#auto-list"); box.replaceChildren();
+    [["refresh-cw","au_collect", t("au_collect_s")(st.dernier_cycle_reussi ? when(st.dernier_cycle_reussi) : "", st.sources_suivies)],["mail","au_digest", t("au_digest_s")],
+     ["newspaper","au_press", t("au_press_s")],["landmark","au_dd", t("au_dd_s")(when(st.prochaine_verif_data_dubai || "lundi à 07:30"))],["message-square","au_req", t("au_req_s")]]
+      .forEach(([ic, k, sub]) => { const c = el("div","card auto"); const i = el("div","ico"); i.append(icon(ic)); const tx = el("div"); tx.append(el("div","t",t(k)), el("div","s",sub));
+        const ok = el("span","chip good", lang === "fr" ? "Actif" : "Active"); c.append(i, tx, ok); box.append(c); });
+    refreshIcons();
+  }
+  function hbars(boxId, rows){
+    const box = $("#" + boxId); box.replaceChildren(); const max = Math.max(1, ...rows.map(r => r[1]));
+    rows.forEach(([label, v]) => { const r = el("div","hbar"); const tr = el("div","track"); const s = el("span"); s.style.width = (v/max*100) + "%"; tr.append(s); r.append(el("span",null,label), tr, el("span","v",nf().format(v))); box.append(r); });
+  }
+  function renderAna(){
+    const d = oppDoc(); if (!d) return; const all = d.opportunites.filter(o => !o.secondaire);
+    hbars("ana-prio", [["haute","pr_haute"],["moyenne","pr_moyenne"],["basse","pr_basse"]].map(([k,l]) => [t(l), all.filter(o => o.priorite === k).length]));
+    const st = o => (suivi[o.id] || {}).statut || "a_contacter";
+    hbars("ana-follow", CS.map(c => [t("cs_" + c), all.filter(o => st(o) === c).length]).filter(r => r[1] > 0 || r[0] === t("cs_a_contacter")));
+    const src = {}; all.forEach(o => [...new Set((o.sources || []).map(s => s.type))].forEach(s => src[s] = (src[s]||0) + 1));
+    hbars("ana-sources", Object.entries(src).sort((a,b) => b[1]-a[1]).map(([k,v]) => [t("src_" + k), v]));
+  }
+  function oppDoc(){
+    const m = docs["opp-meta"]; if (!m) return null;
+    const list = []; for (let i = 1; i <= m.lots; i++) { const lot = docs["opp-lot-" + String(i).padStart(2,"0")]; if (lot) list.push(...(lot.opportunites || [])); }
+    return {maj: m.maj, opportunites: list};
+  }
+  function renderOpp(){
+    const d = oppDoc(); if (!d) return;
+    const all = d.opportunites || []; const f = nf();
+    $("#c-opp").textContent = all.filter(o => !o.secondaire).length;
+    const st = o => (suivi[o.id] || {}).statut || "a_contacter";
+    kpis($("#opp-kpis"), [[f.format(all.filter(o => !o.secondaire).length),t("k_opp")],[f.format(all.filter(o => o.priorite === "haute").length),t("k_high")],
+      [f.format(all.filter(o => !["a_contacter","pas_pertinent"].includes(st(o))).length),t("k_followed")],[f.format(all.filter(o => st(o) === "gagne").length),t("k_won")]]);
+    if (!oppBuilt) {
+      ["opp-q","opp-prio","opp-stat","opp-side"].forEach(id => $("#"+id).addEventListener("input", () => { oppPage = 0; renderOppList(); }));
+      $("#opp-prev").addEventListener("click", () => { oppPage = Math.max(0, oppPage-1); renderOppList(); window.scrollTo({top: $("#p-opp").offsetTop - 60}); });
+      $("#opp-next").addEventListener("click", () => { oppPage++; renderOppList(); window.scrollTo({top: $("#p-opp").offsetTop - 60}); });
+      oppBuilt = true;
+    }
+    renderOppList();
+  }
+  function renderOppList(){
+    const d = oppDoc(); if (!d) return;
+    const q = $("#opp-q").value.trim().toLowerCase(), pr = $("#opp-prio").value, cs = $("#opp-stat").value, side = $("#opp-side").checked;
+    const pick = (o, k) => lang === "en" ? (o[k + "_en"] || o[k]) : o[k];
+    const st = o => (suivi[o.id] || {}).statut || "a_contacter";
+    const list = (d.opportunites||[]).filter(o => (side || !o.secondaire) && (!pr || o.priorite === pr) && (!cs || st(o) === cs)
+      && (!q || [o.nom, pick(o,"lieu"), pick(o,"concept"), o.exploitant, o.licence].join(" ").toLowerCase().includes(q)));
+    const pages = Math.max(1, Math.ceil(list.length / OPP_PER)); oppPage = Math.min(oppPage, pages-1);
+    const box = $("#opp-list");
+    if (box.contains(document.activeElement) && document.activeElement.matches("textarea,select")) return;   // ne pas effacer une saisie en cours
+    box.replaceChildren();
+    if (!list.length) box.append(el("div","empty",t("none_match")));
+    list.slice(oppPage*OPP_PER, oppPage*OPP_PER+OPP_PER).forEach(o => box.append(oppCard(o, pick)));
+    $("#opp-info").textContent = t("page_info")(nf().format(list.length), oppPage+1, pages).replace(lang === "fr" ? "établissement(s)" : "venue(s)", t("k_opp"));
+    $("#opp-prev").disabled = oppPage === 0; $("#opp-next").disabled = oppPage >= pages-1;
+  }
+  function oppCard(o, pick){
+    const c = el("article","card"); c.append(el("h3",null,o.nom));
+    const chips = el("div","chips");
+    chips.append(el("span","chip " + (o.priorite === "haute" ? "good" : o.priorite === "moyenne" ? "" : "muted"), `${t("pr_label")(o.priorite)} · ${t("rs_" + o.raison)}`));
+    chips.append(el("span","chip muted", t("et_" + o.etat) || o.etat));
+    [...new Set((o.sources||[]).map(s => s.type))].forEach(s => chips.append(el("span","chip muted", t("src_" + s))));
+    c.append(chips);
+    const row = el("div","row"); const sep = lang === "fr" ? " : " : ": ";
+    [["type", o.type ? act(o.type) : ""],["place",pick(o,"lieu")],["concept",pick(o,"concept")],["operator",o.exploitant],["opening",pick(o,"ouverture")],["licence_no",o.licence ? `${o.licence}${o.activite_ajoutee_le ? " (" + fmtDate(o.activite_ajoutee_le) + ")" : ""}` : ""]]
+      .forEach(([k,v]) => { if (v) { const s = el("span"); s.append(t(k) + sep, el("b",null,v)); row.append(s); } });
+    c.append(row);
+    const links = (o.sources||[]).filter(s => s.url);
+    if (links.length) { const src = el("div","src"); const ul = el("ul"); links.forEach(s => { const li = el("li"); li.append(link(s.url, s.type === "google_maps" ? t("see_listing") : (s.libelle || s.url))); ul.append(li); }); src.append(ul); c.append(src); }
+    // suivi
+    const fu = el("div","research"); fu.append(el("div","label",t("follow")));
+    const cur = suivi[o.id] || {};
+    const sel = el("select"); sel.id = "st-" + o.id; sel.setAttribute("aria-label", t("follow"));
+    CS.forEach(k => { const op = el("option",null,t("cs_" + k)); op.value = k; sel.append(op); }); sel.value = cur.statut || "a_contacter";
+    const note = el("textarea"); note.id = "nt-" + o.id; note.placeholder = t("note_ph"); note.value = cur.note || ""; note.maxLength = 4000; note.style.minHeight = "70px";
+    const bar = el("div","actions"); bar.style.display = "flex"; bar.style.gap = "10px"; bar.style.alignItems = "center"; bar.style.flexWrap = "wrap";
+    const btn = el("button","btn",t("save")); btn.type = "button"; const msg = el("span","msg");
+    if (cur.maj_le) msg.textContent = t("last_edit")(dateTime(cur.maj_le), cur.maj_par);
+    btn.addEventListener("click", async () => {
+      if (!dbRef) { msg.className = "msg err"; msg.textContent = t("save_fail"); return; }
+      btn.disabled = true;
+      try {
+        const who = (await viewerRole()) || "Renata";
+        await dbRef.doc("suivi/" + o.id).set({ statut: sel.value, note: note.value.trim().slice(0,4000), maj_le: new Date().toISOString(), maj_par: who, nom: o.nom });
+        msg.className = "msg ok"; msg.textContent = t("saved");
+      } catch(e) { msg.className = "msg err"; msg.textContent = t("save_fail"); }
+      finally { btn.disabled = false; }
+    });
+    bar.append(sel, btn, msg); sel.style.width = "auto";
+    fu.append(note, bar); c.append(fu);
+    return c;
+  }
+
+  function renderStatus(){
+    const st = docs.etat; const box = $("#status"); box.replaceChildren();
+    if (!st) { box.append(el("span","pill", dbReady ? "" : t("loading"))); return; }
+    const errs = (st.sources_en_erreur||[]).length;
+    const p1 = el("span","pill " + (errs ? "warn" : "good")); p1.append(el("span","dot"), document.createTextNode(errs ? t("st_errors")(errs) : t("st_running")(st.sources_suivies)));
+    box.append(p1);
+    if (st.dernier_cycle_reussi) box.append(el("span","pill", t("st_last")(when(st.dernier_cycle_reussi))));
+    box.append(el("span","pill", t("st_updated")(when(st.maj))));
+    $("#foot").textContent = t("foot")(when(st.prochaine_verif_data_dubai || "lundi à 07:30"));
+  }
+
+  function renderPistes(){
+    const d = docs.pistes; const box = $("#pistes-list"); if (!d) return;
+    const list = d.pistes || []; $("#c-pistes").textContent = list.length; box.replaceChildren();
+    if (!list.length) { box.append(el("div","empty",t("no_leads"))); return; }
+    list.forEach(p => {
+      const en = lang === "en" ? (p.en || {}) : {};
+      const r = p.recherche ? (lang === "en" && p.recherche.en ? Object.assign({fait_le: p.recherche.fait_le}, p.recherche.en) : p.recherche) : null;
+      const c = el("article","card"); c.append(el("h3",null,p.nom));
+      const chips = el("div","chips");
+      chips.append(el("span","chip " + (p.preuves_independantes === "plusieurs" ? "" : "warn"), p.preuves_independantes === "plusieurs" ? t("confirmed_many") : t("unconfirmed")));
+      if (p.nom_a_verifier) chips.append(el("span","chip warn",t("name_check")));
+      if (r && r.statut && !r.concept) chips.append(el("span","chip warn",t("dup")));
+      c.append(chips);
+      const row = el("div","row");
+      const opening = en.ouverture !== undefined ? en.ouverture : p.ouverture;
+      const clues = en.indices || p.indices || [];
+      if (p.lieu) { const s = el("span"); s.append(t("place") + (lang === "fr" ? " : " : ": "), el("b",null,p.lieu)); row.append(s); }
+      if (opening) { const s = el("span"); s.append(t("opening") + (lang === "fr" ? " " : ": "), el("b",null,opening)); row.append(s); }
+      if (clues.length) { const s = el("span"); s.append(t("clue") + (lang === "fr" ? " : " : ": "), el("b",null,clues.join(", "))); row.append(s); }
+      c.append(row);
+      const src = el("div","src"); src.append(el("div","label",t("where_found"))); const ul = el("ul");
+      (p.sources||[]).forEach((s,i) => ul.append(el("li",null,`${(en.sources||[])[i] || s.source}, ${t("seen_on")} ${s.jour}${s.date_source ? "" : " (" + t("spotted_date") + ")"}`)));
+      (p.liens||[]).forEach(l => { const li = el("li"); li.append(link(l.url, l.url.replace(/^https?:\/\//,"").replace(/\/$/,""))); if (l.extrait) li.append(el("q","quote",l.extrait)); ul.append(li); });
+      src.append(ul); c.append(src);
+      if (r) {
+        const dv = el("div","research"); dv.append(el("div","label",`${t("research")} ${r.fait_le || ""}`));
+        const dl = el("dl");
+        [["concept",r.concept],["operator",r.operateur],["address",r.adresse],["opening",r.ouverture],["status",r.statut]].forEach(([k,v]) => { if (v) dl.append(el("dt",null,t(k)), el("dd",null,v)); });
+        dv.append(dl);
+        if ((r.liens||[]).length) { const u2 = el("ul"); r.liens.forEach(l => { const li = el("li"); li.append(link(l.url, l.titre)); u2.append(li); }); dv.append(u2); }
+        c.append(dv);
+      }
+      box.append(c);
+    });
+  }
+
+  let verBuilt = false;
+  function renderVer(){
+    const d = docs.verifies; if (!d) return;
+    const list = d.etablissements || []; $("#c-ver").textContent = list.length;
+    const ex = list.filter(x => x.identite === "EXACT").length; const f = nf();
+    kpis($("#ver-kpis"), [[f.format(ex),t("k_confirmed")],[f.format(list.length - ex),t("k_probable")],[`${d.lots_verifies} / ${d.lots_prevus}`,t("k_batches")],[f.format(d.a_verifier),t("k_passed")]]);
+    if (!verBuilt) { ["ver-q","ver-id","ver-new"].forEach(id => $("#"+id).addEventListener("input", renderVerList)); verBuilt = true; }
+    renderVerList();
+  }
+  function renderVerList(){
+    const d = docs.verifies; if (!d) return;
+    const q = $("#ver-q").value.trim().toLowerCase(), idf = $("#ver-id").value, nw = $("#ver-new").value;
+    const list = (d.etablissements||[]).filter(x => (!q || (x.nom + " " + x.licence).toLowerCase().includes(q)) && (!idf || x.identite === idf) && (!nw || x.nouvelle_societe === nw));
+    const body = $("#ver-body"); body.replaceChildren();
+    if (!list.length) { const tr = el("tr"); const td = el("td","empty", (d.etablissements||[]).length ? t("none_match") : t("checking")); td.colSpan = 5; tr.append(td); body.append(tr); return; }
+    const OPEN = {oui:["open_yes","good"], bientot:["open_soon","warn"], ferme:["open_closed","warn"], inconnu:["open_unknown","muted"]};
+    list.forEach(x => {
+      const tr = el("tr"); const v = el("td"); const chips = el("div","chips");
+      chips.append(el("span","chip " + (x.identite === "EXACT" ? "" : "muted"), x.identite === "EXACT" ? t("v_confirmed") : t("v_probable")));
+      const o = OPEN[x.ouvert] || OPEN.inconnu; chips.append(el("span","chip " + o[1], t(o[0])));
+      if (x.nouvelle_societe === "Oui") chips.append(el("span","chip",t("co_new"))); else if (x.nouvelle_societe === "Non") chips.append(el("span","chip muted",t("co_old")));
+      v.append(chips);
+      const m = el("td"); if (x.maps) m.append(link(x.maps, t("see_listing"))); else m.textContent = t("no_link");
+      tr.append(el("td","name",x.nom), el("td","act",act(x.activite)), el("td","date",fmtDate(x.activite_ajoutee_le)), v, m);
+      body.append(tr);
+    });
+  }
+
+  let pressBuilt = false;
+  function renderPress(){
+    const d = docs.presse; if (!d) return;
+    const list = d.etablissements || []; $("#c-press").textContent = list.length; const f = nf();
+    $("#press-lead").textContent = t("press_lead")(d.fait_le || "");
+    kpis($("#press-kpis"), [[f.format(list.length),t("k_press")],[f.format(list.filter(x => x.statut === "annonce").length),t("k_announced")],
+      [f.format(list.filter(x => x.renata === "oui").length),t("k_known")],[f.format(list.filter(x => x.data_dubai !== "ABSENT").length),t("k_dd")]]);
+    if (!pressBuilt) { ["press-q","press-status","press-link"].forEach(id => $("#"+id).addEventListener("input", renderPressList)); pressBuilt = true; }
+    const arts = $("#press-articles"); arts.replaceChildren(); const ul = el("ul");
+    (d.articles||[]).forEach(a => { const li = el("li"); const title = lang === "en" ? (a.titre_en || a.titre) : a.titre; li.append(link(a.url, `${a.media || ""}${a.date ? ", " + a.date : ""} : ${title || a.url}`)); if (a.lu !== "oui") li.append(t("refused")); ul.append(li); });
+    arts.append(ul);
+    renderPressList();
+  }
+  function renderPressList(){
+    const d = docs.presse; if (!d) return;
+    const q = $("#press-q").value.trim().toLowerCase(), st = $("#press-status").value, lk = $("#press-link").value;
+    const pick = (x, k) => lang === "en" ? (x[k + "_en"] != null ? x[k + "_en"] : x[k]) : x[k];
+    const f = (d.etablissements||[]).filter(x => (!q || [x.nom,pick(x,"lieu"),pick(x,"concept"),x.exploitant].join(" ").toLowerCase().includes(q)) && (!st || x.statut === st)
+      && (!lk || (lk === "dd" && x.data_dubai !== "ABSENT") || (lk === "renata" && x.renata === "oui") || (lk === "new" && x.renata !== "oui")));
+    const box = $("#press-list"); box.replaceChildren();
+    if (!f.length) { box.append(el("div","empty",t("none_match"))); return; }
+    f.forEach(x => {
+      const c = el("article","card"); c.append(el("h3",null,x.nom));
+      const chips = el("div","chips");
+      chips.append(el("span","chip " + (x.statut === "annonce" ? "warn" : ""), x.statut === "annonce" ? t("announced") : t("opened")));
+      if (x.renata === "oui") chips.append(el("span","chip",t("known")));
+      if (x.data_dubai === "TROUVE") chips.append(el("span","chip",`${t("lic_found")}${x.activite_ajoutee_le ? ", " + t("activity_of") + " " + x.activite_ajoutee_le : ""}`));
+      if (x.data_dubai === "PROBABLE") chips.append(el("span","chip muted",t("lic_prob")));
+      c.append(chips);
+      const row = el("div","row"); const sep = lang === "fr" ? " : " : ": ";
+      [["concept",pick(x,"concept")],["operator",pick(x,"exploitant")],["place",pick(x,"lieu")],["opening",pick(x,"ouverture_annoncee")]].forEach(([k,v]) => { if (v) { const s = el("span"); s.append(t(k) + sep, el("b",null,v)); row.append(s); } });
+      c.append(row);
+      if ((x.sources||[]).length) { const src = el("div","src"); const ul = el("ul"); x.sources.forEach(u => { const li = el("li"); li.append(link(u, u.replace(/^https?:\/\/(www\.)?/,"").split("/")[0])); ul.append(li); }); src.append(ul); c.append(src); }
+      box.append(c);
+    });
+  }
+
+  let rows = [], page = 0, ddBuilt = false; const PER = 40;
+  function renderDD(){
+    const meta = docs["dd-meta"]; if (!meta) return;
+    rows = []; for (let i = 1; i <= meta.lots; i++) { const lot = docs["dd-lot-" + String(i).padStart(2,"0")]; if (lot) rows.push(...lot.lignes); }
+    const f = nf(); $("#c-dd").textContent = f.format(meta.lignes);
+    $("#dd-lead").textContent = t("dd_lead")(meta.date_fichiers);
+    const byAct = {}; rows.forEach(r => String(r[2]).split(",").map(s => s.trim()).filter(Boolean).forEach(a => byAct[a] = (byAct[a]||0) + 1));
+    kpis($("#dd-kpis"), [[f.format(rows.length),t("k_venues")],[f.format(rows.filter(r => r[5] === "Oui").length),t("k_new2026")],[f.format(byAct["Restaurant"]||0),t("k_rest")],[f.format((byAct["Coffee shop"]||0)+(byAct["Café de spécialité"]||0)),t("k_coffee")]]);
+    const byM = {}; rows.forEach(r => { const m = String(r[3]).slice(0,7); if (m) byM[m] = (byM[m]||0) + 1; });
+    const months = Object.keys(byM).filter(m => m >= "2026-01").sort().slice(0,8); const max = Math.max(1, ...months.map(m => byM[m]));
+    const bars = $("#dd-bars"); bars.replaceChildren(); bars.style.gridTemplateColumns = `repeat(${months.length || 1},1fr)`;
+    months.forEach(m => { const b = el("div","bar"); const fl = el("div","fill"); fl.style.height = (byM[m]/max*100) + "%"; b.append(el("div","v",byM[m]), fl, el("div","m",t("months")[+m.slice(5)-1])); bars.append(b); });
+    if (!ddBuilt) {
+      const a = $("#dd-act"), cur = a.value; a.replaceChildren(el("option",null,t("all_act"))); a.firstChild.value = "";
+      Object.keys(byAct).sort((x,y) => byAct[y]-byAct[x]).forEach(k => { const o = el("option",null,`${act(k)} (${byAct[k]})`); o.value = k; a.append(o); }); a.value = cur;
+      const mo = $("#dd-month"), curm = mo.value; mo.replaceChildren(el("option",null,t("all_months"))); mo.firstChild.value = "";
+      months.forEach(m => { const o = el("option",null,`${t("months")[+m.slice(5)-1]} ${m.slice(0,4)}`); o.value = m; mo.append(o); }); mo.value = curm;
+      if (!renderDD.wired) { ["dd-q","dd-act","dd-month","dd-new"].forEach(id => $("#"+id).addEventListener("input", () => { page = 0; renderTable(); }));
+        $("#dd-prev").addEventListener("click", () => { page = Math.max(0, page-1); renderTable(); }); $("#dd-next").addEventListener("click", () => { page++; renderTable(); }); renderDD.wired = true; }
+      ddBuilt = true;
+    }
+    const notes = $("#dd-notes"); notes.replaceChildren(); ((lang === "en" ? meta.a_lire_en : meta.a_lire) || meta.a_lire || []).forEach(x => notes.append(el("p",null,x)));
+    renderTable();
+  }
+  function renderTable(){
+    const q = $("#dd-q").value.trim().toLowerCase(), a = $("#dd-act").value, mon = $("#dd-month").value, onlyNew = $("#dd-new").checked;
+    const f = rows.filter(r => (!q || (r[0]+" "+r[1]+" "+r[7]).toLowerCase().includes(q)) && (!a || String(r[2]).split(",").map(s=>s.trim()).includes(a)) && (!mon || String(r[3]).startsWith(mon)) && (!onlyNew || r[5] === "Oui"));
+    const pages = Math.max(1, Math.ceil(f.length / PER)); page = Math.min(page, pages-1);
+    const body = $("#dd-body"); body.replaceChildren();
+    if (!f.length) { const tr = el("tr"); const td = el("td","empty",t("none_match")); td.colSpan = 6; tr.append(td); body.append(tr); }
+    f.slice(page*PER, page*PER+PER).forEach(r => {
+      const tr = el("tr"); const name = el("td","name", r[1] || r[0] || "");
+      if (r[0] && r[1] && r[0].toUpperCase() !== r[1].toUpperCase()) name.append(el("span","legal", t("company") + (lang === "fr" ? " : " : ": ") + r[0]));
+      tr.append(name, el("td","act",act(r[2])), el("td","date",fmtDate(r[3])), el("td","date",fmtDate(r[4]) + (r[5] === "Oui" ? " · " + t("fresh") : "")), el("td","hide-sm",form(r[6])), el("td","num hide-sm",r[7]));
+      body.append(tr);
+    });
+    $("#dd-info").textContent = t("page_info")(nf().format(f.length), page+1, pages);
+    $("#dd-prev").disabled = page === 0; $("#dd-next").disabled = page >= pages-1;
+  }
+
+  function renderTests(){
+    const d = docs.test50; const box = $("#tests-body"); if (!d) return; box.replaceChildren();
+    const w = d.web, m = d.maps, done = m.verification === "faite";
+    const kp = el("div","kpis");
+    kpis(kp, [[`${w.exact} / 50`,t("t_web_exact")],[`${w.probable}`,t("t_web_prob")],[done ? `${m.exact} / 50` : `${m.propositions} / 50`, done ? t("t_maps_exact") : t("t_maps_prop")],[done ? `${m.probable}` : "…", done ? t("t_maps_prob") : t("t_pending")]]);
+    box.append(kp);
+    if (done) box.append(el("p","note",t("t_maps_note")(m)));
+    box.append(el("p","note",t("t_renata")(d.renata.connus, d.renata.note)));
+    const tb = el("div","tablebox"); const table = el("table"); const thead = el("thead"); const hr = el("tr");
+    t("t_web_head").forEach(h => hr.append(el("th",null,h))); thead.append(hr); table.append(thead);
+    const body = el("tbody");
+    (w.details||[]).forEach(x => {
+      const tr = el("tr");
+      const qv = x.quartier + (x.quartier_verifie === "FAUX" ? t("t_wrong") : x.quartier_verifie === "NON VERIFIABLE" ? t("t_unverified") : "");
+      const cu = x.cuisine + (x.cuisine_verifiee === "FAUX" ? t("t_wrong") : "");
+      const idc = el("td"); idc.append(el("span","chip " + (x.identite === "EXACT" ? "" : x.identite === "FAUX" ? "warn" : "muted"), x.identite === "EXACT" ? t("t_certain") : x.identite === "PROBABLE" ? t("t_prob") : t("t_false")));
+      tr.append(el("td",null,x.nom), el("td",null,qv), el("td",null,cu), idc); body.append(tr);
+    });
+    table.append(body); tb.append(table); box.append(tb);
+    box.append(el("p","note",t("t_web_note")(w.trouves, lang === "fr" ? String(w.cout_usd).replace(".",",") : String(w.cout_usd))));
+  }
+
+  // Demandes
+  let dbRef = null, userRef = null;
+  const ST = {recue:["st_recue","muted"], transmise:["st_transmise",""], validee:["st_validee","good"], en_cours:["st_en_cours",""], faite:["st_faite","good"], refusee:["st_refusee","warn"]};
+  function renderReq(){
+    const box = $("#req-list"); box.replaceChildren(); $("#c-req").textContent = requests.length || "";
+    if (!requests.length) { box.append(el("div","empty",t("no_req"))); return; }
+    requests.forEach(r => {
+      const c = el("article","card");
+      const chips = el("div","chips"); const s = ST[r.statut] || ST.recue; chips.append(el("span","chip " + s[1], t(s[0])));
+      const dt = r.cree_le ? new Date(r.cree_le) : null;
+      if (dt && !isNaN(dt)) chips.append(el("span","chip muted", dt.toLocaleString(lang === "fr" ? "fr-FR" : "en-GB", {timeZone:"Asia/Dubai", day:"2-digit", month:"short", hour:"2-digit", minute:"2-digit"})));
+      if (r.auteur) chips.append(el("span","chip muted", `${t("from")} ${r.auteur}`));
+      c.append(chips, el("p",null,r.texte || ""));
+      const rep = lang === "en" ? (r.reponse_en || r.reponse_fr) : (r.reponse_fr || r.reponse_en);
+      if (rep) { const d = el("div","reply"); d.append(el("div","label",t("reply")), el("div",null,rep)); c.append(d); }
+      box.append(c);
+    });
+  }
+  $("#req-form").addEventListener("submit", async ev => {
+    ev.preventDefault();
+    const txt = $("#req-text").value.trim(), msg = $("#req-msg");
+    msg.className = "msg"; msg.textContent = "";
+    if (!txt) { msg.className = "msg err"; msg.textContent = t("req_empty"); return; }
+    if (!dbRef) { msg.className = "msg err"; msg.textContent = t("req_fail"); return; }
+    $("#req-send").disabled = true;
+    try {
+      const who = (await viewerRole()) || "Renata";
+      await dbRef.collection("demandes").add({ texte: txt.slice(0, 4000), cree_le: new Date().toISOString(), auteur: who, statut: "recue", langue: lang });
+      $("#req-text").value = ""; msg.className = "msg ok"; msg.textContent = t("req_sent");
+    } catch(e) { msg.className = "msg err"; msg.textContent = t("req_fail"); }
+    finally { $("#req-send").disabled = false; }
+  });
+  $("#req-copy").addEventListener("click", async () => {
+    const addr = $("#req-address").textContent;
+    try { await navigator.clipboard.writeText(addr); $("#req-copy").textContent = t("copied"); setTimeout(() => { $("#req-copy").textContent = t("copy"); }, 1500); }
+    catch(e) { const r = document.createRange(); r.selectNodeContents($("#req-address")); const s = getSelection(); s.removeAllRanges(); s.addRange(r); }
+  });
+
+  applyStatic(); refreshIcons();
+  (async () => {
+    const db = window.claude && await window.claude.use("db");
+    try { userRef = window.claude ? await window.claude.use("user") : null; } catch(e) { userRef = null; }
+    viewerName = await viewerRole();
+    greeting();
+    dbReady = true;
+    if (!db) { $("#status").replaceChildren(el("span","pill warn",t("nodb"))); return; }
+    dbRef = db;
+    db.collection("renata").onSnapshot(snap => { snap.docs.forEach(d => { if (d.exists) docs[d.id] = d.data(); }); render(); },
+      () => { $("#status").replaceChildren(el("span","pill crit",t("dberr"))); });
+    db.collection("demandes").orderBy("cree_le","desc").limit(100).onSnapshot(snap => { requests = snap.docs.filter(d => d.exists).map(d => Object.assign({id: d.id}, d.data())); renderReq(); renderHome(); }, () => {});
+    db.collection("contacts").onSnapshot(snap => { contacts = snap.docs.filter(d => d.exists).map(d => Object.assign({id: d.id}, d.data())); renderCt(); renderDirList(); renderHome(); }, () => {});
+    db.collection("suivi").onSnapshot(snap => { const s = {}; snap.docs.forEach(d => { if (d.exists) s[d.id] = d.data(); }); suivi = s; renderOpp(); renderHome(); renderAna(); }, () => {});
+  })();
+})();
+</script>
+</body>
+</html>
