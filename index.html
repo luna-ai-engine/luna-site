@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.116.0/dist/umd/supabase.js https://cdn.jsdelivr.net/npm/lucide@0.460.0/dist/umd/lucide.min.js 'sha256-LeBkW9cZf9Jg8c5vI6K+78fcMsGe5qH9IdaokH6Yn4Q='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src https://jqqzzakidyrcglyzgbrk.supabase.co wss://jqqzzakidyrcglyzgbrk.supabase.co; manifest-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.116.0/dist/umd/supabase.js https://cdn.jsdelivr.net/npm/lucide@0.460.0/dist/umd/lucide.min.js 'sha256-eF1jt/RXoj5y99Z5vTotwaT+mTjkqFsMP9v6caTsGeY='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src https://jqqzzakidyrcglyzgbrk.supabase.co wss://jqqzzakidyrcglyzgbrk.supabase.co; manifest-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
 <meta name="robots" content="noindex, nofollow">
 <meta name="theme-color" content="#F7F3EC">
@@ -132,6 +132,21 @@ td.name{font-weight:500}
 td .legal{display:block;color:var(--taupe-soft);font-size:12px;font-weight:400}
 tr:last-child td{border-bottom:0}
 .dir-table tbody tr{cursor:pointer}
+.dir-table .sm-only{display:none}
+/* liste de choix compacte (catégories des projets) : remplace le menu natif, que le téléphone affiche très espacé */
+.pick{position:relative;min-width:0}
+.pick-btn{display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%;height:100%;font:14px var(--sans);color:var(--taupe);background:var(--cream);border:1px solid var(--border);border-radius:12px;padding:10px 12px 10px 14px;cursor:pointer;text-align:left;transition:border-color .2s ease}
+.pick-btn[aria-expanded="true"]{border-color:var(--tiffany)}
+.pick-btn svg{width:16px;height:16px;flex:0 0 auto;color:var(--taupe-soft)}
+.pick-label{min-width:0;overflow-wrap:anywhere}
+.pick-list{position:absolute;z-index:20;top:calc(100% + 4px);left:0;min-width:100%;width:max-content;max-width:min(340px,calc(100vw - 32px));max-height:min(60vh,420px);overflow-y:auto;margin:0;padding:4px;list-style:none;background:var(--cream);border:1px solid var(--border);border-radius:12px;box-shadow:0 12px 32px rgba(71,61,50,.12)}
+.pick-list[hidden]{display:none}
+.pick-opt{display:flex;align-items:baseline;justify-content:space-between;gap:16px;padding:6px 10px;border-radius:8px;font-size:14px;line-height:1.35;color:var(--taupe);cursor:pointer}
+.pick-opt:focus{outline:0}
+.pick-opt:focus-visible{outline:2px solid var(--tiffany);outline-offset:-2px}
+@media (hover:hover){.pick-opt:hover{background:var(--hover)}}
+.pick-opt[aria-selected="true"]{background:var(--active-bg);color:var(--active-ink);font-weight:500}
+.pick-n{flex:0 0 auto;font-size:12.5px;font-weight:400;color:var(--taupe-soft);font-variant-numeric:tabular-nums}
 .pager{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;font-size:13px;color:var(--taupe-soft)}
 .linkbtn{font:inherit;color:var(--taupe);background:none;border:0;padding:0;cursor:pointer;text-decoration:underline;text-decoration-color:var(--border);text-underline-offset:3px;text-align:left}
 .linkbtn:hover{text-decoration-color:var(--tiffany-dark)}
@@ -274,10 +289,21 @@ details p{margin:8px 0 0}
   .sheet{top:0;right:0;bottom:0;width:100%;border-radius:0;border:0}
   .dd-table thead{display:none}
   .dd-table tr{display:grid;grid-template-columns:1fr auto;gap:2px 10px;padding:14px 16px;border-bottom:1px solid var(--line);height:auto}
-  .dd-table td{border:0;padding:0;height:auto}
+  .dd-table td{border:0;padding:0;height:auto;min-height:0}
   .dd-table td.name{grid-column:1/-1}
-  .dd-table td.hide-sm{display:none}
+  .dd-table td.hide-sm,.dd-table td:empty{display:none}
+  /* Projets : une carte sur deux lignes, le nom puis catégorie, lieu, personnes et priorité à la suite */
+  .dir-table tr{display:block;padding:10px 16px}
+  .dir-table td{display:inline;font-size:13px;line-height:1.45;color:var(--taupe-soft);vertical-align:baseline;white-space:normal}
+  .dir-table td.name{display:block;margin-bottom:2px;font-size:15px;line-height:1.35;color:var(--taupe)}
+  .dir-table td.sep::before{content:"\00a0· ";color:var(--faint)}
+  .dir-table td.prio[data-p="haute"]{color:var(--pos-ink);font-weight:500}
+  .dir-table td.empty{display:block;padding:24px 0;text-align:center}
+  .dir-table .sm-only{display:inline;white-space:nowrap}
+  .dir-table .lg-only{display:none}
+  .pick-opt{padding:8px 12px;font-size:14.5px}
 }
+@media (max-width:900px) and (hover:hover){.dir-table tbody tr:hover{background:var(--hover)}.dir-table tbody tr:hover td{background:transparent}}
 @media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
 </style>
 <style>
@@ -614,7 +640,7 @@ body.luna-locked .app{display:none}
       <div class="page-head"><h2 data-i="pt_dir"></h2><p class="lead" data-i="lead_dir"></p></div>
       <div class="filters">
         <input class="q" type="search" id="dir-q" data-ph="search_dir" aria-label="Search">
-        <select id="dir-type" aria-label="Type"></select>
+        <div class="pick" id="dir-type-pick"><button type="button" class="pick-btn" id="dir-type" aria-haspopup="listbox" aria-expanded="false" aria-controls="dir-type-list"><span class="pick-label" id="dir-type-label" data-i="all_types"></span><i data-lucide="chevron-down"></i></button><ul class="pick-list" id="dir-type-list" role="listbox" aria-label="Type" hidden></ul></div>
         <select id="dir-people" aria-label="People"></select>
       </div>
       <div class="tablebox">
@@ -777,7 +803,7 @@ body.luna-locked .app{display:none}
       lead_dir:"Directory of every venue known to Luna. Click a venue to see everything about it, including the people identified there.",
       lead_ct:"Directory of people identified in these venues and groups. A person only appears here once David has validated them; an email or phone number shows how reliable it is.",
       search_dir:"Search a venue, place, concept or group", search_ct:"Search a name, position, group or venue",
-      th_people:"People", th_prio:"Priority", th_name:"Name", th_position:"Position", th_email:"Email", th_phone:"Phone", close:"Close",
+      th_people:"People", pp_count:n => n === 1 ? "1 person" : `${n} people`, th_prio:"Priority", th_name:"Name", th_position:"Position", th_email:"Email", th_phone:"Phone", close:"Close",
       all_types:"All types", with_people:"With people identified", without_people:"Without people yet", all_people:"All venues",
       all_roles:"All positions", fam_direction:"Leadership", fam_exploitation:"F&B operations", fam_projet:"Projects and pre-opening", fam_marketing:"Marketing and communications",
       has_any:"All people", has_email:"With an email", has_phone:"With a phone number",
@@ -875,7 +901,7 @@ body.luna-locked .app{display:none}
       lead_dir:"Répertoire de tous les établissements connus de Luna. Cliquez sur un établissement pour tout voir, y compris les personnes identifiées qui y travaillent.",
       lead_ct:"Répertoire des personnes identifiées dans ces établissements et ces groupes. Une personne n'apparaît ici qu'après validation par David ; chaque email ou téléphone indique sa fiabilité.",
       search_dir:"Chercher un établissement, un lieu, un concept, un groupe", search_ct:"Chercher un nom, un poste, un groupe, un établissement",
-      th_people:"Personnes", th_prio:"Priorité", th_name:"Nom", th_position:"Poste", th_email:"Email", th_phone:"Téléphone", close:"Fermer",
+      th_people:"Personnes", pp_count:n => n === 1 ? "1 personne" : `${n} personnes`, th_prio:"Priorité", th_name:"Nom", th_position:"Poste", th_email:"Email", th_phone:"Téléphone", close:"Fermer",
       all_types:"Tous les types", with_people:"Avec des personnes identifiées", without_people:"Sans personne pour l'instant", all_people:"Tous les établissements",
       all_roles:"Tous les postes", fam_direction:"Direction", fam_exploitation:"Exploitation F&B", fam_projet:"Projets et pré-ouverture", fam_marketing:"Marketing et communication",
       has_any:"Toutes les personnes", has_email:"Avec un email", has_phone:"Avec un téléphone",
@@ -976,7 +1002,15 @@ body.luna-locked .app{display:none}
   let lang = store.get("renata-lang") || ((navigator.language || "en").toLowerCase().startsWith("fr") ? "fr" : "en");
   const t = k => (T[lang][k] !== undefined ? T[lang][k] : T.en[k]);
   const nf = () => new Intl.NumberFormat(lang === "fr" ? "fr-FR" : "en-GB");
-  const act = s => lang === "fr" ? s : String(s||"").split(",").map(x => ACT_EN[x.trim()] || x.trim()).join(", ");
+  // Activités et catégories : une seule clé de comparaison, qui ignore accents, casse, espaces et ponctuation. Elle sert à la
+  // traduction ici, et au regroupement et au filtre des catégories de Projects (catKey) : « restaurant  flottant »,
+  // « Restaurant flottant » et « Floating restaurant » désignent la même activité et s'affichent du même libellé.
+  const catFold = s => String(s == null ? "" : s).normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^\p{L}\p{N}]+/gu, " ").trim();
+  const ACT_BY_KEY = new Map();
+  Object.entries(ACT_EN).forEach(([fr, en]) => { ACT_BY_KEY.set(catFold(fr), [fr, en]); ACT_BY_KEY.set(catFold(en), [fr, en]); });
+  const actKnown = s => ACT_BY_KEY.get(catFold(s));
+  const act1 = s => { const k = actKnown(s); return k ? k[lang === "fr" ? 0 : 1] : String(s == null ? "" : s).replace(/\s+/g, " ").trim(); };
+  const act = s => String(s == null ? "" : s).split(",").map(act1).filter(Boolean).join(", ");
   const form = s => lang === "fr" ? s : (FORM_EN[s] || s);
   const when = s => lang === "fr" ? s : String(s||"").replace(" à ", " at ").replace(/^lundi/, "Monday");
   const fmtDate = s => { if (!s) return ""; const str = String(s); if (/^\d{2}\/\d{2}\/\d{4}$/.test(str)) return str; const [y,m,d] = str.slice(0,10).split("-"); return d ? `${d}/${m}/${y}` : str; };
@@ -1034,29 +1068,104 @@ body.luna-locked .app{display:none}
   const dateTime = iso => { const d = new Date(iso); return isNaN(d) ? "" : d.toLocaleString(lang === "fr" ? "fr-FR" : "en-GB", {timeZone:"Asia/Dubai", day:"2-digit", month:"short", hour:"2-digit", minute:"2-digit"}); };
 
   // Répertoires : établissements et contacts
-  let contacts = [], dirPage = 0, dirBuilt = false, ctBuilt = false; const DIR_PER = 30;
+  let contacts = [], dirPage = 0, dirBuilt = false, ctBuilt = false, dirType = ""; const DIR_PER = 30;
   const peopleOf = o => contacts.filter(c => (c.etablissements || []).includes(o.id));
   const sepC = () => lang === "fr" ? " : " : ": ";
+  // Catégories d'un projet (demande de Renata du 01/10/2026) : sa catégorie principale quand l'export la fournit, sinon chacune
+  // de ses activités, jamais leur combinaison. La clé est celle de la traduction (catFold, plus haut), prise sur le libellé
+  // anglais quand l'activité est connue : une catégorie écrite autrement (majuscule, espace, ponctuation, en français ou en
+  // anglais) ne donne qu'un seul choix, le filtre la retrouve sous toutes ses écritures, la liste et les cartes l'affichent du
+  // même libellé, et un projet ne compte qu'une fois dans chaque catégorie. Une catégorie inconnue de la traduction s'affiche
+  // partout sous son écriture la plus fréquente.
+  const catKey = s => { const k = actKnown(s); return catFold(k ? k[1] : s); };
+  let catSpell = new Map();
+  const catLabel = s => actKnown(s) ? act1(s) : (catSpell.get(catKey(s)) || act1(s));
+  const catsOf = o => { const seen = new Set();
+    return (o.categorie ? [o.categorie] : String(o.type || "").split(",")).map(s => String(s).replace(/\s+/g, " ").trim())
+      .filter(s => { const k = catKey(s); if (!k || seen.has(k)) return false; seen.add(k); return true; }); };
   function renderDir(){
     const d = oppDoc(); if (!d) return;
-    const all = (d.opportunites || []).slice().sort((a,b) => a.nom.localeCompare(b.nom));
+    const all = d.opportunites || [];
     $("#c-dir").textContent = all.length;
-    const sel = $("#dir-type"), cur = sel.value; const types = [...new Set(all.map(o => o.type).filter(Boolean))].sort();
-    sel.replaceChildren(el("option",null,t("all_types"))); sel.firstChild.value = "";
-    types.forEach(ty => { const op = el("option",null,act(ty)); op.value = ty; sel.append(op); }); sel.value = types.includes(cur) ? cur : "";
+    const cats = new Map();
+    all.forEach(o => catsOf(o).forEach(s => { const k = catKey(s); const c = cats.get(k) || {key: k, raw: s, n: 0, spell: new Map()};
+      c.n += 1; c.spell.set(s, (c.spell.get(s) || 0) + 1); cats.set(k, c); }));
+    catSpell = new Map([...cats.values()].map(c => [c.key, [...c.spell].reduce((a, b) => b[1] > a[1] ? b : a)[0]]));
+    const choices = [...cats.values()].map(c => ({key: c.key, label: catLabel(c.raw), n: c.n}));
+    renderTypePick(all.length, choices.sort((a,b) => a.label.localeCompare(b.label, lang === "fr" ? "fr" : "en", {sensitivity:"base"})));
     if (!dirBuilt) {
-      ["dir-q","dir-type","dir-people"].forEach(id => $("#"+id).addEventListener("input", () => { dirPage = 0; renderDirList(); }));
+      ["dir-q","dir-people"].forEach(id => $("#"+id).addEventListener("input", () => { dirPage = 0; renderDirList(); }));
       $("#dir-prev").addEventListener("click", () => { dirPage = Math.max(0, dirPage-1); renderDirList(); });
       $("#dir-next").addEventListener("click", () => { dirPage++; renderDirList(); });
+      wireTypePick();
       dirBuilt = true;
     }
     renderDirList();
   }
+  // Liste serrée des catégories : « Tous les types », puis chaque catégorie avec son nombre de projets.
+  function renderTypePick(total, cats){
+    if (dirType && !cats.some(c => c.key === dirType)) dirType = "";
+    const list = $("#dir-type-list"), had = list.contains(document.activeElement) ? document.activeElement.dataset.value : null;
+    list.replaceChildren();
+    [{key: "", label: t("all_types"), n: total}, ...cats].forEach(c => {
+      const li = el("li","pick-opt"); li.setAttribute("role","option"); li.tabIndex = -1; li.dataset.value = c.key;
+      li.setAttribute("aria-selected", String(c.key === dirType));
+      li.append(el("span","pick-name",c.label), el("span","pick-n",nf().format(c.n)));
+      list.append(li);
+    });
+    const cur = cats.find(c => c.key === dirType);
+    $("#dir-type-label").textContent = cur ? cur.label : t("all_types");
+    if (had != null) { const f = [...list.children].find(li => li.dataset.value === had); if (f) f.focus(); }
+  }
+  function wireTypePick(){
+    const btn = $("#dir-type"), list = $("#dir-type-list"), box = $("#dir-type-pick");
+    const items = () => [...list.querySelectorAll(".pick-opt")];
+    const open = on => { list.hidden = !on; btn.setAttribute("aria-expanded", String(on));
+      if (on) { const cur = list.querySelector('.pick-opt[aria-selected="true"]') || items()[0]; if (cur) cur.focus(); } };
+    const choose = li => { dirType = li.dataset.value || ""; open(false); btn.focus(); dirPage = 0; renderDir(); };
+    btn.addEventListener("click", () => open(list.hidden));
+    btn.addEventListener("keydown", ev => { if ((ev.key === "ArrowDown" || ev.key === "ArrowUp") && list.hidden) { ev.preventDefault(); open(true); } });
+    list.addEventListener("click", ev => { const li = ev.target && ev.target.closest ? ev.target.closest(".pick-opt") : null; if (li) choose(li); });
+    list.addEventListener("keydown", ev => {
+      const all = items(), i = all.indexOf(document.activeElement);
+      const go = j => { const li = all[Math.max(0, Math.min(all.length - 1, j))]; if (li) li.focus(); };
+      if (ev.key === "ArrowDown") { ev.preventDefault(); go(i + 1); }
+      else if (ev.key === "ArrowUp") { ev.preventDefault(); go(i - 1); }
+      else if (ev.key === "Home") { ev.preventDefault(); go(0); }
+      else if (ev.key === "End") { ev.preventDefault(); go(all.length - 1); }
+      else if (ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); if (all[i]) choose(all[i]); }
+      else if (ev.key === "Escape") { ev.preventDefault(); ev.stopPropagation(); open(false); btn.focus(); }
+      else if (ev.key === "Tab") open(false);
+    });
+    // Toucher hors de la liste ouverte : la liste se referme et rien n'est activé dessous, comme une liste native. Le geste est
+    // pris dès son début (pointerdown ; touchstart sur un téléphone sans événements de pointeur), parce que Safari sur iPhone
+    // n'envoie aucun clic quand on touche une zone qui n'est pas cliquable ; le clic que ce même geste produit ensuite est
+    // absorbé, s'il arrive tant que le doigt est posé ou dans les 700 ms qui suivent son relâchement. Un seul début de geste
+    // est écouté, et le geste suivant (ou une touche du clavier) efface la consigne : jamais de double déclenchement, jamais un
+    // clic absorbé plus tard par erreur.
+    let swallow = 0;                                    // fin de la fenêtre d'absorption (0 : rien à absorber)
+    const outside = ev => !list.hidden && !box.contains(ev.target);
+    const down = ev => { swallow = 0; if (!outside(ev)) return;
+      swallow = Infinity;                                                  // doigt ou bouton encore appuyé
+      if (ev.pointerType === "mouse" && ev.cancelable) ev.preventDefault();  // souris : ni focus ni menu ouvert dessous
+      open(false); };
+    const up = () => { if (swallow) swallow = Date.now() + 700; };
+    const pointer = "PointerEvent" in window;
+    document.addEventListener(pointer ? "pointerdown" : "touchstart", down, {capture: true, passive: !pointer});
+    (pointer ? ["pointerup", "pointercancel"] : ["touchend", "touchcancel"]).forEach(type => document.addEventListener(type, up, true));
+    document.addEventListener("keydown", () => { swallow = 0; }, true);
+    document.addEventListener("click", ev => {
+      const absorb = swallow > 0 && Date.now() <= swallow; swallow = 0;
+      if (!absorb && !outside(ev)) return;
+      if (!list.hidden) open(false);
+      ev.preventDefault(); ev.stopPropagation();
+    }, true);
+  }
   function renderDirList(){
     const d = oppDoc(); if (!d) return;
     const pick = (o, k) => lang === "en" ? (o[k + "_en"] || o[k]) : o[k];
-    const q = $("#dir-q").value.trim().toLowerCase(), ty = $("#dir-type").value, pp = $("#dir-people").value;
-    const list = (d.opportunites || []).slice().sort((a,b) => a.nom.localeCompare(b.nom)).filter(o => (!ty || o.type === ty)
+    const q = $("#dir-q").value.trim().toLowerCase(), pp = $("#dir-people").value;
+    const list = (d.opportunites || []).slice().sort((a,b) => a.nom.localeCompare(b.nom)).filter(o => (!dirType || catsOf(o).some(s => catKey(s) === dirType))
       && (!pp || (pp === "yes") === (peopleOf(o).length > 0))
       && (!q || [o.nom, pick(o,"lieu"), pick(o,"concept"), o.exploitant, o.licence].join(" ").toLowerCase().includes(q)));
     const pages = Math.max(1, Math.ceil(list.length / DIR_PER)); dirPage = Math.min(dirPage, pages-1);
@@ -1064,8 +1173,14 @@ body.luna-locked .app{display:none}
     if (!list.length) { const tr = el("tr"); const td = el("td","empty",t("none_match")); td.colSpan = 5; tr.append(td); body.append(tr); }
     list.slice(dirPage*DIR_PER, dirPage*DIR_PER+DIR_PER).forEach(o => {
       const tr = el("tr"); tr.tabIndex = 0; tr.setAttribute("role","button");
+      // Ordinateur : une colonne par information. Téléphone : le nom, puis les cases non vides à la suite, séparées par un point.
       const n = peopleOf(o).length;
-      tr.append(el("td","name",o.nom), el("td","act",o.type ? act(o.type) : ""), el("td",null,pick(o,"lieu") || ""), el("td","num", n ? String(n) : ""), el("td",null,t("pr_" + o.priorite)));
+      const ppl = el("td","num"); if (n) ppl.append(el("span","lg-only",String(n)), el("span","sm-only",t("pp_count")(n)));
+      const pr = el("td","prio"); pr.dataset.p = o.priorite || "";
+      if (["haute","moyenne","basse"].includes(o.priorite)) pr.append(el("span","lg-only",t("pr_" + o.priorite)), el("span","sm-only",t("pr_label")(o.priorite)));
+      const cells = [el("td","act",catsOf(o).map(catLabel).join(", ")), el("td","place",pick(o,"lieu") || ""), ppl, pr];
+      let first = true; cells.forEach(c => { if (!c.textContent) return; if (!first) c.classList.add("sep"); first = false; });
+      tr.append(el("td","name",o.nom), ...cells);
       tr.addEventListener("click", () => openVenue(o));
       tr.addEventListener("keydown", ev => { if (ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); openVenue(o); } });
       body.append(tr);
