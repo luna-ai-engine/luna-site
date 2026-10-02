@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.116.0/dist/umd/supabase.js https://cdn.jsdelivr.net/npm/lucide@0.460.0/dist/umd/lucide.min.js 'sha256-eF1jt/RXoj5y99Z5vTotwaT+mTjkqFsMP9v6caTsGeY='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src https://jqqzzakidyrcglyzgbrk.supabase.co wss://jqqzzakidyrcglyzgbrk.supabase.co; manifest-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.116.0/dist/umd/supabase.js https://cdn.jsdelivr.net/npm/lucide@0.460.0/dist/umd/lucide.min.js 'sha256-weeXojgvhJdzvvQ4sH96HO2LNEt5XB2b33SNtlU8y9Q='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src https://jqqzzakidyrcglyzgbrk.supabase.co wss://jqqzzakidyrcglyzgbrk.supabase.co; manifest-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
 <meta name="robots" content="noindex, nofollow">
 <meta name="theme-color" content="#F7F3EC">
@@ -133,6 +133,11 @@ td .legal{display:block;color:var(--taupe-soft);font-size:12px;font-weight:400}
 tr:last-child td{border-bottom:0}
 .dir-table tbody tr{cursor:pointer}
 .dir-table .sm-only{display:none}
+/* repères du lot 2 de Projects : Warm Lead (ouverture dans 4 à 8 mois) et Newly opened (ouverture datée de moins de 90 jours) */
+.dir-table .stage{display:inline-block;padding:0 7px;border-radius:999px;background:var(--pos-bg);color:var(--pos-ink);font-size:12px;font-weight:500;line-height:1.6;white-space:nowrap}
+.dir-table td.prio[data-stage="new"] .stage{background:var(--neu-bg);color:var(--neu-ink)}
+.dir-table .stage + .lg-only{margin-left:6px}
+#dir-note{margin:0 0 10px}
 /* liste de choix compacte (catégories des projets) : remplace le menu natif, que le téléphone affiche très espacé */
 .pick{position:relative;min-width:0}
 .pick-btn{display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%;height:100%;font:14px var(--sans);color:var(--taupe);background:var(--cream);border:1px solid var(--border);border-radius:12px;padding:10px 12px 10px 14px;cursor:pointer;text-align:left;transition:border-color .2s ease}
@@ -643,6 +648,7 @@ body.luna-locked .app{display:none}
         <div class="pick" id="dir-type-pick"><button type="button" class="pick-btn" id="dir-type" aria-haspopup="listbox" aria-expanded="false" aria-controls="dir-type-list"><span class="pick-label" id="dir-type-label" data-i="all_types"></span><i data-lucide="chevron-down"></i></button><ul class="pick-list" id="dir-type-list" role="listbox" aria-label="Type" hidden></ul></div>
         <select id="dir-people" aria-label="People"></select>
       </div>
+      <p class="note" id="dir-note" data-i="note_no_new" hidden></p>
       <div class="tablebox">
         <table class="dd-table dir-table">
           <thead><tr><th data-i="th_venue"></th><th data-i="type"></th><th data-i="place"></th><th data-i="th_people"></th><th data-i="th_prio"></th></tr></thead>
@@ -804,7 +810,7 @@ body.luna-locked .app{display:none}
       lead_ct:"Directory of people identified in these venues and groups. A person only appears here once David has validated them; an email or phone number shows how reliable it is.",
       search_dir:"Search a venue, place, concept or group", search_ct:"Search a name, position, group or venue",
       th_people:"People", pp_count:n => n === 1 ? "1 person" : `${n} people`, th_prio:"Priority", th_name:"Name", th_position:"Position", th_email:"Email", th_phone:"Phone", close:"Close",
-      all_types:"All types", with_people:"With people identified", without_people:"Without people yet", all_people:"All venues",
+      all_types:"All types", tag_warm:"Warm Lead", tag_new:"Newly opened", note_no_new:"No venue carries “Newly opened” yet: it only appears once a dated press article confirms the opening.", with_people:"With people identified", without_people:"Without people yet", all_people:"All venues",
       all_roles:"All positions", fam_direction:"Leadership", fam_exploitation:"F&B operations", fam_projet:"Projects and pre-opening", fam_marketing:"Marketing and communications",
       has_any:"All people", has_email:"With an email", has_phone:"With a phone number",
       no_contacts:"No validated person yet. The first people found are being checked; they will appear here once David validates them.",
@@ -902,7 +908,7 @@ body.luna-locked .app{display:none}
       lead_ct:"Répertoire des personnes identifiées dans ces établissements et ces groupes. Une personne n'apparaît ici qu'après validation par David ; chaque email ou téléphone indique sa fiabilité.",
       search_dir:"Chercher un établissement, un lieu, un concept, un groupe", search_ct:"Chercher un nom, un poste, un groupe, un établissement",
       th_people:"Personnes", pp_count:n => n === 1 ? "1 personne" : `${n} personnes`, th_prio:"Priorité", th_name:"Nom", th_position:"Poste", th_email:"Email", th_phone:"Téléphone", close:"Fermer",
-      all_types:"Tous les types", with_people:"Avec des personnes identifiées", without_people:"Sans personne pour l'instant", all_people:"Tous les établissements",
+      all_types:"Tous les types", tag_warm:"Warm Lead", tag_new:"Tout juste ouvert", note_no_new:"Aucun établissement ne porte encore « Tout juste ouvert » : la mention n'apparaît que lorsqu'un article de presse daté confirme l'ouverture.", with_people:"Avec des personnes identifiées", without_people:"Sans personne pour l'instant", all_people:"Tous les établissements",
       all_roles:"Tous les postes", fam_direction:"Direction", fam_exploitation:"Exploitation F&B", fam_projet:"Projets et pré-ouverture", fam_marketing:"Marketing et communication",
       has_any:"Toutes les personnes", has_email:"Avec un email", has_phone:"Avec un téléphone",
       no_contacts:"Aucune personne validée pour l'instant. Les premières personnes trouvées sont en cours de vérification ; elles apparaîtront ici dès que David les aura validées.",
@@ -1008,6 +1014,12 @@ body.luna-locked .app{display:none}
   const catFold = s => String(s == null ? "" : s).normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^\p{L}\p{N}]+/gu, " ").trim();
   const ACT_BY_KEY = new Map();
   Object.entries(ACT_EN).forEach(([fr, en]) => { ACT_BY_KEY.set(catFold(fr), [fr, en]); ACT_BY_KEY.set(catFold(en), [fr, en]); });
+  // Catégories des projets (lot 2, contrat des champs avec Sun) : l'export fournit un code, la page le traduit.
+  const CAT_CODES = {hotel:["Hôtel","Hotel"], nightclub:["Boîte de nuit","Nightclub"], lounge:["Lounge","Lounge"],
+    wellness_cafe:["Centre de bien-être avec café","Wellness centre with café"], fine_dining:["Restaurant gastronomique","Fine dining"],
+    upscale_casual:["Restaurant haut de gamme décontracté","Upscale casual dining"], casual_dining:["Restaurant décontracté","Casual dining"],
+    dinner_show:["Salon dîner-spectacle","Dinner show lounge"], to_classify:["À classer","To classify"]};
+  Object.entries(CAT_CODES).forEach(([code, pair]) => { ACT_BY_KEY.set(catFold(code), pair); ACT_BY_KEY.set(catFold(pair[0]), pair); ACT_BY_KEY.set(catFold(pair[1]), pair); });
   const actKnown = s => ACT_BY_KEY.get(catFold(s));
   const act1 = s => { const k = actKnown(s); return k ? k[lang === "fr" ? 0 : 1] : String(s == null ? "" : s).replace(/\s+/g, " ").trim(); };
   const act = s => String(s == null ? "" : s).split(",").map(act1).filter(Boolean).join(", ");
@@ -1083,9 +1095,28 @@ body.luna-locked .app{display:none}
   const catsOf = o => { const seen = new Set();
     return (o.categorie ? [o.categorie] : String(o.type || "").split(",")).map(s => String(s).replace(/\s+/g, " ").trim())
       .filter(s => { const k = catKey(s); if (!k || seen.has(k)) return false; seen.add(k); return true; }); };
+  // Lot 2 : les cafés seuls, cafés de spécialité et food trucks (masque) restent dans l'export et dans Data Dubai, mais pas dans
+  // Projects. « Warm Lead » : l'ouverture annoncée recoupe la fenêtre de 4 à 8 mois après le jour affiché (heure de Dubai) ;
+  // « Newly opened » : ouverture constatée par un article daté (ouvert_le) il y a moins de 90 jours. Calculés à l'affichage,
+  // jamais tirés d'une date de licence. Tri : Warm Leads, puis Newly opened, puis priorité, puis nom.
+  const dirAll = d => (d.opportunites || []).filter(o => !o.masque);
+  const isoDay = s => /^\d{4}-\d{2}-\d{2}/.test(String(s || "")) ? String(s).slice(0, 10) : "";
+  const todayDubai = () => new Intl.DateTimeFormat("en-CA", {timeZone: "Asia/Dubai", year: "numeric", month: "2-digit", day: "2-digit"}).format(new Date());
+  const addMonths = (iso, n) => { const [y, m, d] = iso.split("-").map(Number); const first = new Date(Date.UTC(y, m - 1 + n, 1));
+    const last = new Date(Date.UTC(first.getUTCFullYear(), first.getUTCMonth() + 1, 0)).getUTCDate();
+    return new Date(Date.UTC(first.getUTCFullYear(), first.getUTCMonth(), Math.min(d, last))).toISOString().slice(0, 10); };
+  const addDays = (iso, n) => { const [y, m, d] = iso.split("-").map(Number); return new Date(Date.UTC(y, m - 1, d + n)).toISOString().slice(0, 10); };
+  function stageOf(o, today){
+    const conf = isoDay(o.ouverture_confirmee), a = conf || isoDay(o.ouverture_debut) || isoDay(o.ouverture_fin), b = conf || isoDay(o.ouverture_fin) || a;
+    if (a && a <= addMonths(today, 8) && b >= addMonths(today, 4)) return "warm";
+    const op = isoDay(o.ouvert_le);
+    if (op && op <= today && op > addDays(today, -90)) return "new";
+    return "";
+  }
+  const STAGE_RANK = {warm: 0, new: 1, "": 2}, PRIO_RANK = {haute: 0, moyenne: 1, basse: 2};
   function renderDir(){
     const d = oppDoc(); if (!d) return;
-    const all = d.opportunites || [];
+    const all = dirAll(d);
     $("#c-dir").textContent = all.length;
     const cats = new Map();
     all.forEach(o => catsOf(o).forEach(s => { const k = catKey(s); const c = cats.get(k) || {key: k, raw: s, n: 0, spell: new Map()};
@@ -1165,7 +1196,10 @@ body.luna-locked .app{display:none}
     const d = oppDoc(); if (!d) return;
     const pick = (o, k) => lang === "en" ? (o[k + "_en"] || o[k]) : o[k];
     const q = $("#dir-q").value.trim().toLowerCase(), pp = $("#dir-people").value;
-    const list = (d.opportunites || []).slice().sort((a,b) => a.nom.localeCompare(b.nom)).filter(o => (!dirType || catsOf(o).some(s => catKey(s) === dirType))
+    const today = todayDubai(), stage = new Map(dirAll(d).map(o => [o, stageOf(o, today)]));
+    $("#dir-note").hidden = [...stage.values()].includes("new") || !stage.size;
+    const list = [...stage.keys()].sort((a,b) => STAGE_RANK[stage.get(a)] - STAGE_RANK[stage.get(b)] || (PRIO_RANK[a.priorite] ?? 3) - (PRIO_RANK[b.priorite] ?? 3)
+      || a.nom.localeCompare(b.nom)).filter(o => (!dirType || catsOf(o).some(s => catKey(s) === dirType))
       && (!pp || (pp === "yes") === (peopleOf(o).length > 0))
       && (!q || [o.nom, pick(o,"lieu"), pick(o,"concept"), o.exploitant, o.licence].join(" ").toLowerCase().includes(q)));
     const pages = Math.max(1, Math.ceil(list.length / DIR_PER)); dirPage = Math.min(dirPage, pages-1);
@@ -1177,7 +1211,8 @@ body.luna-locked .app{display:none}
       const n = peopleOf(o).length;
       const ppl = el("td","num"); if (n) ppl.append(el("span","lg-only",String(n)), el("span","sm-only",t("pp_count")(n)));
       const pr = el("td","prio"); pr.dataset.p = o.priorite || "";
-      if (["haute","moyenne","basse"].includes(o.priorite)) pr.append(el("span","lg-only",t("pr_" + o.priorite)), el("span","sm-only",t("pr_label")(o.priorite)));
+      const sg = stage.get(o); if (sg) { pr.dataset.stage = sg; pr.append(el("span","stage",t("tag_" + sg))); }
+      if (["haute","moyenne","basse"].includes(o.priorite)) pr.append(el("span","lg-only",t("pr_" + o.priorite)), el("span","sm-only",sg ? "" : t("pr_label")(o.priorite)));
       const cells = [el("td","act",catsOf(o).map(catLabel).join(", ")), el("td","place",pick(o,"lieu") || ""), ppl, pr];
       let first = true; cells.forEach(c => { if (!c.textContent) return; if (!first) c.classList.add("sep"); first = false; });
       tr.append(el("td","name",o.nom), ...cells);
@@ -1272,7 +1307,7 @@ body.luna-locked .app{display:none}
     if (o.nouvelle_societe === "Oui") chips.append(el("span","chip muted", t("new_company")));
     b.append(chips);
     const dl = el("dl");
-    [["type", o.type ? act(o.type) : ""],["place",pick("lieu")],["concept",pick("concept")],["operator",o.exploitant],["opening",pick("ouverture")],
+    [["type", catsOf(o).map(catLabel).join(", ")],["place",pick("lieu")],["concept",pick("concept")],["operator",o.exploitant],["opening",pick("ouverture")],
      ["licence_no", o.licence ? `${o.licence}${o.activite_ajoutee_le ? " (" + fmtDate(o.activite_ajoutee_le) + ")" : ""}` : ""]]
       .forEach(([k,v]) => { if (v) dl.append(el("dt",null,t(k)), el("dd",null,v)); });
     b.append(dl);
