@@ -12,8 +12,11 @@
      connexion (luna-login.js) reste affiché. Une personne connectée qui n'est pas membre est aussitôt déconnectée.
    - Lecture : temps réel si le canal Supabase est abonné ; sinon relecture toutes les 60 s ; toujours au retour sur l'onglet.
      Chaque relecture ne demande d'abord que (doc_id, version, updated_at), puis le contenu des seuls documents changés.
-   - Écriture : seulement « suivi » et « demandes » (les règles d'accès de la base décident en dernier ressort). Jamais de
-     suppression.
+   - Écriture : seulement « suivi », « demandes » et « personnes » (corrections et notes de l'écran Personnes repérées,
+     migration 0039 ; l'export de Kate n'y touche jamais). Les règles d'accès de la base décident en dernier ressort. Jamais de
+     suppression. DocRef.change(fn) relit le document, calcule le nouveau contenu depuis ce qui vient d'être lu, puis écrit
+     seulement si la version n'a pas bougé ; sinon il relit et recommence (quatre essais) : deux personnes qui écrivent en même
+     temps ne perdent rien.
    - CRM : ce fichier ne lit aucune table du CRM ; il prête seulement son client à luna-crm-db.js (lunaAuth.client()), qui
      n'existe que sur le site.
    - Aucune clé ici : l'adresse de la base et sa clé PUBLIQUE viennent de config.js (window.LUNA_CONFIG). */
@@ -21,8 +24,8 @@
   "use strict";
 
   const SCHEMA = "renata", TABLE = "luna_documents", MEMBERS = "luna_members";
-  const COLLECTIONS = ["renata", "contacts", "suivi", "demandes"];
-  const WRITABLE = ["suivi", "demandes"];
+  const COLLECTIONS = ["renata", "contacts", "suivi", "demandes", "personnes"];
+  const WRITABLE = ["suivi", "demandes", "personnes"];
   const POLL_MS = 60000, SAFETY_MS = 300000, TICK_MS = 15000, PAGE = 500, CHUNK = 40, DEBOUNCE_MS = 400;
 
   const cfg = () => root.LUNA_CONFIG || {};
@@ -330,6 +333,36 @@
         return writeRow(this.coll, this.id, Object.assign({}, cur.exists ? cur.data() : {}, clone(data)), "upsert");
       }
       return writeRow(this.coll, this.id, data, "upsert");
+    }
+    // Contenu, version, date et auteur posés par la base, lus à l'instant (jamais depuis le cache).
+    async meta() {
+      const r = await getClient().from(TABLE).select("doc_id,version,updated_at,updated_by,data").eq("collection", this.coll).eq("doc_id", this.id).maybeSingle();
+      if (r.error) throw r.error;
+      return r.data ? { exists: true, data: clone(r.data.data) || {}, version: r.data.version, updated_at: r.data.updated_at, updated_by: r.data.updated_by }
+                    : { exists: false, data: {}, version: null, updated_at: null, updated_by: null };
+    }
+    // Lecture puis écriture conditionnée à la version lue ; document absent : création (un doublon simultané fait relire).
+    // fn reçoit une copie du contenu lu et rend le nouveau contenu (ou lève une erreur : rien n'est écrit).
+    async change(fn) {
+      if (!WRITABLE.includes(this.coll)) throw new Error("écriture refusée : la collection « " + this.coll + " » est en lecture seule");
+      const c = getClient();
+      for (let attempt = 0; attempt < 4; attempt++) {
+        const r = await c.from(TABLE).select("doc_id,version,data").eq("collection", this.coll).eq("doc_id", this.id).maybeSingle();
+        if (r.error) throw r.error;
+        const next = clone(fn(r.data ? clone(r.data.data) || {} : {}));
+        if (!r.data) {
+          const i = await c.from(TABLE).insert({ collection: this.coll, doc_id: this.id, data: next });
+          if (!i.error) { localSet(this.coll, this.id, next); return next; }
+          if (String(i.error.code) !== "23505") throw i.error;
+          continue;
+        }
+        let q = c.from(TABLE).update({ data: next }).eq("collection", this.coll).eq("doc_id", this.id);
+        if (r.data.version != null) q = q.eq("version", r.data.version);
+        const u = await q.select("doc_id");
+        if (u.error) throw u.error;
+        if ((u.data || []).length) { localSet(this.coll, this.id, next); return next; }
+      }
+      throw new Error("document modifié entre-temps : " + this.path);
     }
     async update(data) {
       const c = getClient();

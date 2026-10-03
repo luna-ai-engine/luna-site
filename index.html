@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.116.0/dist/umd/supabase.js https://cdn.jsdelivr.net/npm/lucide@0.460.0/dist/umd/lucide.min.js 'sha256-weeXojgvhJdzvvQ4sH96HO2LNEt5XB2b33SNtlU8y9Q='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src https://jqqzzakidyrcglyzgbrk.supabase.co wss://jqqzzakidyrcglyzgbrk.supabase.co; manifest-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.116.0/dist/umd/supabase.js https://cdn.jsdelivr.net/npm/lucide@0.460.0/dist/umd/lucide.min.js 'sha256-haYWOoNZ942GwNvSWxPuTFeBjP6nPqKhtryKgZDtFzc='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src https://jqqzzakidyrcglyzgbrk.supabase.co wss://jqqzzakidyrcglyzgbrk.supabase.co; manifest-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
 <meta name="robots" content="noindex, nofollow">
 <meta name="theme-color" content="#F7F3EC">
@@ -38,7 +38,9 @@ html,body{height:100%}
 body{margin:0;background:var(--ivory);color:var(--taupe);font-family:var(--sans);font-size:14.5px;line-height:1.6;-webkit-font-smoothing:antialiased}
 .app{display:grid;grid-template-columns:240px 1fr;min-height:100%}
 /* barre latérale */
-.side{position:sticky;top:0;height:100vh;padding:28px 16px 20px;display:flex;flex-direction:column;gap:28px;background:var(--ivory);border-right:1px solid var(--line)}
+/* hauteur de l'écran visible (dvh, avec repli vh) et défilement interne : la fin du menu reste atteignable sur une fenêtre
+   basse ou un téléphone (JACK-0210-08, capture de David du 02/10/2026) */
+.side{position:sticky;top:0;height:100vh;height:100dvh;overflow-y:auto;overscroll-behavior:contain;padding:28px 16px 20px;display:flex;flex-direction:column;gap:28px;background:var(--ivory);border-right:1px solid var(--line)}
 .brand{display:grid;justify-items:center;gap:6px;padding:4px 0 8px}
 .brand img{width:58px;height:58px}
 .wordmark{font-family:var(--serif);font-weight:500;font-size:26px;letter-spacing:.42em;margin-right:-.42em;color:var(--taupe);line-height:1}
@@ -137,6 +139,8 @@ tr:last-child td{border-bottom:0}
 .dir-table .stage{display:inline-block;padding:0 7px;border-radius:999px;background:var(--pos-bg);color:var(--pos-ink);font-size:12px;font-weight:500;line-height:1.6;white-space:nowrap}
 .dir-table td.prio[data-stage="new"] .stage{background:var(--neu-bg);color:var(--neu-ink)}
 .dir-table .stage + .lg-only{margin-left:6px}
+.dir-table .pstatus{font-weight:500;color:var(--taupe);margin-right:6px}
+.dir-table .pstatus:not(:last-child)::after{content:"\00a0·";font-weight:400;color:var(--faint)}
 #dir-note{margin:0 0 10px}
 /* liste de choix compacte (catégories des projets) : remplace le menu natif, que le téléphone affiche très espacé */
 .pick{position:relative;min-width:0}
@@ -283,7 +287,7 @@ details p{margin:8px 0 0}
   .topbar .wordmark{font-size:19px}
   .topbar button{border:0;background:transparent;color:var(--taupe);padding:8px;border-radius:10px;cursor:pointer}
   .topbar svg{width:22px;height:22px}
-  .side{position:fixed;left:0;top:0;bottom:0;width:260px;z-index:35;transform:translateX(-100%);transition:transform .22s ease;box-shadow:0 0 40px rgba(71,61,50,.12);padding-top:calc(28px + env(safe-area-inset-top,0px))}
+  .side{position:fixed;left:0;top:0;bottom:0;height:auto;max-height:100dvh;width:260px;z-index:35;transform:translateX(-100%);transition:transform .22s ease;box-shadow:0 0 40px rgba(71,61,50,.12);padding-top:calc(28px + env(safe-area-inset-top,0px));padding-bottom:calc(20px + env(safe-area-inset-bottom,0px));-webkit-overflow-scrolling:touch}
   .side.open{transform:none}
   .side-back{position:fixed;inset:0;z-index:34;background:rgba(81,75,69,.18)}
   main{padding:24px 16px 56px}
@@ -484,6 +488,17 @@ body.luna-locked .app{display:none}
 .crm-stage-opt[aria-current="true"]{background:var(--active-bg);border-color:var(--active-bg);color:var(--active-ink);opacity:1}
 .crm-stage-opt:disabled{cursor:default}
 .crm-del{display:grid;gap:8px}
+/* Lot 3 de Projects : bloc du CRM ajouté à la fiche d'un projet (statut, catégorie, décideur) */
+.crm-proj{display:grid;gap:14px;min-width:0;margin-top:4px;padding-top:14px;border-top:1px solid var(--line)}
+.crm-proj-part{display:grid;gap:8px;min-width:0}
+.crm-proj-k{font-size:13.5px;font-weight:500;color:var(--taupe)}
+.crm-proj-v{font-size:14px;color:var(--taupe-soft);overflow-wrap:anywhere}
+.crm-proj .crm-stagehead{gap:8px 10px}
+.crm-proj .crm-hint{margin:0;overflow-wrap:anywhere}
+.crm-proj select{width:100%;min-width:0;max-width:100%}
+.crm-proj .crm-kv dd a{overflow-wrap:anywhere}
+.crm-proj-form{gap:12px}
+@media (max-width:600px){.crm-proj .crm-form input[type=text],.crm-proj .crm-form input[type=email],.crm-proj .crm-form input[type=tel],.crm-proj select{font-size:16px}}
 /* Paramètres */
 .crm-items{list-style:none;margin:0;padding:0;display:grid;border:1px solid var(--line);border-radius:12px;overflow:hidden}
 .crm-item{display:grid;gap:8px;padding:10px 14px;border-bottom:1px solid var(--line);min-width:0}
@@ -521,6 +536,14 @@ body.luna-locked .app{display:none}
   .crm-filter-grid{grid-template-columns:1fr}
   .crm-row{padding:13px 16px}
 }
+/* Fiche personne (corrections, Contacts, notes) : mêmes règles que le bloc des projets, 390 points sans défilement horizontal */
+.crm-pers{margin-top:8px}
+.crm-pnotes{list-style:none;margin:0;padding:0;display:grid;gap:10px;min-width:0}
+.crm-pnote{display:grid;gap:2px;min-width:0;padding-bottom:10px;border-bottom:1px solid var(--line)}
+.crm-pnote-by{font-size:12.5px;color:var(--taupe-soft);overflow-wrap:anywhere}
+.crm-pnote-text{font-size:14.5px;white-space:pre-wrap;overflow-wrap:anywhere}
+.crm-pers textarea{width:100%;min-width:0;max-width:100%;min-height:90px;box-sizing:border-box}
+@media (max-width:600px){.crm-pers textarea{font-size:16px}}
 </style>
 <script src="config.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.116.0/dist/umd/supabase.js" integrity="sha384-iLddHTLokph6Omwoyid4XKxHaWa6w41BnoEj0q5oOrzmYPpHIKt1wyjReA7s//pP" crossorigin="anonymous"></script>
@@ -812,9 +835,9 @@ body.luna-locked .app{display:none}
       th_people:"People", pp_count:n => n === 1 ? "1 person" : `${n} people`, th_prio:"Priority", th_name:"Name", th_position:"Position", th_email:"Email", th_phone:"Phone", close:"Close",
       all_types:"All types", tag_warm:"Warm Lead", tag_new:"Newly opened", note_no_new:"No venue carries “Newly opened” yet: it only appears once a dated press article confirms the opening.", with_people:"With people identified", without_people:"Without people yet", all_people:"All venues",
       all_roles:"All positions", fam_direction:"Leadership", fam_exploitation:"F&B operations", fam_projet:"Projects and pre-opening", fam_marketing:"Marketing and communications",
-      has_any:"All people", has_email:"With an email", has_phone:"With a phone number",
+      has_any:"All people", has_email:"With an email", has_phone:"With a phone number", has_none:"No contact details yet",
       no_contacts:"No validated person yet. The first people found are being checked; they will appear here once David validates them.",
-      people_title:"People identified", no_people:"No validated person yet for this venue.", follow_title:"Follow-up", edit_follow:"Edit follow-up",
+      people_title:"People identified", no_people:"No validated person yet for this venue.", follow_title:"Follow-up", edit_follow:"Edit follow-up", th_linkedin:"LinkedIn", follow_moved:"The status of a project is now chosen on the project itself, in Projects. This older follow-up is shown for reference only.",
       verified_place:"Place confirmed on Google Maps", probable_place:"Place probable on Google Maps", new_company:"Company created in 2026",
       em_VERIFIED_PUBLISHED:"verified (published by the company)", em_SMTP_CONFIRMED:"verified (mail server)", em_CORROBORATED:"corroborated by several sources",
       em_INFERRED_PATTERN:"guessed from the company's email pattern, not verified", em_CATCH_ALL_UNCERTAIN:"uncertain (server accepts every address)", em_UNVERIFIED:"not verified",
@@ -910,9 +933,9 @@ body.luna-locked .app{display:none}
       th_people:"Personnes", pp_count:n => n === 1 ? "1 personne" : `${n} personnes`, th_prio:"Priorité", th_name:"Nom", th_position:"Poste", th_email:"Email", th_phone:"Téléphone", close:"Fermer",
       all_types:"Tous les types", tag_warm:"Warm Lead", tag_new:"Tout juste ouvert", note_no_new:"Aucun établissement ne porte encore « Tout juste ouvert » : la mention n'apparaît que lorsqu'un article de presse daté confirme l'ouverture.", with_people:"Avec des personnes identifiées", without_people:"Sans personne pour l'instant", all_people:"Tous les établissements",
       all_roles:"Tous les postes", fam_direction:"Direction", fam_exploitation:"Exploitation F&B", fam_projet:"Projets et pré-ouverture", fam_marketing:"Marketing et communication",
-      has_any:"Toutes les personnes", has_email:"Avec un email", has_phone:"Avec un téléphone",
+      has_any:"Toutes les personnes", has_email:"Avec un email", has_phone:"Avec un téléphone", has_none:"Sans coordonnée",
       no_contacts:"Aucune personne validée pour l'instant. Les premières personnes trouvées sont en cours de vérification ; elles apparaîtront ici dès que David les aura validées.",
-      people_title:"Personnes identifiées", no_people:"Aucune personne validée pour cet établissement.", follow_title:"Suivi", edit_follow:"Modifier le suivi",
+      people_title:"Personnes identifiées", no_people:"Aucune personne validée pour cet établissement.", follow_title:"Suivi", edit_follow:"Modifier le suivi", th_linkedin:"LinkedIn", follow_moved:"Le statut d'un projet se choisit désormais sur le projet lui-même, dans Projets. Cet ancien suivi n'est affiché que pour mémoire.",
       verified_place:"Lieu confirmé sur Google Maps", probable_place:"Lieu probable sur Google Maps", new_company:"Société créée en 2026",
       em_VERIFIED_PUBLISHED:"vérifié (publié par l'entreprise)", em_SMTP_CONFIRMED:"vérifié (serveur de messagerie)", em_CORROBORATED:"confirmé par plusieurs sources",
       em_INFERRED_PATTERN:"deviné d'après le format des emails de l'entreprise, non vérifié", em_CATCH_ALL_UNCERTAIN:"incertain (le serveur accepte toutes les adresses)", em_UNVERIFIED:"non vérifié",
@@ -1042,7 +1065,7 @@ body.luna-locked .app{display:none}
     opts($("#opp-stat"), [["",t("cs_all")], ...CS.map(c => [c, t("cs_" + c)])]);
     opts($("#dir-people"), [["",t("all_people")],["yes",t("with_people")],["no",t("without_people")]]);
     opts($("#ct-role"), [["",t("all_roles")], ...FAM.map(f => [f, t("fam_" + f)])]);
-    opts($("#ct-has"), [["",t("has_any")],["email",t("has_email")],["phone",t("has_phone")]]);
+    opts($("#ct-has"), [["",t("has_any")],["email",t("has_email")],["phone",t("has_phone")],["none",t("has_none")]]);
     opts($("#ct-sort"), [["",t("sort_alpha")],["recent",t("sort_recent")]]);
   }
   const CS = ["a_contacter","contacte","rendez_vous","proposition","gagne","perdu","pas_pertinent"];
@@ -1052,8 +1075,18 @@ body.luna-locked .app{display:none}
   $("#lang-fr").addEventListener("click", () => setLang("fr"));
 
   const tabs = [...document.querySelectorAll(".nav button[data-panel]")].map(b => [b.id, b.dataset.panel]);
-  function show(id){ tabs.forEach(([tb,p]) => { const on = tb === id; if (on) $("#"+tb).setAttribute("aria-current","page"); else $("#"+tb).removeAttribute("aria-current"); $("#"+p).hidden = !on; });
-    store.set("luna-nav", id); closeMenu(); window.scrollTo({top:0}); }
+  // Geste retour (JACK-0210-10) : sur le site seulement (page ouverte seule, pas dans un cadre comme la page privée), chaque
+  // changement d'écran principal et chaque fiche ouverte portent une entrée d'historique, sans changer l'adresse. Le retour
+  // ramène à l'écran précédent ou ferme la fiche ; arrivé à l'entrée de base, il montre l'Accueil et y reste au lieu de
+  // quitter le site (donc de revenir aux pages de connexion de Google). Les entrées des autres calques ne sont pas
+  // touchées ici : les entrées sans « lunaNav » appartiennent aux calques du site, qui les traitent eux-mêmes.
+  const navHist = (() => { try { return window.top === window && !!window.history && typeof history.pushState === "function"; } catch(e) { return false; } })();
+  let curNav = "", navArmed = false;
+  const navPush = state => { if (navHist) try { history.pushState(state, ""); } catch(e) {} };
+  function show(id, fromHistory){ tabs.forEach(([tb,p]) => { const on = tb === id; if (on) $("#"+tb).setAttribute("aria-current","page"); else $("#"+tb).removeAttribute("aria-current"); $("#"+p).hidden = !on; });
+    store.set("luna-nav", id); closeMenu(); window.scrollTo({top:0});
+    if (navArmed && !fromHistory && id !== curNav) navPush({lunaNav: id});
+    curNav = id; }
   tabs.forEach(([tb]) => $("#"+tb).addEventListener("click", () => show(tb)));
   function openMenu(){ $("#side").classList.add("open"); $("#side-back").hidden = false; }
   function closeMenu(){ $("#side").classList.remove("open"); $("#side-back").hidden = true; }
@@ -1067,6 +1100,23 @@ body.luna-locked .app{display:none}
   const saved = store.get("luna-nav"), savedSub = store.get("renata-sub");
   show(hashMap ? hashMap[0] : (tabs.some(([tb]) => tb === saved) ? saved : "nav-home"));
   showSub(hashMap && hashMap[1] ? hashMap[1] : (subs.includes(savedSub) ? savedSub : "p-pistes"));
+  // Entrée de base (l'Accueil), puis l'écran de départ au-dessus. Posée au premier geste de la personne : un navigateur peut
+  // sauter au retour une entrée ajoutée sans geste.
+  function armNav(){
+    if (navArmed || !navHist) return; navArmed = true;
+    try { history.replaceState({lunaNav: "nav-home", lunaBase: 1}, ""); } catch(e) {}
+    navPush({lunaNav: curNav});
+  }
+  if (navHist) { ["pointerdown","keydown","touchstart"].forEach(type => document.addEventListener(type, armNav, {capture: true, once: true})); }
+  window.addEventListener("popstate", ev => {
+    const st = ev.state;
+    if (!navArmed || (st && !("lunaNav" in st))) return;                            // entrée d'un autre module (calques du site)
+    if (!$("#sheet").hidden) { if (!(st && st.lunaSheet)) hideSheet(); return; }     // le retour ferme d'abord la fiche
+    if ($("#side").classList.contains("open")) closeMenu();
+    const base = !st || st.lunaBase, target = base ? "nav-home" : (st.lunaNav || "nav-home");
+    if (target !== curNav) show(target, true);
+    if (base) navPush({lunaNav: "nav-home"});                                         // à l'Accueil, le retour reste sur le site
+  });
 
   const docs = {}; let requests = []; let dbReady = false;
   const kpis = (box, list) => { box.replaceChildren(); list.forEach(([n,l,ic]) => { const k = el("div","kpi");
@@ -1092,8 +1142,13 @@ body.luna-locked .app{display:none}
   const catKey = s => { const k = actKnown(s); return catFold(k ? k[1] : s); };
   let catSpell = new Map();
   const catLabel = s => actKnown(s) ? act1(s) : (catSpell.get(catKey(s)) || act1(s));
+  // Surcouche de Projects (lot 3) : seul le site la fournit (lunaPage.setOverlay), avec, par identifiant de projet, la catégorie
+  // choisie par une personne et un statut à afficher. La page privée ne l'appelle jamais : elle garde la catégorie de l'export.
+  let overlay = new Map();
+  const ovOf = o => overlay.get(o.id) || {};
+  const followReadOnly = () => document.documentElement.dataset.followReadonly === "1";
   const catsOf = o => { const seen = new Set();
-    return (o.categorie ? [o.categorie] : String(o.type || "").split(",")).map(s => String(s).replace(/\s+/g, " ").trim())
+    return (ovOf(o).categorie ? [ovOf(o).categorie] : o.categorie ? [o.categorie] : String(o.type || "").split(",")).map(s => String(s).replace(/\s+/g, " ").trim())
       .filter(s => { const k = catKey(s); if (!k || seen.has(k)) return false; seen.add(k); return true; }); };
   // Lot 2 : les cafés seuls, cafés de spécialité et food trucks (masque) restent dans l'export et dans Data Dubai, mais pas dans
   // Projects. « Warm Lead » : l'ouverture annoncée recoupe la fenêtre de 4 à 8 mois après le jour affiché (heure de Dubai) ;
@@ -1211,6 +1266,7 @@ body.luna-locked .app{display:none}
       const n = peopleOf(o).length;
       const ppl = el("td","num"); if (n) ppl.append(el("span","lg-only",String(n)), el("span","sm-only",t("pp_count")(n)));
       const pr = el("td","prio"); pr.dataset.p = o.priorite || "";
+      const st = ovOf(o).statut; if (st) pr.append(el("span","pstatus",st));
       const sg = stage.get(o); if (sg) { pr.dataset.stage = sg; pr.append(el("span","stage",t("tag_" + sg))); }
       if (["haute","moyenne","basse"].includes(o.priorite)) pr.append(el("span","lg-only",t("pr_" + o.priorite)), el("span","sm-only",sg ? "" : t("pr_label")(o.priorite)));
       const cells = [el("td","act",catsOf(o).map(catLabel).join(", ")), el("td","place",pick(o,"lieu") || ""), ppl, pr];
@@ -1245,7 +1301,41 @@ body.luna-locked .app{display:none}
     return b;
   }
   function personCard(c){ const wrap = el("div","people inline"); wrap.append(personRow(c, true)); return wrap; }
+  // LinkedIn d'une personne (décision de David du 02/10/2026) : seule une adresse de profil linkedin.com/in/ devient un lien,
+  // ouvert dans un nouvel onglet ; sa source s'affiche dessous, dans la langue de l'écran. Rien n'est cherché ni deviné ici.
+  const LINKEDIN_RE = /^https:\/\/([a-z]{2,3}\.)?linkedin\.com\/in\/[^\/?#\s]+\/?$/i;
+  function linkedinOf(c){
+    const f = document.createDocumentFragment(), url = String(c.linkedin || "").trim();
+    if (!LINKEDIN_RE.test(url)) { f.append(el("span","badge-nf", t("pp_missing"))); return f; }
+    f.append(link(url, url.replace(/^https:\/\/([a-z]{2,3}\.)?linkedin\.com/i, "linkedin.com").replace(/\/$/, "")));
+    const src = String(c.linkedin_source || "").trim();
+    if (src) f.append(el("small", null, lang === "fr" ? src.replace(/^provided by /i, "fourni par ") : src.replace(/^fourni par /i, "provided by ")));
+    return f;
+  }
+  // « Trouvé par » (JACK-0210-15, point 4) : chaque adresse web du texte devient un lien ouvert dans un nouvel onglet
+  // (http, https, ou www. complété en https) ; le reste du texte s'affiche tel quel.
+  function sourceNode(text){
+    const f = document.createDocumentFragment(), s = String(text == null ? "" : text), re = /\b(?:https?:\/\/|www\.)[^\s<>"']+/gi;
+    let last = 0, m;
+    while ((m = re.exec(s))) {
+      if (m.index > 0 && /[@\w.\/-]/.test(s[m.index - 1])) continue;          // partie d'un email ou d'un mot : reste du texte
+      const raw = m[0].replace(/[.,;:!?)\]]+$/, ""), end = m.index + raw.length;
+      if (m.index > last) f.append(document.createTextNode(s.slice(last, m.index)));
+      const url = /^www\./i.test(raw) ? "https://" + raw : raw.replace(/^https?:\/\//i, x => x.toLowerCase());  // HTTPS:// comme https://
+      f.append(link(url, raw));
+      last = end; re.lastIndex = end;
+    }
+    if (last < s.length) f.append(document.createTextNode(s.slice(last)));
+    return f;
+  }
+  // Surcouche de la fiche personne : seul le site la fournit (lunaPage.setPersonOverlay), avec, par identifiant de fiche, un email
+  // et un téléphone qui remplacent ceux de l'export (chaîne vide = effacé) et la mention à écrire dessous. La page privée ne la
+  // reçoit jamais : sa fiche reste celle de l'export.
+  let personOv = new Map(), curPerson = null;
   function openPerson(c){
+    curPerson = c;
+    const ov = personOv.get(String(c.id)) || {};
+    const shown = {email: ov.email !== undefined ? ov.email : c.email, telephone: ov.telephone !== undefined ? ov.telephone : c.telephone};
     const d = oppDoc(); const byId = {}; (d ? d.opportunites : []).forEach(o => byId[o.id] = o);
     $("#sheet").classList.add("pmode");
     $("#sheet-title").textContent = c.nom || "";
@@ -1257,8 +1347,8 @@ body.luna-locked .app{display:none}
     b.append(id);
     // 2. actions rapides : désactivées proprement si l'information manque
     const acts = el("div","p-actions");
-    const phoneDigits = String(c.telephone || "").replace(/[^\d]/g, "");
-    [["mail", t("act_email"), c.email ? "mailto:" + c.email : ""], ["phone", t("act_call"), c.telephone ? "tel:" + String(c.telephone).replace(/\s+/g, "") : ""],
+    const phoneDigits = String(shown.telephone || "").replace(/[^\d]/g, "");
+    [["mail", t("act_email"), shown.email ? "mailto:" + shown.email : ""], ["phone", t("act_call"), shown.telephone ? "tel:" + String(shown.telephone).replace(/\s+/g, "") : ""],
      ["message-circle", "WhatsApp", phoneDigits ? "https://wa.me/" + phoneDigits : ""]].forEach(([ic, label, href]) => {
       const a = el("a","p-act"); a.append(icon(ic), document.createTextNode(label));
       if (href) { a.href = href; if (href.startsWith("https://")) { a.target = "_blank"; a.rel = "noopener noreferrer"; } } else { a.setAttribute("aria-disabled","true"); a.setAttribute("role","link"); }
@@ -1266,14 +1356,19 @@ body.luna-locked .app{display:none}
     b.append(acts);
     const section = (title, quiet) => { const sec = el("section","p-sec" + (quiet ? " quiet" : "")); sec.append(el("h4",null,title)); return sec; };
     const kv = rows => { const g = el("div","p-kv"); rows.forEach(([k, v]) => { g.append(el("span","k",k)); const cell = el("span","v"); if (v instanceof Node) cell.append(v); else cell.textContent = v; g.append(cell); }); return g; };
-    const valueOrMissing = (value, status, prefix) => { const f = document.createDocumentFragment();
-      if (!value) { f.append(el("span","badge-nf", t("pp_missing"))); return f; }
-      f.append(document.createTextNode(value));
+    const valueOrMissing = (value, status, prefix, mention) => { const f = document.createDocumentFragment();
+      if (!value) f.append(el("span","badge-nf", t("pp_missing")));
+      else f.append(document.createTextNode(value));
+      if (mention) { f.append(el("small", null, mention)); return f; }
+      if (!value) return f;
       if (status) { const lab = t(prefix + status); f.append(el("small", null, typeof lab === "string" ? lab : status)); }
       return f; };
     // 3. contact
     const sc = section(t("pp_contact"));
-    sc.append(kv([[t("th_email"), valueOrMissing(c.email, c.email_statut, "em_")], [t("th_phone"), valueOrMissing(c.telephone, c.telephone_statut, "ph_")]]));
+    const kvEl = kv([[t("th_email"), valueOrMissing(shown.email, c.email_statut, "em_", ov.email_note)], [t("th_phone"), valueOrMissing(shown.telephone, c.telephone_statut, "ph_", ov.telephone_note)],
+      [t("th_linkedin"), linkedinOf(c)]]);
+    sc.append(kvEl);
+    if (ov.stamp) sc.append(el("small", null, ov.stamp));
     b.append(sc);
     // 4. société
     if (c.organisation || c.poste) { const sco = section(t("pp_company_t"));
@@ -1290,10 +1385,14 @@ body.luna-locked .app{display:none}
       b.append(sv); }
     // 6. source, discrète
     const ss = section(t("pp_source"), true);
-    const rows = [[t("pp_found"), c.source || "Apollo"], [t("pp_verif"), t("lv_" + (c.niveau || "apollo"))]];
+    const rows = [[t("pp_found"), sourceNode(c.source || "Apollo")], [t("pp_verif"), t("lv_" + (c.niveau || "apollo"))]];
     if (c.valide_le) rows.push([t("pp_validated"), `${fmtDate(c.valide_le)}${c.valide_par ? " · " + c.valide_par : ""}`]);
     ss.append(kv(rows)); b.append(ss);
-    $("#sheet").hidden = false; $("#sheet-back").hidden = false; $("#sheet-close").focus(); refreshIcons();
+    // Point d'accroche neutre pour le site (comme « luna:venue-open ») : l'identifiant de la fiche, ses valeurs d'export et
+    // l'élément à compléter. La page ne lit ni n'écrit rien d'autre ici.
+    document.dispatchEvent(new CustomEvent("luna:person-open", {detail: {id: String(c.id == null ? "" : c.id), nom: c.nom || "", poste: c.poste || "",
+      organisation: c.organisation || "", email: c.email || "", telephone: c.telephone || "", linkedin: c.linkedin || "", source: c.source || "", body: b}}));
+    openSheetLayer(); $("#sheet-close").focus(); refreshIcons();
   }
   function openVenue(o){
     $("#sheet").classList.remove("pmode");
@@ -1324,19 +1423,28 @@ body.luna-locked .app{display:none}
     const eb = el("button","btn",t("edit_follow")); eb.type = "button";
     eb.addEventListener("click", () => { closeSheet(); show("nav-opp"); $("#opp-side").checked = true; $("#opp-q").value = o.nom; oppPage = 0; renderOppList(); });
     fu.append(eb); b.append(fu);
-    $("#sheet").hidden = false; $("#sheet-back").hidden = false; $("#sheet-close").focus();
+    if (followReadOnly()) { eb.hidden = true; fu.append(el("p","note",t("follow_moved"))); }
+    document.dispatchEvent(new CustomEvent("luna:venue-open", {detail: {id: o.id, nom: o.nom, body: b, categorie: o.categorie || ""}}));
+    openSheetLayer(); $("#sheet-close").focus();
   }
-  function closeSheet(){ $("#sheet").hidden = true; $("#sheet-back").hidden = true; }
-  $("#sheet-close").addEventListener("click", closeSheet);
-  $("#sheet-back").addEventListener("click", closeSheet);
-  document.addEventListener("keydown", ev => { if (ev.key === "Escape" && !$("#sheet").hidden) closeSheet(); });
+  function openSheetLayer(){ const was = $("#sheet").hidden; $("#sheet").hidden = false; $("#sheet-back").hidden = false;
+    if (was && navArmed) navPush({lunaNav: curNav, lunaSheet: 1}); }
+  function hideSheet(){ $("#sheet").hidden = true; $("#sheet-back").hidden = true; }
+  // Fermeture par l'écran avant un changement d'écran : l'entrée de la fiche devient celle de l'écran courant (aucun retour
+  // asynchrone qui croiserait l'entrée du nouvel écran).
+  function closeSheet(){ hideSheet(); if (navArmed && history.state && history.state.lunaSheet) try { history.replaceState({lunaNav: curNav}, ""); } catch(e) {} }
+  // Fermeture par la personne (bouton, fond, Échap) : l'entrée de la fiche est retirée par un retour.
+  function closeSheetByUser(){ const top = navArmed && history.state && history.state.lunaSheet; hideSheet(); if (top) try { history.back(); } catch(e) {} }
+  $("#sheet-close").addEventListener("click", closeSheetByUser);
+  $("#sheet-back").addEventListener("click", closeSheetByUser);
+  document.addEventListener("keydown", ev => { if (ev.key === "Escape" && !$("#sheet").hidden) closeSheetByUser(); });
 
   function renderCt(){
     $("#c-ct").textContent = contacts.length || "";
     if (!ctBuilt) { ["ct-q","ct-role","ct-has","ct-sort"].forEach(id => $("#"+id).addEventListener("input", renderCt)); ctBuilt = true; }
     const q = $("#ct-q").value.trim().toLowerCase(), fam = $("#ct-role").value, has = $("#ct-has").value;
     const d = oppDoc(); const byId = {}; (d ? d.opportunites : []).forEach(o => byId[o.id] = o);
-    const list = contacts.filter(c => (!fam || c.famille === fam) && (!has || (has === "email" ? !!c.email : !!c.telephone))
+    const list = contacts.filter(c => (!fam || c.famille === fam) && (!has || (has === "email" ? !!c.email : has === "phone" ? !!c.telephone : !c.email && !c.telephone))
       && (!q || [c.nom, c.poste, c.organisation, ...(c.etablissements || []).map(id => (byId[id] || {}).nom)].join(" ").toLowerCase().includes(q)))
       .sort((a,b) => String(a.nom).localeCompare(String(b.nom)));
     const box = $("#ct-list"); box.replaceChildren();
@@ -1495,6 +1603,7 @@ body.luna-locked .app{display:none}
     });
     bar.append(sel, btn, msg); sel.style.width = "auto";
     fu.append(note, bar); c.append(fu);
+    if (followReadOnly()) { sel.disabled = true; note.readOnly = true; btn.hidden = true; fu.append(el("p","note",t("follow_moved"))); }
     return c;
   }
 
@@ -1710,6 +1819,20 @@ body.luna-locked .app{display:none}
     catch(e) { const r = document.createRange(); r.selectNodeContents($("#req-address")); const s = getSelection(); s.removeAllRanges(); s.addRange(r); }
   });
 
+  // Points d'accroche de Projects pour le site (lot 3) : la page ne lit ici aucune donnée extérieure ; elle affiche seulement la
+  // surcouche qu'on lui donne et signale l'ouverture d'une fiche (« luna:venue-open ») et l'arrivée des projets
+  // (« luna:projects-data »). La page privée n'a aucun module qui s'en sert.
+  window.lunaPage = {
+    setOverlay(entries){ overlay = new Map(entries || []); if (oppDoc()) renderDir(); },
+    projects(){ const d = oppDoc(); return d ? dirAll(d).map(o => ({id: o.id, nom: o.nom, categorie: o.categorie || ""})) : []; },
+    lang: () => lang, refresh(){ if (oppDoc()) renderDir(); },
+    setPersonOverlay(entries){ personOv = new Map(entries || []); },
+    refreshPerson(){ if (curPerson && !$("#sheet").hidden && $("#sheet").classList.contains("pmode")) openPerson(curPerson); }
+  };
+  // Le suivi passe en lecture seule (ou redevient modifiable) dès que le site le décide : les cartes affichées sont redessinées.
+  try { new MutationObserver(() => { if (oppDoc()) renderOppList(); })
+    .observe(document.documentElement, {attributes: true, attributeFilter: ["data-follow-readonly"]}); } catch(e) {}
+
   applyStatic(); refreshIcons();
   (async () => {
     const db = window.claude && await window.claude.use("db");
@@ -1719,7 +1842,8 @@ body.luna-locked .app{display:none}
     dbReady = true;
     if (!db) { $("#status").replaceChildren(el("span","pill warn",t("nodb"))); return; }
     dbRef = db;
-    db.collection("renata").onSnapshot(snap => { snap.docs.forEach(d => { if (d.exists) docs[d.id] = d.data(); }); render(); },
+    db.collection("renata").onSnapshot(snap => { snap.docs.forEach(d => { if (d.exists) docs[d.id] = d.data(); }); render();
+      document.dispatchEvent(new CustomEvent("luna:projects-data")); },
       () => { $("#status").replaceChildren(el("span","pill crit",t("dberr"))); });
     db.collection("demandes").orderBy("cree_le","desc").limit(100).onSnapshot(snap => { requests = snap.docs.filter(d => d.exists).map(d => Object.assign({id: d.id}, d.data())); renderReq(); renderHome(); }, () => {});
     db.collection("contacts").onSnapshot(snap => { contacts = snap.docs.filter(d => d.exists).map(d => Object.assign({id: d.id}, d.data())); renderCt(); renderDirList(); renderHome(); }, () => {});

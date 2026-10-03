@@ -181,7 +181,38 @@
       fld_referred_by_company_id: "referred by", fld_referred_by_contact_id: "referred by", fld_expected_decision_on: "expected decision date",
       fld_close_reason_id: "reason", fld_closed_on: "closing date", fld_kind: "type", fld_body: "text", fld_occurred_at: "date",
       fld_deal_id: "deal", fld_label_en: "English label", fld_label_fr: "French label", fld_position: "order", fld_stage_outcome: "stage type",
-      fld_code: "internal code", fld_months: "duration", fld_label: "name", fld_role: "role"
+      fld_code: "internal code", fld_months: "duration", fld_label: "name", fld_role: "role", fld_project_category: "category", fld_linkedin_url: "LinkedIn",
+      pj_title: "Status, category and decision-maker", pj_status: "Status", pj_no_status: "No status yet",
+      pj_choose_status: "Choose a status", pj_change_status: "Change status", pj_status_lead: "Choosing a status sends nothing and contacts no one.",
+      pj_category: "Category", pj_cat_auto: "As found by Luna", pj_cat_found: label => `Found by Luna: ${label}`,
+      pj_dm: "Decision-maker", pj_dm_lead: "Nothing is filled in for you: enter only what you know. At least a name and the source.",
+      pj_dm_save: "Save decision-maker", pj_dm_edit: "Edit decision-maker", f_mobile: "Mobile", pj_office: "Office phone", pj_open_deal: "Open deal", pj_open_contact: "Open contact",
+      pj_not_ready: "Choosing a category and entering the decision-maker will be available after the next CRM update.",
+      pj_closed: "Status, category and decision-maker will appear here as soon as David opens the CRM.",
+      pj_bad_key: "This project cannot be followed in the CRM yet: Luna has no stable reference for it.",
+      err_source: "Not saved: choose a source.", err_category: "Not saved: choose a category from the list.",
+      err_project: "Not saved: this project cannot be followed in the CRM yet.",
+      err_linked_twice: "Not saved: this project was changed in the meantime. Reload it, then make your change again.",
+      f_linkedin: "LinkedIn", linkedin_hint: "Profile address only, such as https://www.linkedin.com/in/your-contact",
+      err_linkedin: "Not saved: enter a LinkedIn profile address, such as https://www.linkedin.com/in/your-contact, without anything after it.",
+      err_not_ready: "Not saved: LinkedIn will be available after the next CRM update.",
+      partial_dm: "Only part of the changes was saved. Check the decision-maker, then make the rest of your change again.",
+      pe_title: "Corrections, Contacts and notes", pe_fix: "Correct details",
+      pe_fix_lead: "What you enter here replaces the exported value on this screen. Empty a field to mark it as removed. Nothing is sent to anyone.",
+      pe_save: "Save details", pe_nothing: "Nothing has changed.",
+      pe_corrected: "corrected", pe_removed: "removed",
+      pe_last: (by, on) => `Last change to this person's corrections or notes: ${[by, on].filter(Boolean).join(", ")}`,
+      pe_notes: "Notes", pe_note_label: "New note", pe_note_add: "Add note", pe_no_notes: "No notes yet.",
+      pe_err_note_long: "Not saved: a note holds 4,000 characters at most.", pe_err_notes_max: "Not saved: this person already has 200 notes.",
+      pe_err_busy: "Not saved: someone else changed this at the same time. Your entry is kept; try again.",
+      pe_crm: "Contacts", pe_move: "Move to Contacts", pe_in_contacts: "In Contacts", pe_open_contact: "Open contact",
+      pe_move_lead: "Creates a contact in Contacts (and its company if it is new) with the details shown above. Nothing is sent to anyone.",
+      pe_created: "Moved to Contacts.", pe_existing: "This person is already in Contacts: the existing contact is open.",
+      pe_not_ready: "Moving a person to Contacts will be available after the next CRM update.",
+      pe_crm_closed: "Moving a person to Contacts will be available as soon as David opens the CRM.",
+      err_person: "Not moved: this person has no usable reference.",
+      cat_hotel: "Hotel", cat_nightclub: "Nightclub", cat_lounge: "Lounge", cat_wellness_cafe: "Wellness centre with café", cat_fine_dining: "Fine dining",
+      cat_upscale_casual: "Upscale casual dining", cat_casual_dining: "Casual dining", cat_dinner_show: "Dinner show lounge", cat_to_classify: "To classify"
     },
     fr: {
       nav_pipeline: "Pipeline", nav_companies: "Entreprises", nav_contacts: "Contacts",
@@ -313,7 +344,39 @@
       fld_referred_by_company_id: "recommandé par", fld_referred_by_contact_id: "recommandé par", fld_expected_decision_on: "date de décision prévue",
       fld_close_reason_id: "motif", fld_closed_on: "date de clôture", fld_kind: "type", fld_body: "texte", fld_occurred_at: "date",
       fld_deal_id: "affaire", fld_label_en: "libellé anglais", fld_label_fr: "libellé français", fld_position: "ordre", fld_stage_outcome: "type d'étape",
-      fld_code: "code interne", fld_months: "durée", fld_label: "nom", fld_role: "rôle"
+      fld_code: "code interne", fld_months: "durée", fld_label: "nom", fld_role: "rôle", fld_project_category: "catégorie", fld_linkedin_url: "LinkedIn",
+      pj_title: "Statut, catégorie et décideur", pj_status: "Statut", pj_no_status: "Aucun statut pour l'instant",
+      pj_choose_status: "Choisir un statut", pj_change_status: "Changer de statut", pj_status_lead: "Choisir un statut n'envoie rien et ne contacte personne.",
+      pj_category: "Catégorie", pj_cat_auto: "Celle trouvée par Luna", pj_cat_found: label => `Trouvée par Luna : ${label}`,
+      pj_dm: "Décideur", pj_dm_lead: "Rien n'est prérempli : saisissez seulement ce que vous savez. Au moins un nom et la source.",
+      pj_dm_save: "Enregistrer le décideur", pj_dm_edit: "Modifier le décideur", f_mobile: "Mobile", pj_office: "Téléphone du bureau", pj_open_deal: "Ouvrir l'affaire", pj_open_contact: "Ouvrir le contact",
+      pj_not_ready: "Le choix de la catégorie et la saisie du décideur seront disponibles après la prochaine mise à jour du CRM.",
+      pj_closed: "Statut, catégorie et décideur apparaîtront ici dès que David aura ouvert le CRM.",
+      pj_bad_key: "Ce projet ne peut pas encore être suivi dans le CRM : Luna n'a pas de référence stable pour lui.",
+      err_source: "Non enregistré : choisissez une source.", err_category: "Non enregistré : choisissez une catégorie de la liste.",
+      err_project: "Non enregistré : ce projet ne peut pas encore être suivi dans le CRM.",
+      err_linked_twice: "Non enregistré : ce projet a été modifié entre-temps. Rechargez-le, puis refaites votre modification.",
+      f_linkedin: "LinkedIn", linkedin_hint: "Adresse du profil seulement, par exemple https://www.linkedin.com/in/votre-contact",
+      err_linkedin: "Non enregistré : saisissez l'adresse d'un profil LinkedIn, par exemple https://www.linkedin.com/in/votre-contact, sans rien après.",
+      err_not_ready: "Non enregistré : LinkedIn sera disponible après la prochaine mise à jour du CRM.",
+      partial_dm: "Une partie seulement des modifications est enregistrée. Vérifiez le décideur, puis refaites le reste de votre modification.",
+      pe_title: "Corrections, Contacts et notes", pe_fix: "Corriger les coordonnées",
+      pe_fix_lead: "Ce que vous saisissez ici remplace la valeur de l'export sur cet écran. Videz un champ pour le marquer comme effacé. Rien n'est envoyé à personne.",
+      pe_save: "Enregistrer les coordonnées", pe_nothing: "Rien n'a changé.",
+      pe_corrected: "corrigé", pe_removed: "effacé",
+      pe_last: (by, on) => `Dernière modification des corrections ou des notes : ${[by, on].filter(Boolean).join(", ")}`,
+      pe_notes: "Notes", pe_note_label: "Nouvelle note", pe_note_add: "Ajouter la note", pe_no_notes: "Aucune note pour l'instant.",
+      pe_err_note_long: "Non enregistré : une note tient en 4 000 caractères au plus.", pe_err_notes_max: "Non enregistré : cette personne a déjà 200 notes.",
+      pe_err_busy: "Non enregistré : quelqu'un d'autre a modifié cette fiche en même temps. Votre saisie est gardée ; réessayez.",
+      pe_crm: "Contacts", pe_move: "Basculer dans Contacts", pe_in_contacts: "Dans Contacts", pe_open_contact: "Ouvrir le contact",
+      pe_move_lead: "Crée un contact dans Contacts (et son entreprise si elle est nouvelle) avec les coordonnées affichées ci-dessus. Rien n'est envoyé à personne.",
+      pe_created: "Basculé dans Contacts.", pe_existing: "Cette personne est déjà dans Contacts : le contact existant est ouvert.",
+      pe_not_ready: "Le basculement d'une personne dans Contacts sera disponible après la prochaine mise à jour du CRM.",
+      pe_crm_closed: "Le basculement d'une personne dans Contacts sera disponible dès que David aura ouvert le CRM.",
+      err_person: "Non basculé : cette personne n'a pas de référence utilisable.",
+      cat_hotel: "Hôtel", cat_nightclub: "Boîte de nuit", cat_lounge: "Lounge", cat_wellness_cafe: "Centre de bien-être avec café",
+      cat_fine_dining: "Restaurant gastronomique", cat_upscale_casual: "Restaurant haut de gamme décontracté", cat_casual_dining: "Restaurant décontracté",
+      cat_dinner_show: "Salon dîner-spectacle", cat_to_classify: "À classer"
     }
   };
 
@@ -358,6 +421,14 @@
   // les essais pour ne pas attendre dix secondes.
   root.__lunaCrmInternals = { CT, FIXED, LIST_KINDS, toLocalInput, fromLocalInput, parseAed, mailHref, WAIT };
   if (!doc || typeof doc.addEventListener !== "function" || !doc.documentElement) return;   // hors navigateur : textes seulement
+  // Lot 3, décision D1 A : sur le site, le statut d'un projet se choisit sur le projet (affaire liée) ; le suivi de l'onglet
+  // Opportunities passe en lecture seule, mais SEULEMENT quand ce choix est réellement possible (CRM ouvert, étapes lues,
+  // au moins une étape ouverte) : CRM fermé, refusé ou injoignable, le suivi reste modifiable, pour que Renata ait toujours
+  // un endroit où marquer un statut. La page privée ne charge jamais ce fichier : son suivi ne change pas.
+  function syncFollow() {
+    const ok = S.state === "ready" && items("stage").some(st => st.stage_outcome === "open");
+    if (ok) doc.documentElement.dataset.followReadonly = "1"; else doc.documentElement.removeAttribute("data-follow-readonly");
+  }
 
   // ------------------------------------------------------------------ outils
   const api = () => root.lunaCrm;
@@ -422,6 +493,13 @@
   const telHref = p => "tel:" + String(p || "").replace(/[^\d+]/g, "");
   const natureFor = status => ({ current_client: "client", past_client: "client", prospect: "prospect", partner_supplier: "partner_supplier", media: "press" }[status] || "");
   const statusTone = s => (s === "current_client" ? "good" : s === "prospect" ? "" : "muted");
+  // Lot 3 : nom d'un projet de la page (lunaPage.projects, site seulement), pour titrer une affaire liée sans nom.
+  function projectName(key) {
+    const pg = root.lunaPage;
+    if (!key || !pg || typeof pg.projects !== "function") return "";
+    try { const hit = pg.projects().find(x => x.id === key); return hit ? String(hit.nom || "") : ""; } catch (e) { return ""; }
+  }
+  const dealTitle = r => (r && r.name) || (r && r.engine_link_kind === "page_opportunity" ? projectName(r.engine_link_key) : "") || t("unnamed_deal");
 
   // ------------------------------------------------------------------ état
   const PANELS = ["pipeline", "companies", "contacts"];
@@ -499,6 +577,17 @@
     const href = /^https?:\/\/[^\s]+$/i.test(s) ? s : /^[a-z0-9-]+(\.[a-z0-9-]+)+(\/\S*)?$/i.test(s) ? "https://" + s : "";
     return href ? h("a", { href, target: "_blank", rel: "noopener noreferrer", text: s }) : s;
   }
+  // Lien LinkedIn d'un contact : ouvert dans un nouvel onglet, seulement sous la forme acceptée par la base ; sinon le texte
+  // seul. Ce n'est ni un appel ni un écrit : il reste un lien sous « ne pas contacter » (contrat, section 10).
+  function linkedinLink(url) {
+    const u = String(url || "").trim();
+    if (!u) return "";
+    return api().valid.linkedin(u) === u ? h("a", { href: u, target: "_blank", rel: "noopener noreferrer", text: u }) : u;
+  }
+  // Champ LinkedIn d'un formulaire : rien de prérempli à la création ; forme contrôlée avant l'envoi.
+  const fLinkedin = value => fText("linkedin_url", t("f_linkedin"), value || "", { type: "url", inputmode: "url", max: 300, hint: t("linkedin_hint"),
+    check: v => (!v || api().valid.linkedin(v) ? "" : "err_linkedin") });
+  const linkedinOn = row => (row ? row.linkedin_ready !== false : api().linkedinReady() !== false);
   function quickLink(iconName, label, href) {
     const a = h("a", { class: "p-act" }, icon(iconName), label);
     if (href) a.setAttribute("href", href); else { a.setAttribute("aria-disabled", "true"); a.setAttribute("role", "link"); }
@@ -524,16 +613,20 @@
     if (kind === "forbidden") return t("err_forbidden");
     if (kind === "not_found") return t("err_not_found");
     if (kind === "closed") return t("err_closed");
+    if (kind === "not_ready") return t("err_not_ready");
     if (kind === "invalid") { const k = "err_" + (e.detail || ""); return e.detail && CT.en[k] !== undefined ? t(k) : t("err_invalid"); }
     return t("err_generic");
   }
   // Fiche modifiée ailleurs entre-temps (conflict, 409) ou lue sans sa version (version, 428) : réessayer tel quel échouerait
   // encore. La fiche est relue d'abord ; « rechargée » ne s'écrit qu'après une relecture réussie.
-  const isStale = e => !!e && (e.kind === "conflict" || e.kind === "version");
+  // Lot 3 : un projet qui a reçu son affaire entre-temps (index unique de 0034, linked_twice) se traite comme une fiche
+  // modifiée entre-temps.
+  const isLinkedTwice = e => !!e && e.kind === "invalid" && e.detail === "linked_twice";
+  const isStale = e => !!e && (e.kind === "conflict" || e.kind === "version" || isLinkedTwice(e));
   async function staleText(e, reload) {
     let ok;
     try { ok = (await (reload || refreshAfterWrite)()) !== false; } catch (x) { ok = false; }
-    if (e.kind === "conflict") return t(ok ? "err_conflict_reloaded" : "err_conflict");
+    if (e.kind === "conflict" || isLinkedTwice(e)) return t(ok ? "err_conflict_reloaded" : "err_conflict");
     return t(ok ? "err_version_reloaded" : "err_version");
   }
   // Action immédiate (sans formulaire) : message seulement après la réponse de la base ; fiche rechargée si elle a changé.
@@ -552,8 +645,8 @@
 
   // Échec dans une petite fenêtre : fiche modifiée entre-temps, la fenêtre (celle qui a envoyé, jeton tok) se ferme et la
   // fiche est rechargée ; sinon le message reste dans la fenêtre.
-  async function failIn(msg, e, tok) {
-    if (isStale(e)) { closeDialog(true, tok); toast(await staleText(e), true); return; }
+  async function failIn(msg, e, tok, reload) {
+    if (isStale(e)) { closeDialog(true, tok); toast(await staleText(e, reload), true); return; }
     clearToast();
     msg.className = "crm-msg err"; msg.textContent = errorText(e);
   }
@@ -986,7 +1079,7 @@
       lines.push(h("span", { class: "s" + (late ? " late" : ""), text: nextText }));
       lines.push(t("days_in_stage", Number(r.days_in_stage) || 0));
     }
-    return rowButton({ title: r.name || t("unnamed_deal"), chips, lines, archivedLine: archivedLine(r), onclick: () => openRecord("deal", r.id) });
+    return rowButton({ title: dealTitle(r), chips, lines, archivedLine: archivedLine(r), onclick: () => openRecord("deal", r.id) });
   }
   async function loadPipeline() {
     const my = nextSeq("pl"), f = S.pf;
@@ -1266,7 +1359,7 @@
     const brand = ct.brand_id ? ((brands.find(b => b.id === ct.brand_id) || {}).name || "") : "";
     const identity = section(t("sec_identity"), kv([
       [t("f_first_name"), ct.first_name || ""], [t("f_last_name"), ct.last_name || ""], [t("f_job_title"), ct.job_title || ""],
-      [t("f_company"), company], [t("f_brand"), brand],
+      [t("f_company"), company], [t("f_brand"), brand], [t("f_linkedin"), linkedinLink(ct.linkedin_url)],
       [t("f_decision_role"), ct.decision_role ? fx("decision_role", ct.decision_role) : ""],
       [t("f_main_contact"), ct.company_id ? (ct.is_primary_contact ? t("yes") : t("no")) : ""]]),
       ct.company_id && !ct.is_primary_contact && !locked ? acts(actBtn(t("make_main"), () => doAction(async () => {
@@ -1344,7 +1437,7 @@
       [t("f_expected_decision"), fmtDay(d.expected_decision_on)],
       [t("f_last_contact"), d.last_contact_at ? fmtDay(d.last_contact_at) : t("none_yet")]]));
     const next = section(t("sec_next_step"), kv([[t("f_next_step"), d.next_step || ""], [t("f_follow_up"), fmtDay(d.follow_up_on)]]) || note(t("no_next_step")));
-    return { title: d.name || t("unnamed_deal"), nodes: [archivedBanner("deal", d), head, details, next, notesSection({ deal: d }, notesList),
+    return { title: dealTitle(d), nodes: [archivedBanner("deal", d), head, details, next, notesSection({ deal: d }, notesList),
       historySection(hist, id), footer("deal", d, () => dealForm(d, { referred }))] };
   }
   const VIEWS = { company: companyView, contact: contactView, deal: dealView };
@@ -1453,6 +1546,8 @@
     const source = fSelect("source_id", t("f_source"), itemOptions("source", edit ? row.source_id : null), edit ? row.source_id : "", { required: true, empty: t("choose") });
     const language = fSelect("preferred_language", t("f_language"), fxOptions("preferred_language"), edit ? row.preferred_language : "", { empty: t("none") });
     const fields = [first, last, job, company, brand, role, main, nature, source];
+    const linkedin = linkedinOn(row) ? fLinkedin(edit ? row.linkedin_url : "") : null;
+    if (linkedin) fields.push(linkedin);
     let email = null, phone = null;
     if (!edit) {
       email = fText("email", t("f_email"), "", { type: "email", inputmode: "email", max: 254, check: v => (!v || api().valid.email(v) ? "" : "err_email") });
@@ -1487,6 +1582,7 @@
         const values = { first_name: v.first_name || null, last_name: v.last_name || null, job_title: v.job_title || null, company_id: c ? c.id : null,
           brand_id: c ? v.brand_id : null, decision_role: v.decision_role, nature: v.nature, source_id: v.source_id, preferred_language: v.preferred_language };
         if (c && !brandsOk) { if (edit && c.id === row.company_id) delete values.brand_id; else values.brand_id = null; }
+        if (linkedin) values.linkedin_url = v.linkedin_url ? api().valid.linkedin(v.linkedin_url) : null;
         // Nouveau contact : un seul appel, tout ou rien ; en cas d'échec, rien n'est créé, la fenêtre reste ouverte avec la
         // saisie (critère TR10, contrat 1).
         if (!edit) {
@@ -1515,9 +1611,9 @@
   }
 
   function dealForm(row, pre) {
-    const edit = !!row, p = pre || {};
+    const edit = !!row, p = pre || {}, linked = edit && !!row.engine_link_key;
     const company0 = edit ? (row.company_id ? { type: "company", id: row.company_id, name: row.company_name || "" } : null) : (p.company || null);
-    const name = fText("name", t("f_deal_name"), edit ? row.name : "", { required: true, max: 200 });
+    const name = fText("name", t("f_deal_name"), edit ? row.name : "", { required: !linked, max: 200 });
     const brand = fSelect("brand_id", t("f_brand"), [], "", { empty: t("none"), more: true });
     const outlet = fSelect("outlet_id", t("f_outlet"), [], "", { empty: t("none"), more: true });
     const contact = fSelect("primary_contact_id", t("f_deal_contact"), [], "", { empty: t("none"), more: true });
@@ -1529,6 +1625,8 @@
     let ui = null, refsOk = true, refsSeq = 0;
     async function setCompany(c) {
       const my = ++refsSeq, same = edit && !!c && c.id === row.company_id;
+      // Lot 3 : le décideur d'une affaire liée à un projet n'a souvent pas d'entreprise ; il reste dans les choix et reste choisi.
+      const keepPc = edit && !!row.primary_contact_id && (same || linked);
       refsOk = !c;
       choices.forEach(f => { put(f.input, h("option", { value: "", text: c ? t("st_loading") : t("none") })); f.input.disabled = !!c; });
       if (ui) { ui.note(); ui.hold("choices", !!c); }
@@ -1537,7 +1635,7 @@
         const [bs, os, cs, kept] = await timeLimit((async () => {
           const [bs, os, cs] = await Promise.all([api().brands(c.id), api().outlets(c.id), api().contacts({ company: c.id })]);
           let kept = null;
-          if (same && row.primary_contact_id && !cs.some(x => x.id === row.primary_contact_id)) {
+          if (keepPc && !cs.some(x => x.id === row.primary_contact_id)) {
             const found = (await api().names("contact", [row.primary_contact_id]))[0];
             const mark = !found ? "" : found.archived_at ? t("archived_chip") : found.company_id !== c.id ? t("other_company") : "";
             kept = h("option", { value: row.primary_contact_id, text: marked((found && fullName(found)) || t("rt_contact"), mark) });
@@ -1551,6 +1649,7 @@
           .map(o => h("option", { value: o.id, text: marked(o.name, o.archived_at ? t("archived_chip") : "") })));
         put(contact.input, h("option", { value: "", text: t("none") }), cs.map(x => h("option", { value: x.id, text: fullName(x) })), kept);
         if (same) { brand.input.value = row.brand_id || ""; outlet.input.value = row.outlet_id || ""; contact.input.value = row.primary_contact_id || ""; }
+        else if (keepPc) contact.input.value = row.primary_contact_id;
         else if (p.contact && cs.some(x => x.id === p.contact)) contact.input.value = p.contact;
         refsOk = true;
       } catch (e) {
@@ -1561,7 +1660,7 @@
         if (my === refsSeq) { choices.forEach(f => { f.input.disabled = !refsOk; }); if (ui) ui.hold("choices", false); }
       }
     }
-    const company = fPicker("company", t("f_company"), company0, { kinds: ["company"], required: true, onChange: setCompany });
+    const company = fPicker("company", t("f_company"), company0, { kinds: ["company"], required: !linked, onChange: setCompany });
     const openStages = items("stage").filter(s => s.stage_outcome === "open");
     const fields = [name, company];
     if (!edit) fields.push(fSelect("stage_id", t("f_stage"), openStages.map(s => [s.id, itemLabel(s.id)]), openStages.length ? openStages[0].id : "", { required: true }));
@@ -1584,7 +1683,8 @@
           outlet_id: v.outlet_id, primary_contact_id: v.primary_contact_id, is_renewal: !!v.is_renewal, source_id: v.source_id,
           referred_by_company_id: v.referred && v.referred.type === "company" ? v.referred.id : null,
           referred_by_contact_id: v.referred && v.referred.type === "contact" ? v.referred.id : null };
-        if (!refsOk) {
+        if (linked && !v.company && !row.company_id) ["brand_id", "outlet_id", "primary_contact_id"].forEach(k => { delete values[k]; });
+        else if (!refsOk) {
           if (edit && v.company && v.company.id === row.company_id) ["brand_id", "outlet_id", "primary_contact_id"].forEach(k => { delete values[k]; });
           else Object.assign(values, { brand_id: null, outlet_id: null, primary_contact_id: null });
         }
@@ -1711,7 +1811,12 @@
   // Changer d'étape (PI3) : deux touches pour une étape ouverte ; Gagné ou Perdu demandent un motif (PI4, PI5).
   // Une seule écriture à la fois : dès la première touche, tous les choix sont inactifs et la fenêtre occupée, jusqu'à la
   // réponse (défaut C12).
-  function stageDialog(d) {
+  // Lot 3 : le bloc d'un projet réutilise cette fenêtre ; o.write enregistre (création de l'affaire liée au premier geste,
+  // modification ensuite), o.after relit ce qu'il faut, o.title nomme la fenêtre.
+  function stageDialog(d, o) {
+    o = o || {};
+    const write = o.write || (changes => api().update("deal", d.id, d.version, changes));
+    const after = o.after || refreshAfterWrite;
     const msg = h("p", { class: "crm-msg", role: "status", "aria-live": "polite" });
     const box = h("div", { class: "crm-stage-pick" });
     let tok = 0;
@@ -1720,11 +1825,11 @@
       return busyRun(tok, async () => {
         lock(true);
         try {
-          await api().update("deal", d.id, d.version, changes);
+          await write(changes);
           closeDialog(true, tok); toast(t("saved"));
-          await refreshAfterWrite();
+          await after();
           if (won) await askMakeClient(d);
-        } catch (e) { await failIn(msg, e, tok); }
+        } catch (e) { await failIn(msg, e, tok, o.after); }
         finally { if (tok === dialogSeq) lock(false); }
       });
     }
@@ -1749,7 +1854,7 @@
       } },
       h("span", { class: "n", text: itemLabel(s.id) }), s.stage_outcome !== "open" ? h("small", { text: t("reason_asked") }) : null));
     put(box, ...choices());
-    tok = openDialog(t("change_stage"), box, msg);
+    tok = openDialog(o.title || t("change_stage"), box, msg);
   }
   async function askMakeClient(d) {
     if (!d.company_id) return;
@@ -1912,6 +2017,499 @@
     put(review, h("h3", { text: t("set_review") }), note(t("set_review_lead")), h("ul", { class: "crm-periods" }, periods.map(periodRow)));
   }
 
+
+  // ------------------------------------------------------------------ lot 3 de Projects : statut, catégorie et décideur
+  // Contrat docs/crm/CONTRAT_LOT3_PROJETS.md (arbitrages de Jack du 02/10/2026), critères PR16 et PR17. La page commune
+  // (ui/luna/src/script.js) ne lit aucune donnée du CRM : elle signale l'ouverture d'une fiche projet (« luna:venue-open ») et
+  // l'arrivée des projets (« luna:projects-data »), et affiche la surcouche que ce module lui donne (lunaPage.setOverlay) :
+  // catégorie choisie par Renata et libellé de l'étape, sur la carte, la fiche et la liste des catégories du site. Tout passe
+  // par l'affaire liée au projet : le premier geste la crée, les suivants la modifient. Aucun envoi, aucun brouillon ; une
+  // perte ou « Do not pursue » ne touche jamais à « ne pas contacter ». Lectures : à l'ouverture du CRM, à l'arrivée des
+  // projets (au plus une fois toutes les quinze secondes), à l'ouverture d'une fiche projet et après chaque enregistrement.
+  const PJ = { map: new Map(), lot3: true, loaded: false, reading: null, again: false, lastRead: 0, cur: null, seq: 0, forms: new Map() };
+  const PJ_EVERY_MS = 15000;
+  const CATS = ["hotel", "nightclub", "lounge", "wellness_cafe", "fine_dining", "upscale_casual", "casual_dining", "dinner_show"];
+  const page = () => (root.lunaPage && typeof root.lunaPage.setOverlay === "function" ? root.lunaPage : null);
+  const catLabel = code => (code && CT.en["cat_" + code] !== undefined ? t("cat_" + code) : "");
+  function stageText(row) {
+    if (!row) return "";
+    const st = itemLabel(row.stage_id);
+    return row.stage_outcome !== "open" && row.close_reason_id && itemLabel(row.close_reason_id) ? `${st} · ${itemLabel(row.close_reason_id)}` : st;
+  }
+  // Surcouche donnée à la page : seulement les projets qui ont une affaire liée active ; rien quand le CRM n'est pas prêt.
+  function applyOverlay() {
+    const pg = page();
+    if (!pg) return;
+    const entries = S.state === "ready" ? [...PJ.map.values()].map(r => {
+      const v = {};
+      if (r.project_category) v.categorie = r.project_category;
+      const st = itemLabel(r.stage_id);
+      if (st) v.statut = st;
+      return [r.engine_link_key, v];
+    }) : [];
+    try { pg.setOverlay(entries); } catch (e) { /* la page garde sa surcouche précédente */ }
+    sheetCategory();
+  }
+  // Fiche projet ouverte : la ligne « Type » de la page suit la catégorie choisie (ou revient à celle de l'export, quand c'est
+  // un code connu), sans rouvrir la fiche. La page écrit cette ligne « Type » dans les deux langues.
+  function sheetCategory() {
+    const P = PJ.cur;
+    if (!P || !P.box.isConnected || S.state !== "ready") return;
+    const row = PJ.map.get(P.id), label = catLabel((row && row.project_category) || P.categorie);
+    const dl = P.body.querySelector("dl");
+    if (!label || !dl) return;
+    const kids = [...dl.children], i = kids.findIndex(x => x.tagName === "DT" && x.textContent.trim() === "Type");
+    if (i >= 0 && kids[i + 1] && kids[i + 1].tagName === "DD") kids[i + 1].textContent = label;
+  }
+  // Lecture des affaires liées ; une lecture à la fois, une seconde demandée pendant la première est faite juste après.
+  async function readProjectDeals() {
+    if (S.state !== "ready") return false;
+    if (PJ.reading) { PJ.again = true; return PJ.reading; }
+    PJ.reading = (async () => {
+      let ok = true;
+      do {
+        PJ.again = false;
+        try {
+          const r = await api().projectDeals();
+          PJ.map = new Map((r.rows || []).filter(x => x && x.engine_link_key).map(x => [x.engine_link_key, x]));
+          PJ.lot3 = !!r.lot3; PJ.loaded = true; PJ.lastRead = Date.now(); ok = true;
+        } catch (e) { ok = false; }
+      } while (PJ.again);
+      PJ.reading = null;
+      applyOverlay();
+      return ok;
+    })();
+    return PJ.reading;
+  }
+  function onProjectsData() {
+    if (S.state !== "ready") return;
+    if (PJ.loaded && Date.now() - PJ.lastRead < PJ_EVERY_MS) return;
+    readProjectDeals();
+  }
+  // Relecture après un enregistrement : affaires liées (surcouche) puis le bloc de la fiche ouverte. Rend faux si la relecture
+  // a échoué (le message ne dira pas « rechargée »).
+  async function projectReload() {
+    const ok = await readProjectDeals();
+    await renderProject();
+    return ok;
+  }
+  // Premier geste : crée l'affaire liée ; ensuite : la modifie, avec la version lue.
+  function writeProject(id, changes) {
+    const row = PJ.map.get(id);
+    if (row) return api().update("deal", row.id, row.version, changes);
+    return api().createProjectDeal(id, changes);
+  }
+
+  // Fiche projet ouverte : un bloc ajouté à la fin, rendu de nouveau à chaque changement d'état du CRM.
+  function onVenueOpen(ev) {
+    const d = (ev && ev.detail) || {};
+    if (!d.body || typeof d.body.append !== "function" || !d.id) return;
+    const box = h("section", { class: "crm-proj", "aria-label": t("pj_title") });
+    d.body.append(box);
+    PJ.cur = { id: String(d.id), nom: String(d.nom || ""), categorie: String(d.categorie || ""), body: d.body, box, dm: null, msg: "" };
+    PJ.forms.clear();
+    renderProject(true);
+  }
+  // fresh : relire les affaires liées avant le rendu (ouverture de la fiche).
+  async function renderProject(fresh) {
+    const P = PJ.cur;
+    if (!P || !P.box.isConnected) { PJ.cur = null; return; }
+    const my = ++PJ.seq;
+    if (S.state !== "ready") { paintProject(P, null); return; }
+    if (!api().isProjectKey(P.id)) { paintProject(P, null); return; }
+    if (fresh || !PJ.loaded) { if (!PJ.loaded) paintProject(P, null, true); await readProjectDeals(); }
+    if (my !== PJ.seq || PJ.cur !== P) return;
+    if (!PJ.loaded) { paintProject(P, null, false, true); return; }
+    const row = PJ.map.get(P.id) || null;
+    let dm = null;
+    if (row && row.primary_contact_id) {
+      try {
+        const [ct, mails, phones] = await Promise.all([api().contact(row.primary_contact_id), api().emails(row.primary_contact_id), api().phones(row.primary_contact_id)]);
+        dm = { ct, email: (mails || []).find(m => !m.archived_at && m.is_primary) || (mails || []).find(m => !m.archived_at) || null,
+               mobile: (phones || []).find(x => !x.archived_at && x.phone_type === "mobile") || null,
+               // Contrat, section 9 : le téléphone général de l'entreprise est rangé sur le décideur comme « Office ».
+               office: (phones || []).find(x => !x.archived_at && x.phone_type === "office") || null };
+      } catch (e) { dm = { failed: true }; }
+    }
+    if (my !== PJ.seq || PJ.cur !== P) return;
+    P.dm = dm;
+    paintProject(P, row);
+  }
+  function projectMsg(P, text, bad) {
+    const m = P.box.querySelector(".crm-proj-msg");
+    if (m) { m.className = "crm-msg crm-proj-msg" + (bad ? " err" : ""); m.textContent = text || ""; }
+  }
+  function paintProject(P, row, waiting, failed) {
+    const head = h("div", { class: "label", text: t("pj_title") });
+    const msg = h("p", { class: "crm-msg crm-proj-msg", role: "status", "aria-live": "polite" });
+    if (S.state !== "ready") {
+      const key = S.state === "closed" ? "pj_closed" : S.state === "denied" ? "st_denied" : S.state === "loading" ? "st_loading" : "st_offline";
+      put(P.box, head, note(t(key)), S.state === "offline" ? h("div", { class: "crm-acts" }, btn(t("retry"), () => start())) : null);
+      return;
+    }
+    if (!api().isProjectKey(P.id)) { put(P.box, head, note(t("pj_bad_key"))); return; }
+    if (waiting) { put(P.box, head, loading()); return; }
+    if (failed) { put(P.box, head, note(t("load_fail")), h("div", { class: "crm-acts" }, btn(t("retry"), () => renderProject(true)))); return; }
+    put(P.box, head, statusPart(P, row), categoryPart(P, row), decisionPart(P, row),
+      row ? h("div", { class: "crm-acts" }, btn(t("pj_open_deal"), () => openRecord("deal", row.id))) : null, msg);
+    refreshIcons();
+  }
+
+  // (a) Statut = étape de l'affaire liée, choisie dans les étapes du pipeline lues en base (fenêtre du Pipeline réutilisée).
+  function statusPart(P, row) {
+    const cur = row ? stageText(row) : "";
+    const pseudo = row || { id: null, stage_id: null, company_id: null };
+    return h("div", { class: "crm-proj-part" },
+      h("div", { class: "crm-stagehead" }, h("span", { class: "crm-proj-k", text: t("pj_status") }),
+        row ? chip(cur, row.stage_outcome === "won" ? "good" : row.stage_outcome === "lost" ? "muted" : "") : h("span", { class: "crm-proj-v", text: t("pj_no_status") }),
+        btn(row ? t("pj_change_status") : t("pj_choose_status"), () => stageDialog(pseudo, {
+          title: row ? t("pj_change_status") : t("pj_choose_status"),
+          write: changes => writeProject(P.id, changes), after: projectReload }), "sm")),
+      h("p", { class: "crm-hint", text: t("pj_status_lead") }));
+  }
+
+  // (b) Catégorie : un des huit codes, traduit ; « Celle trouvée par Luna » rend la catégorie de l'export.
+  function categoryPart(P, row) {
+    if (!PJ.lot3) return note(t("pj_not_ready"));
+    const value = (row && row.project_category) || "";
+    const sel = h("select", { "aria-label": t("pj_category") }, h("option", { value: "", text: t("pj_cat_auto") }), CATS.map(c => h("option", { value: c, text: catLabel(c) })));
+    sel.value = value;
+    sel.addEventListener("change", async () => {
+      const next = sel.value || null;
+      if ((next || "") === value || sel.disabled) return;
+      sel.disabled = true; clearToast(); projectMsg(P, t("saving"));
+      try {
+        await writeProject(P.id, { project_category: next });
+        projectMsg(P, ""); toast(t("saved"));
+        await projectReload();
+      } catch (e) {
+        sel.value = value;
+        if (isStale(e)) { projectMsg(P, ""); toast(await staleText(e, projectReload), true); }
+        else projectMsg(P, errorText(e), true);
+      } finally { sel.disabled = false; }
+    });
+    const found = catLabel(P.categorie) || "";
+    return h("div", { class: "crm-proj-part" },
+      h("label", { class: "crm-field" }, h("span", { class: "crm-label", text: t("pj_category") }), sel,
+        found ? h("small", { class: "crm-hint", text: t("pj_cat_found", found) }) : null));
+  }
+
+  // (c) Décideur : affiché s'il existe ; sinon un formulaire vide (rien de prérempli), créé en un seul appel, tout ou rien.
+  function decisionPart(P, row) {
+    const title = h("div", { class: "crm-proj-k", text: t("pj_dm") });
+    if (!PJ.lot3) return null;
+    if (row && row.primary_contact_id) {
+      const dm = P.dm;
+      if (!dm || dm.failed) return h("div", { class: "crm-proj-part" }, title, note(t("load_fail")), h("div", { class: "crm-acts" }, btn(t("retry"), () => renderProject())));
+      const ct = dm.ct, dnc = !!ct.do_not_contact;
+      const email = dm.email ? dm.email.email : "", mobile = dm.mobile ? dm.mobile.phone : "", office = dm.office ? dm.office.phone : "";
+      const mailNode = email ? (dnc ? email : h("a", { href: mailHref(email), text: email })) : "";
+      const telNode = mobile ? (dnc ? mobile : h("a", { href: telHref(mobile), text: mobile })) : "";
+      const officeNode = office ? (dnc ? office : h("a", { href: telHref(office), text: office })) : "";
+      return h("div", { class: "crm-proj-part" }, title,
+        dnc ? h("div", { class: "chips" }, chip(t("dnc"), "warn")) : null,
+        kv([[t("f_name"), fullName(ct)], [t("f_job_title"), ct.job_title || ""], [t("f_email"), mailNode], [t("f_mobile"), telNode],
+          [t("pj_office"), officeNode], [t("f_linkedin"), linkedinLink(ct.linkedin_url)]]),
+        dnc ? note(t("dnc_links_off")) : null,
+        h("div", { class: "crm-acts" }, btn(t("pj_dm_edit"), () => decisionEditForm(P, dm), "sm"), btn(t("pj_open_contact"), () => openRecord("contact", ct.id), "sm")));
+    }
+    // Formulaire gardé d'un rendu à l'autre : une saisie refusée reste à l'écran.
+    let f = PJ.forms.get(P.id);
+    if (!f) { f = decisionCreateForm(P); PJ.forms.set(P.id, f); }
+    return h("div", { class: "crm-proj-part" }, title, f);
+  }
+  function decisionCreateForm(P) {
+    const fields = [fText("first_name", t("f_first_name"), "", { max: 100 }), fText("last_name", t("f_last_name"), "", { max: 100 }),
+      fText("job_title", t("f_job_title"), "", { max: 200 }),
+      fText("email", t("f_email"), "", { type: "email", max: 254, inputmode: "email", check: v => (v && !api().valid.email(v) ? "err_email" : "") }),
+      fText("mobile", t("f_mobile"), "", { type: "tel", max: 40, inputmode: "tel", check: v => (v && !api().valid.phone(v) ? "err_phone" : "") }),
+      fLinkedin(""),
+      fSelect("source_id", t("f_source"), itemOptions("source"), "", { required: true, empty: t("choose"), requiredKey: "err_source" })];
+    const msg = h("p", { class: "crm-msg", role: "status", "aria-live": "polite" });
+    const save = h("button", { type: "submit", class: "btn primary", text: t("pj_dm_save") });
+    const form = h("form", { class: "crm-form crm-proj-form", novalidate: true }, note(t("pj_dm_lead")), fields.map(x => x.node), h("div", { class: "crm-acts" }, save), msg);
+    let busy = false;
+    form.addEventListener("submit", async ev => {
+      ev.preventDefault();
+      if (busy) return;
+      const v = {};
+      for (const x of fields) {
+        const bad = x.check ? x.check() : "";
+        if (bad) { msg.className = "crm-msg err"; msg.textContent = t(bad); try { x.input.focus(); } catch (e) { /* facultatif */ } return; }
+        v[x.key] = x.get();
+      }
+      if (!v.first_name && !v.last_name) { msg.className = "crm-msg err"; msg.textContent = t("err_name"); return; }
+      busy = true; save.disabled = true; clearToast(); msg.className = "crm-msg"; msg.textContent = t("saving");
+      try {
+        // Premier geste sur le projet : l'affaire liée naît ici, à la première étape ouverte (posée par la base).
+        let row = PJ.map.get(P.id);
+        if (!row) { row = await api().createProjectDeal(P.id, {}); PJ.map.set(P.id, row); applyOverlay(); }
+        await api().createDealDecisionMaker(row.id, row.version, v);
+        msg.textContent = ""; PJ.forms.delete(P.id); toast(t("saved"));
+        await projectReload();
+      } catch (e) {
+        if (isStale(e)) { msg.textContent = ""; toast(await staleText(e, projectReload), true); }
+        else { msg.className = "crm-msg err"; msg.textContent = errorText(e); await projectReload(); }   // saisie et message gardés
+      } finally { busy = false; save.disabled = false; }
+    });
+    return form;
+  }
+  // Modifier le décideur sur le projet (PR17) : nom, poste, email et mobile ; chaque changement réel seulement, avec la version
+  // lue. Vider l'email ou le mobile l'archive (il reste dans l'historique du contact).
+  function decisionEditForm(P, dm) {
+    const ct = dm.ct, email0 = dm.email ? dm.email.email : "", mobile0 = dm.mobile ? dm.mobile.phone : "";
+    const fields = [fText("first_name", t("f_first_name"), ct.first_name, { max: 100 }), fText("last_name", t("f_last_name"), ct.last_name, { max: 100 }),
+      fText("job_title", t("f_job_title"), ct.job_title, { max: 200 }),
+      fText("email", t("f_email"), email0, { type: "email", max: 254, inputmode: "email", check: v => (v && !api().valid.email(v) ? "err_email" : "") }),
+      fText("mobile", t("f_mobile"), mobile0, { type: "tel", max: 40, inputmode: "tel", check: v => (v && !api().valid.phone(v) ? "err_phone" : "") }),
+      fLinkedin(ct.linkedin_url)];
+    const ui = formDialog({ title: t("pj_dm_edit"), fields, reload: projectReload,
+      submit: async v => {
+        if (!v.first_name && !v.last_name) throw new (api().CrmError)("invalid", "name");
+        const steps = [];
+        const named = diff(ct, { first_name: v.first_name || null, last_name: v.last_name || null, job_title: v.job_title || null,
+          linkedin_url: v.linkedin_url ? api().valid.linkedin(v.linkedin_url) : null }, ["first_name", "last_name", "job_title", "linkedin_url"]);
+        if (Object.keys(named).length) steps.push(() => api().update("contact", ct.id, ct.version, named));
+        const mail = String(v.email || "").trim().toLowerCase();
+        if (mail !== String(email0).toLowerCase()) {
+          if (dm.email && mail) steps.push(() => api().update("contact_email", dm.email.id, dm.email.version, { email: mail }));
+          else if (dm.email) steps.push(() => api().archive("contact_email", dm.email.id, dm.email.version));
+          else steps.push(() => api().insert("contact_email", { contact_id: ct.id, email: mail, is_primary: true }));
+        }
+        const tel = String(v.mobile || "").trim();
+        if (tel !== mobile0) {
+          if (dm.mobile && tel) steps.push(() => api().update("contact_phone", dm.mobile.id, dm.mobile.version, { phone: tel }));
+          else if (dm.mobile) steps.push(() => api().archive("contact_phone", dm.mobile.id, dm.mobile.version));
+          else steps.push(() => api().insert("contact_phone", { contact_id: ct.id, phone: tel, phone_type: "mobile" }));
+        }
+        if (!steps.length) throw new (api().CrmError)("invalid", "nothing");
+        let done = 0;
+        try { for (const step of steps) { await step(); done += 1; } }
+        catch (e) {
+          if (!done) throw e;
+          closeDialog(true, ui.token); toast(t("partial_dm"), true); await projectReload();
+          return false;
+        }
+        return true;
+      },
+      done: projectReload });
+  }
+
+
+  // ------------------------------------------------------------------ fiche personne (écran « Personnes repérées », site seulement)
+  // Fiche besoin docs/crm/FICHE_BESOIN_PERSONNES_2026-10-02.md (PP3 à PP9). La page commune signale l'ouverture d'une fiche
+  // (« luna:person-open » : identifiant, valeurs de l'export, élément à compléter) et affiche la surcouche qu'on lui donne
+  // (lunaPage.setPersonOverlay) ; elle ne lit rien du CRM. Corrections et notes vivent dans la collection « personnes » de la
+  // page (jamais dans « contacts », que l'export de Kate réécrit) : email et téléphone corrigés (chaîne vide = effacé), liste de
+  // notes. Chaque écriture relit le document puis n'écrit que si sa version n'a pas bougé (DocRef.change) : aucune note perdue.
+  // « Basculer dans Contacts » : un seul appel (crm.import_page_person), avec les valeurs corrigées quand elles existent.
+  // Rien n'est envoyé, aucun brouillon n'est créé, « ne pas contacter » n'est jamais touché.
+  const PE = { docs: new Map(), meta: new Map(), cur: null, db: null, dbp: null, linked: {}, seq: 0, who: "" };
+  const peDoc = id => PE.docs.get(String(id)) || null;
+  function peDb() {
+    if (!PE.dbp) PE.dbp = (root.claude ? root.claude.use("db") : Promise.resolve(null)).then(d => { PE.db = d; return d; }, () => null);
+    return PE.dbp;
+  }
+  const peValue = (P, key) => { const d = peDoc(P.id); return d && typeof d[key] === "string" ? d[key] : String(P.d[key] || ""); };
+  // La valeur corrigée est marquée « corrigé » sans auteur ni date : l'auteur et la date du document valent pour le document
+  // entier (une note ajoutée après les change) et s'écrivent à part, sous les coordonnées.
+  const peStamp = (id, removed) => t(removed ? "pe_removed" : "pe_corrected");
+  function peEntries() {
+    const out = [];
+    PE.docs.forEach((d, id) => {
+      const e = {};
+      ["email", "telephone"].forEach(k => { if (typeof d[k] === "string") { e[k] = d[k]; e[k + "_note"] = peStamp(id, d[k] === ""); } });
+      if (Object.keys(e).length) {
+        const m = PE.meta.get(String(id));
+        if (m && (m.by || m.at)) e.stamp = t("pe_last", String(m.by || ""), m.at ? fmtDay(m.at) : "");
+        out.push([id, e]);
+      }
+    });
+    return out;
+  }
+  const peSig = id => JSON.stringify((peEntries().find(x => x[0] === String(id)) || [0, null])[1]);
+  function peApply() {
+    const pg = root.lunaPage;
+    if (pg && typeof pg.setPersonOverlay === "function") { try { pg.setPersonOverlay(peEntries()); } catch (e) { /* surcouche précédente gardée */ } }
+  }
+  function peRefreshSheet() {
+    peApply();
+    const pg = root.lunaPage;
+    if (pg && typeof pg.refreshPerson === "function") { try { pg.refreshPerson(); } catch (e) { /* fiche inchangée */ } }
+  }
+  async function peRead(id) {
+    const db = await peDb();
+    if (!db) return false;
+    const m = await db.doc("personnes/" + id).meta();
+    if (m.exists) { PE.docs.set(String(id), m.data); PE.meta.set(String(id), { by: m.updated_by, at: m.updated_at }); }
+    return true;
+  }
+  async function peStart() {
+    const db = await peDb();
+    if (!db) return;
+    db.collection("personnes").onSnapshot(snap => {
+      snap.docs.forEach(d => { if (d.exists) PE.docs.set(d.id, d.data()); });
+      peApply();
+      const P = PE.cur;
+      if (P && P.box.isConnected) peNotesList(P);
+    }, () => {});
+  }
+  async function peAuthor() {
+    if (PE.who) return PE.who;
+    let w = S.me && S.me.label ? String(S.me.label) : "";
+    if (!w && root.claude) { try { const u = await root.claude.use("user"); w = (u && (u.name() || u.email())) || ""; } catch (e) { w = ""; } }
+    PE.who = String(w || "?").slice(0, 100);
+    return PE.who;
+  }
+  function peErrorText(e) {
+    if (e && /entre-temps/.test(String(e.message || ""))) return t("pe_err_busy");
+    return t("err_generic");
+  }
+  const peRef = id => PE.db.doc("personnes/" + id);
+
+  function peNotesList(P) {
+    const d = peDoc(P.id), list = d && Array.isArray(d.notes) ? d.notes : [];
+    const sorted = list.map((n, i) => [n, i]).sort((a, b) => (String(a[0].date) < String(b[0].date) ? 1 : String(a[0].date) > String(b[0].date) ? -1 : b[1] - a[1])).map(x => x[0]);
+    put(P.list, sorted.length ? sorted.map(n => h("li", { class: "crm-pnote" },
+      h("span", { class: "crm-pnote-by", text: [String(n.auteur || ""), fmtWhen(n.date)].filter(Boolean).join(" · ") }),
+      h("span", { class: "crm-pnote-text", text: String(n.texte || "") }))) : h("li", { class: "note", text: t("pe_no_notes") }));
+  }
+  function peFixPart(P) {
+    const email = fText("email", t("f_email"), peValue(P, "email"), { type: "email", max: 254, inputmode: "email", noOpt: true, check: v => (v && !api().valid.email(v) ? "err_email" : "") });
+    const phone = fText("telephone", t("f_phone"), peValue(P, "telephone"), { type: "tel", max: 40, inputmode: "tel", noOpt: true, check: v => (v && !api().valid.phone(v) ? "err_phone" : "") });
+    const msg = h("p", { class: "crm-msg", role: "status", "aria-live": "polite" });
+    const save = h("button", { type: "submit", class: "btn primary", text: t("pe_save") });
+    const form = h("form", { class: "crm-form crm-proj-form", novalidate: true }, note(t("pe_fix_lead")), email.node, phone.node, h("div", { class: "crm-acts" }, save), msg);
+    let busy = false;
+    form.addEventListener("submit", async ev => {
+      ev.preventDefault();
+      if (busy) return;
+      for (const x of [email, phone]) {
+        const bad = x.check();
+        if (bad) { msg.className = "crm-msg err"; msg.textContent = t(bad); try { x.input.focus(); } catch (e) { /* facultatif */ } return; }
+      }
+      const changes = {};
+      const em = email.get() ? api().valid.email(email.get()) : "", ph = phone.get();
+      if (em !== peValue(P, "email")) changes.email = em;
+      if (ph !== peValue(P, "telephone")) changes.telephone = ph;
+      if (!Object.keys(changes).length) { msg.className = "crm-msg"; msg.textContent = t("pe_nothing"); return; }
+      busy = true; save.disabled = true; clearToast(); msg.className = "crm-msg"; msg.textContent = t("saving");
+      try {
+        await peDb();
+        if (!PE.db) throw new Error("base absente");
+        const next = await peRef(P.id).change(d => Object.assign(d, changes));
+        PE.docs.set(String(P.id), next);
+        try { await peRead(P.id); } catch (e) { /* la mention se lira à la prochaine ouverture */ }
+        msg.textContent = ""; toast(t("saved"));
+        peRefreshSheet();
+      } catch (e) { msg.className = "crm-msg err"; msg.textContent = peErrorText(e); }      // saisie gardée
+      finally { busy = false; save.disabled = false; }
+    });
+    return h("div", { class: "crm-proj-part" }, h("div", { class: "crm-proj-k", text: t("pe_fix") }), form);
+  }
+  function peNotesPart(P) {
+    const area = fArea("note", t("pe_note_label"), "", { max: 4000, noOpt: true });
+    const msg = h("p", { class: "crm-msg", role: "status", "aria-live": "polite" });
+    const add = h("button", { type: "submit", class: "btn primary", text: t("pe_note_add") });
+    P.list = h("ul", { class: "crm-pnotes" });
+    const form = h("form", { class: "crm-form crm-proj-form", novalidate: true }, area.node, h("div", { class: "crm-acts" }, add), msg);
+    let busy = false;
+    form.addEventListener("submit", async ev => {
+      ev.preventDefault();
+      if (busy) return;
+      const text = area.get();
+      if (!text) { msg.className = "crm-msg err"; msg.textContent = t("err_note_text"); return; }
+      if (text.length > 4000) { msg.className = "crm-msg err"; msg.textContent = t("pe_err_note_long"); return; }
+      busy = true; add.disabled = true; clearToast(); msg.className = "crm-msg"; msg.textContent = t("saving");
+      try {
+        await peDb();
+        if (!PE.db) throw new Error("base absente");
+        const who = await peAuthor();
+        const next = await peRef(P.id).change(d => {
+          const old = Array.isArray(d.notes) ? d.notes : [];
+          if (old.length >= 200) throw new Error("notes max");
+          d.notes = [...old, { texte: text, date: new Date().toISOString(), auteur: who }];
+          return d;
+        });
+        PE.docs.set(String(P.id), next);
+        area.input.value = ""; msg.textContent = ""; toast(t("saved"));
+        peNotesList(P);
+      } catch (e) {
+        msg.className = "crm-msg err";
+        msg.textContent = e && e.message === "notes max" ? t("pe_err_notes_max") : peErrorText(e);      // saisie gardée
+      } finally { busy = false; add.disabled = false; }
+    });
+    peNotesList(P);
+    return h("div", { class: "crm-proj-part" }, h("div", { class: "crm-proj-k", text: t("pe_notes") }), P.list, form);
+  }
+  // Basculer dans Contacts : visible seulement CRM ouvert ; sinon un message clair, jamais une erreur.
+  function peCrmPart(P) {
+    const head = h("div", { class: "crm-proj-k", text: t("pe_crm") });
+    if (S.state !== "ready") {
+      const key = S.state === "closed" ? "pe_crm_closed" : S.state === "denied" ? "st_denied" : S.state === "loading" ? "st_loading" : "st_offline";
+      return h("div", { class: "crm-proj-part" }, head, note(t(key)));
+    }
+    const msg = h("p", { class: "crm-msg", role: "status", "aria-live": "polite" });
+    const linked = PE.linked[String(P.id)];
+    if (linked) {
+      return h("div", { class: "crm-proj-part" }, head,
+        h("div", { class: "chips" }, chip(t("pe_in_contacts"), "good")),
+        h("div", { class: "crm-acts" }, btn(t("pe_open_contact"), () => openRecord("contact", linked), "sm")));
+    }
+    const go = actBtn(t("pe_move"), async () => {
+      clearToast(); msg.className = "crm-msg"; msg.textContent = t("saving");
+      try {
+        // Doublon : d'abord le contact déjà lié à cette fiche, puis celui qui porte déjà cet email ; sinon l'appel est une création.
+        const key = String(P.id), email = peValue(P, "email");
+        let existing = (await api().linkedPersons())[key] || null;
+        if (!existing && email && api().valid.email(email)) {
+          const owner = (await api().emailOwners(email)).find(r => !r.archived_at);
+          if (owner) existing = owner.id;
+        }
+        if (existing) {
+          msg.textContent = ""; toast(t("pe_existing")); openRecord("contact", existing);
+          return;
+        }
+        const row = await api().importPagePerson({ doc_id: P.id, name: P.d.nom, job_title: P.d.poste, organisation: P.d.organisation,
+          email: peValue(P, "email"), phone: peValue(P, "telephone"), linkedin_url: P.d.linkedin, source: P.d.source });
+        // Défense : la fonction a rendu un contact existant (lien autre que cette fiche) au lieu d'en créer un.
+        const fresh = row.engine_link_kind === "page_person" && row.engine_link_key === key;
+        if (fresh) PE.linked[key] = row.id;
+        msg.textContent = "";
+        if (P.box.isConnected) paintPerson(P);
+        toast(t(fresh ? "pe_created" : "pe_existing"));
+        if (!fresh) openRecord("contact", row.id);
+      } catch (e) {
+        msg.className = "crm-msg err";
+        msg.textContent = e && (e.kind === "closed" || e.kind === "not_ready") ? t("pe_not_ready") : errorText(e);
+      }
+    }, "primary");
+    return h("div", { class: "crm-proj-part" }, head, note(t("pe_move_lead")), h("div", { class: "crm-acts" }, go), msg);
+  }
+  function paintPerson(P) {
+    if (!P.box.isConnected) return;
+    put(P.box, h("div", { class: "label", text: t("pe_title") }), peFixPart(P), peCrmPart(P), peNotesPart(P));
+  }
+  async function onPersonOpen(ev) {
+    const d = (ev && ev.detail) || {};
+    if (!d.body || typeof d.body.append !== "function" || !d.id) return;
+    const box = h("section", { class: "crm-pers crm-proj", "aria-label": t("pe_title") });
+    d.body.append(box);
+    const P = { id: String(d.id), d, box, list: null, sig: peSig(d.id) };
+    PE.cur = P;
+    paintPerson(P);
+    // Valeurs, version, date et auteur lus à l'instant ; si la fiche affichée est en retard, la page la redessine une fois.
+    try { await peRead(P.id); } catch (e) { /* le cache de la collection sert */ }
+    if (PE.cur !== P || !P.box.isConnected) return;
+    if (S.state === "ready") {
+      try { PE.linked = await api().linkedPersons(); } catch (e) { /* « Basculer » reste proposé ; la base refuse un doublon */ }
+      if (PE.cur !== P || !P.box.isConnected) return;
+    }
+    if (peSig(P.id) !== P.sig) { peRefreshSheet(); return; }
+    peApply();
+    paintPerson(P);
+  }
+
   // ------------------------------------------------------------------ bouton « + » (toujours visible sur les écrans du CRM)
   function updateFab() {
     const fab = byId("crm-fab"), dialog = byId("crm-dialog"), sheet = byId("crm-sheet");
@@ -1938,14 +2536,15 @@
     doc.querySelectorAll("[data-ci-label]").forEach(e => { const v = t(e.dataset.ciLabel); if (v) { e.setAttribute("aria-label", v); e.setAttribute("title", v); } });
   }
   function renderPanels() { PANELS.forEach(p => renderPanel(p)); }
-  function renderAll() { renderPanels(); renderSettings(); updateFab(); }
+  function renderAll() { renderPanels(); renderSettings(); updateFab(); if (PJ.cur) renderProject(); if (PE.cur) paintPerson(PE.cur); }
   async function loadRefs() {
     const [list, periods] = await Promise.all([api().lists(), api().reviewPeriods()]);
     S.items = list || []; S.byId = new Map(S.items.map(i => [i.id, i])); S.periods = periods || [];
     S.listsUnsure = false;                                                     // l'ordre affiché redevient l'ordre enregistré
+    syncFollow();                                                              // étapes relues : lecture seule du suivi à jour
   }
   async function start() {
-    S.state = "loading"; S.built = {}; renderAll();
+    S.state = "loading"; S.built = {}; syncFollow(); renderAll();
     const A = api();
     const r = A ? await A.start() : { state: "offline" };
     S.me = r.me || null; S.state = r.state;
@@ -1953,6 +2552,8 @@
       try { await loadRefs(); } catch (e) { S.state = e && e.kind === "closed" ? "closed" : e && e.kind === "forbidden" ? "denied" : "offline"; }
     }
     S.built = {};
+    syncFollow();
+    if (S.state === "ready" && page()) await readProjectDeals(); else applyOverlay();
     renderAll();
   }
   function init() {
@@ -1964,10 +2565,13 @@
     byId("crm-dialog-close").addEventListener("click", () => closeDialog());
     byId("crm-dialog-back").addEventListener("click", () => closeDialog());
     byId("crm-fab").addEventListener("click", fabMenu);
+    // Échap ferme seulement le calque du CRM du dessus : écouté avant la page (phase de capture) et arrêté là, pour que la fiche
+    // projet ouverte dessous reste ouverte (recette de Jacob du 02/10/2026).
     doc.addEventListener("keydown", ev => {
       if (ev.key !== "Escape") return;
-      if (!byId("crm-dialog").hidden) closeDialog(); else if (!byId("crm-sheet").hidden) closeSheet();
-    });
+      if (!byId("crm-dialog").hidden) closeDialog(); else if (!byId("crm-sheet").hidden) closeSheet(); else return;
+      if (typeof ev.stopPropagation === "function") ev.stopPropagation();
+    }, true);
     // Geste retour du téléphone : ferme le calque du dessus (défaut C11). Une entrée restée d'avant un rechargement de la
     // page est remise à zéro, sans changer l'adresse.
     if (typeof root.addEventListener === "function") root.addEventListener("popstate", onPopState);
@@ -1980,9 +2584,15 @@
     });
     PANELS.forEach(p => { const e = panelEl(p); if (e) watch.observe(e, { attributes: true, attributeFilter: ["hidden"] }); });
     // La langue se choisit dans Paramètres (page) : les écrans du CRM la suivent.
-    new MutationObserver(() => { translateStatic(); S.built = {}; renderAll(); if (!byId("crm-sheet").hidden) renderSheet(); })
+    new MutationObserver(() => { translateStatic(); S.built = {}; renderAll(); applyOverlay(); if (!byId("crm-sheet").hidden) renderSheet(); if (PE.docs.size) peRefreshSheet(); })
       .observe(doc.documentElement, { attributes: true, attributeFilter: ["lang"] });
-    doc.addEventListener("visibilitychange", () => { if (!doc.hidden && S.state === "ready") renderPanels(); });
+    doc.addEventListener("visibilitychange", () => { if (!doc.hidden && S.state === "ready") { renderPanels(); if (page()) readProjectDeals(); } });
+    // Lot 3 : fiche projet ouverte et projets arrivés (page commune, site seulement).
+    doc.addEventListener("luna:venue-open", onVenueOpen);
+    doc.addEventListener("luna:projects-data", onProjectsData);
+    // Fiche personne (corrections, notes, Basculer dans Contacts) : indépendante de l'ouverture du CRM, sauf le basculement.
+    doc.addEventListener("luna:person-open", onPersonOpen);
+    peStart();
     start();
   }
   if (doc.readyState === "loading") doc.addEventListener("DOMContentLoaded", init); else init();
