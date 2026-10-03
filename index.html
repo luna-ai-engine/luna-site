@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.116.0/dist/umd/supabase.js https://cdn.jsdelivr.net/npm/lucide@0.460.0/dist/umd/lucide.min.js 'sha256-haYWOoNZ942GwNvSWxPuTFeBjP6nPqKhtryKgZDtFzc='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src https://jqqzzakidyrcglyzgbrk.supabase.co wss://jqqzzakidyrcglyzgbrk.supabase.co; manifest-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.116.0/dist/umd/supabase.js https://cdn.jsdelivr.net/npm/lucide@0.460.0/dist/umd/lucide.min.js 'sha256-XAu4yhgiDWFfxkxjQRDVD1yvM5FwydU+z8RMLXNInGo='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src https://jqqzzakidyrcglyzgbrk.supabase.co wss://jqqzzakidyrcglyzgbrk.supabase.co; manifest-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
 <meta name="robots" content="noindex, nofollow">
 <meta name="theme-color" content="#F7F3EC">
@@ -544,6 +544,14 @@ body.luna-locked .app{display:none}
 .crm-pnote-text{font-size:14.5px;white-space:pre-wrap;overflow-wrap:anywhere}
 .crm-pers textarea{width:100%;min-width:0;max-width:100%;min-height:90px;box-sizing:border-box}
 @media (max-width:600px){.crm-pers textarea{font-size:16px}}
+/* Fiche personne : bloc « Contacts » en haut, email et téléphone modifiables sur place */
+.crm-pers-top{border-top:0;padding-top:0;margin:12px 0 4px}
+.crm-editable{cursor:text}
+.crm-inline-edit{margin-left:8px;padding:2px 10px;min-height:28px;font-size:13px}
+.crm-inline-form{display:grid;gap:8px;min-width:0;font-weight:400}
+.crm-inline-form input{width:100%;min-width:0;box-sizing:border-box}
+.crm-inline-form .crm-acts{margin:0}
+@media (max-width:600px){.crm-inline-form input{font-size:16px}}
 </style>
 <script src="config.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.116.0/dist/umd/supabase.js" integrity="sha384-iLddHTLokph6Omwoyid4XKxHaWa6w41BnoEj0q5oOrzmYPpHIKt1wyjReA7s//pP" crossorigin="anonymous"></script>
@@ -1367,7 +1375,7 @@ body.luna-locked .app{display:none}
     const sc = section(t("pp_contact"));
     const kvEl = kv([[t("th_email"), valueOrMissing(shown.email, c.email_statut, "em_", ov.email_note)], [t("th_phone"), valueOrMissing(shown.telephone, c.telephone_statut, "ph_", ov.telephone_note)],
       [t("th_linkedin"), linkedinOf(c)]]);
-    sc.append(kvEl);
+    sc.append(kvEl); const vcells = kvEl.querySelectorAll(".v");
     if (ov.stamp) sc.append(el("small", null, ov.stamp));
     b.append(sc);
     // 4. société
@@ -1391,7 +1399,8 @@ body.luna-locked .app{display:none}
     // Point d'accroche neutre pour le site (comme « luna:venue-open ») : l'identifiant de la fiche, ses valeurs d'export et
     // l'élément à compléter. La page ne lit ni n'écrit rien d'autre ici.
     document.dispatchEvent(new CustomEvent("luna:person-open", {detail: {id: String(c.id == null ? "" : c.id), nom: c.nom || "", poste: c.poste || "",
-      organisation: c.organisation || "", email: c.email || "", telephone: c.telephone || "", linkedin: c.linkedin || "", source: c.source || "", body: b}}));
+      organisation: c.organisation || "", email: c.email || "", telephone: c.telephone || "", linkedin: c.linkedin || "", source: c.source || "", body: b,
+      cells: {email: vcells[0], telephone: vcells[1]}}}));
     openSheetLayer(); $("#sheet-close").focus(); refreshIcons();
   }
   function openVenue(o){

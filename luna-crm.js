@@ -197,16 +197,15 @@
       err_linkedin: "Not saved: enter a LinkedIn profile address, such as https://www.linkedin.com/in/your-contact, without anything after it.",
       err_not_ready: "Not saved: LinkedIn will be available after the next CRM update.",
       partial_dm: "Only part of the changes was saved. Check the decision-maker, then make the rest of your change again.",
-      pe_title: "Corrections, Contacts and notes", pe_fix: "Correct details",
-      pe_fix_lead: "What you enter here replaces the exported value on this screen. Empty a field to mark it as removed. Nothing is sent to anyone.",
-      pe_save: "Save details", pe_nothing: "Nothing has changed.",
+      pe_title: "Notes", pe_edit: "Edit", pe_edit_email: "Edit email", pe_edit_phone: "Edit phone",
+      pe_nothing: "Nothing has changed.",
       pe_corrected: "corrected", pe_removed: "removed",
       pe_last: (by, on) => `Last change to this person's corrections or notes: ${[by, on].filter(Boolean).join(", ")}`,
       pe_notes: "Notes", pe_note_label: "New note", pe_note_add: "Add note", pe_no_notes: "No notes yet.",
       pe_err_note_long: "Not saved: a note holds 4,000 characters at most.", pe_err_notes_max: "Not saved: this person already has 200 notes.",
       pe_err_busy: "Not saved: someone else changed this at the same time. Your entry is kept; try again.",
       pe_crm: "Contacts", pe_move: "Move to Contacts", pe_in_contacts: "In Contacts", pe_open_contact: "Open contact",
-      pe_move_lead: "Creates a contact in Contacts (and its company if it is new) with the details shown above. Nothing is sent to anyone.",
+      pe_move_lead: "Adds this person to Contacts. Nothing is sent.",
       pe_created: "Moved to Contacts.", pe_existing: "This person is already in Contacts: the existing contact is open.",
       pe_not_ready: "Moving a person to Contacts will be available after the next CRM update.",
       pe_crm_closed: "Moving a person to Contacts will be available as soon as David opens the CRM.",
@@ -360,16 +359,15 @@
       err_linkedin: "Non enregistré : saisissez l'adresse d'un profil LinkedIn, par exemple https://www.linkedin.com/in/votre-contact, sans rien après.",
       err_not_ready: "Non enregistré : LinkedIn sera disponible après la prochaine mise à jour du CRM.",
       partial_dm: "Une partie seulement des modifications est enregistrée. Vérifiez le décideur, puis refaites le reste de votre modification.",
-      pe_title: "Corrections, Contacts et notes", pe_fix: "Corriger les coordonnées",
-      pe_fix_lead: "Ce que vous saisissez ici remplace la valeur de l'export sur cet écran. Videz un champ pour le marquer comme effacé. Rien n'est envoyé à personne.",
-      pe_save: "Enregistrer les coordonnées", pe_nothing: "Rien n'a changé.",
+      pe_title: "Notes", pe_edit: "Modifier", pe_edit_email: "Modifier l'email", pe_edit_phone: "Modifier le téléphone",
+      pe_nothing: "Rien n'a changé.",
       pe_corrected: "corrigé", pe_removed: "effacé",
       pe_last: (by, on) => `Dernière modification des corrections ou des notes : ${[by, on].filter(Boolean).join(", ")}`,
       pe_notes: "Notes", pe_note_label: "Nouvelle note", pe_note_add: "Ajouter la note", pe_no_notes: "Aucune note pour l'instant.",
       pe_err_note_long: "Non enregistré : une note tient en 4 000 caractères au plus.", pe_err_notes_max: "Non enregistré : cette personne a déjà 200 notes.",
       pe_err_busy: "Non enregistré : quelqu'un d'autre a modifié cette fiche en même temps. Votre saisie est gardée ; réessayez.",
       pe_crm: "Contacts", pe_move: "Basculer dans Contacts", pe_in_contacts: "Dans Contacts", pe_open_contact: "Ouvrir le contact",
-      pe_move_lead: "Crée un contact dans Contacts (et son entreprise si elle est nouvelle) avec les coordonnées affichées ci-dessus. Rien n'est envoyé à personne.",
+      pe_move_lead: "Ajoute cette personne aux Contacts. Rien n'est envoyé.",
       pe_created: "Basculé dans Contacts.", pe_existing: "Cette personne est déjà dans Contacts : le contact existant est ouvert.",
       pe_not_ready: "Le basculement d'une personne dans Contacts sera disponible après la prochaine mise à jour du CRM.",
       pe_crm_closed: "Le basculement d'une personne dans Contacts sera disponible dès que David aura ouvert le CRM.",
@@ -2374,38 +2372,55 @@
       h("span", { class: "crm-pnote-by", text: [String(n.auteur || ""), fmtWhen(n.date)].filter(Boolean).join(" · ") }),
       h("span", { class: "crm-pnote-text", text: String(n.texte || "") }))) : h("li", { class: "note", text: t("pe_no_notes") }));
   }
-  function peFixPart(P) {
-    const email = fText("email", t("f_email"), peValue(P, "email"), { type: "email", max: 254, inputmode: "email", noOpt: true, check: v => (v && !api().valid.email(v) ? "err_email" : "") });
-    const phone = fText("telephone", t("f_phone"), peValue(P, "telephone"), { type: "tel", max: 40, inputmode: "tel", noOpt: true, check: v => (v && !api().valid.phone(v) ? "err_phone" : "") });
-    const msg = h("p", { class: "crm-msg", role: "status", "aria-live": "polite" });
-    const save = h("button", { type: "submit", class: "btn primary", text: t("pe_save") });
-    const form = h("form", { class: "crm-form crm-proj-form", novalidate: true }, note(t("pe_fix_lead")), email.node, phone.node, h("div", { class: "crm-acts" }, save), msg);
-    let busy = false;
-    form.addEventListener("submit", async ev => {
-      ev.preventDefault();
-      if (busy) return;
-      for (const x of [email, phone]) {
-        const bad = x.check();
-        if (bad) { msg.className = "crm-msg err"; msg.textContent = t(bad); try { x.input.focus(); } catch (e) { /* facultatif */ } return; }
-      }
-      const changes = {};
-      const em = email.get() ? api().valid.email(email.get()) : "", ph = phone.get();
-      if (em !== peValue(P, "email")) changes.email = em;
-      if (ph !== peValue(P, "telephone")) changes.telephone = ph;
-      if (!Object.keys(changes).length) { msg.className = "crm-msg"; msg.textContent = t("pe_nothing"); return; }
-      busy = true; save.disabled = true; clearToast(); msg.className = "crm-msg"; msg.textContent = t("saving");
-      try {
-        await peDb();
-        if (!PE.db) throw new Error("base absente");
-        const next = await peRef(P.id).change(d => Object.assign(d, changes));
-        PE.docs.set(String(P.id), next);
-        try { await peRead(P.id); } catch (e) { /* la mention se lira à la prochaine ouverture */ }
-        msg.textContent = ""; toast(t("saved"));
-        peRefreshSheet();
-      } catch (e) { msg.className = "crm-msg err"; msg.textContent = peErrorText(e); }      // saisie gardée
-      finally { busy = false; save.disabled = false; }
+  // Email et téléphone modifiables sur place : la page donne les deux cellules de valeur (detail.cells) ; chacune reçoit un
+  // petit bouton « Modifier » (et le toucher de la valeur ouvre aussi le champ). Le champ s'ouvre à la même place, avec
+  // Enregistrer et Annuler ; forme contrôlée avant l'envoi ; « Enregistré » seulement après la base ; saisie gardée en échec.
+  function peEditable(P) {
+    const defs = [["email", "pe_edit_email", "f_email", "email", "email", v => (v && !api().valid.email(v) ? "err_email" : "")],
+                  ["telephone", "pe_edit_phone", "f_phone", "tel", "tel", v => (v && !api().valid.phone(v) ? "err_phone" : "")]];
+    defs.forEach(([key, aria, label, type, mode, check]) => {
+      const cell = P.d.cells && P.d.cells[key];
+      if (!cell || typeof cell.append !== "function") return;
+      const kids = [...cell.childNodes];
+      let open = false;
+      const edit = h("button", { type: "button", class: "btn sm crm-inline-edit", text: t("pe_edit"), "aria-label": t(aria) });
+      const openForm = () => {
+        if (open) return;
+        open = true;
+        const input = h("input", { type: type, value: peValue(P, key), maxlength: key === "email" ? 254 : 40, autocomplete: "off", inputmode: mode,
+          "aria-label": t(label), autocapitalize: type === "email" ? "off" : null, spellcheck: type === "email" ? "false" : null });
+        const msg = h("p", { class: "crm-msg", role: "status", "aria-live": "polite" });
+        const save = h("button", { type: "submit", class: "btn primary sm", text: t("save") });
+        const cancel = h("button", { type: "button", class: "btn sm", text: t("cancel") });
+        const form = h("form", { class: "crm-inline-form", novalidate: true }, input, h("div", { class: "crm-acts" }, save, cancel), msg);
+        cancel.addEventListener("click", () => { put(cell, kids); cell.append(edit); open = false; });
+        let busy = false;
+        form.addEventListener("submit", async ev => {
+          ev.preventDefault();
+          if (busy) return;
+          const raw = input.value.trim(), bad = check(raw);
+          if (bad) { msg.className = "crm-msg err"; msg.textContent = t(bad); try { input.focus(); } catch (e) { /* facultatif */ } return; }
+          const next = key === "email" && raw ? api().valid.email(raw) : raw;
+          if (next === peValue(P, key)) { msg.className = "crm-msg"; msg.textContent = t("pe_nothing"); return; }
+          busy = true; save.disabled = true; cancel.disabled = true; clearToast(); msg.className = "crm-msg"; msg.textContent = t("saving");
+          try {
+            await peDb();
+            if (!PE.db) throw new Error("base absente");
+            const done = await peRef(P.id).change(d => Object.assign(d, { [key]: next }));
+            PE.docs.set(String(P.id), done);
+            try { await peRead(P.id); } catch (e) { /* la mention se lira à la prochaine ouverture */ }
+            toast(t("saved"));
+            peRefreshSheet();
+          } catch (e) { msg.className = "crm-msg err"; msg.textContent = peErrorText(e); busy = false; save.disabled = false; cancel.disabled = false; }   // saisie gardée
+        });
+        put(cell, form);
+        try { input.focus(); } catch (e) { /* facultatif */ }
+      };
+      edit.addEventListener("click", ev => { ev.stopPropagation(); openForm(); });
+      cell.addEventListener("click", ev => { if (!open && !(ev.target && ev.target.closest && ev.target.closest("button"))) openForm(); });
+      cell.classList.add("crm-editable");
+      cell.append(edit);
     });
-    return h("div", { class: "crm-proj-part" }, h("div", { class: "crm-proj-k", text: t("pe_fix") }), form);
   }
   function peNotesPart(P) {
     const area = fArea("note", t("pe_note_label"), "", { max: 4000, noOpt: true });
@@ -2444,7 +2459,7 @@
   }
   // Basculer dans Contacts : visible seulement CRM ouvert ; sinon un message clair, jamais une erreur.
   function peCrmPart(P) {
-    const head = h("div", { class: "crm-proj-k", text: t("pe_crm") });
+    const head = null;
     if (S.state !== "ready") {
       const key = S.state === "closed" ? "pe_crm_closed" : S.state === "denied" ? "st_denied" : S.state === "loading" ? "st_loading" : "st_offline";
       return h("div", { class: "crm-proj-part" }, head, note(t(key)));
@@ -2488,14 +2503,21 @@
   }
   function paintPerson(P) {
     if (!P.box.isConnected) return;
-    put(P.box, h("div", { class: "label", text: t("pe_title") }), peFixPart(P), peCrmPart(P), peNotesPart(P));
+    put(P.top, peCrmPart(P));
+    put(P.box, h("div", { class: "label", text: t("pe_title") }), peNotesPart(P));
   }
   async function onPersonOpen(ev) {
     const d = (ev && ev.detail) || {};
     if (!d.body || typeof d.body.append !== "function" || !d.id) return;
     const box = h("section", { class: "crm-pers crm-proj", "aria-label": t("pe_title") });
     d.body.append(box);
-    const P = { id: String(d.id), d, box, list: null, sig: peSig(d.id) };
+    // « Basculer dans Contacts » : en haut de la fiche, juste après les boutons d'action (sous le nom et le poste).
+    const top = h("section", { class: "crm-pers-top crm-proj", "aria-label": t("pe_crm") });
+    const acts = d.body.querySelector(".p-actions");
+    const sibs = [...d.body.children], after = acts ? sibs[sibs.indexOf(acts) + 1] || null : sibs[0] || null;
+    d.body.insertBefore(top, after);
+    const P = { id: String(d.id), d, box, top, list: null, sig: peSig(d.id) };
+    peEditable(P);
     PE.cur = P;
     paintPerson(P);
     // Valeurs, version, date et auteur lus à l'instant ; si la fiche affichée est en retard, la page la redessine une fois.
