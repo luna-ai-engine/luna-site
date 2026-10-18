@@ -8,7 +8,14 @@
    Règles : rien n'est envoyé et rien n'entre dans le CRM (aucune autre écriture que « detections ») ; « Enregistré » seulement
    après la réponse de la base ; en cas d'échec, « non enregistré » et rien ne change ; une décision déjà prise par quelqu'un
    d'autre est relue puis affichée (ND10, version vérifiée par DocRef.change). « Annuler » écrit decision = "annule" : il n'y a
-   aucune suppression. Aucune donnée personnelle ici ; la page privée ne charge jamais ce fichier. */
+   aucune suppression. Aucune donnée personnelle ici ; la page privée ne charge jamais ce fichier.
+
+   « Supprimer » une personne repérée (fiche besoin docs/crm/FICHE_BESOIN_ARCHIVER_DATADUBAI_2026-10-18.md, AR1 à AR5) : une
+   archive, jamais un effacement. Collection « archives » (un document par fiche, identifiant de la fiche, contenu { archive: booléen,
+   motif?: texte de 500 caractères au plus }, auteur, date et version posés par la base). Les identifiants archivés sont donnés
+   à la page commune (lunaPage.setHidden) ; elle les retire des listes, des compteurs et des nouvelles détections et les montre
+   dans « Archivés ». Le bouton « Supprimer » se met à côté de « Fermer » ; la confirmation dit que rien n'est effacé ; « Restaurer »
+   remet la fiche à sa place (corrections, notes, liens : jamais touchés). Échec de la base : « non enregistré », rien ne change. */
 (function (root) {
   "use strict";
   const doc = root.document;
@@ -16,6 +23,12 @@
 
   const TXT = {
     en: {
+      arc_del: "Delete", arc_title: "Delete this person?", arc_lead: "The record is moved to Archived. Nothing is erased, and it can be restored at any time.",
+      arc_reason: "Reason (optional)", arc_go: "Delete", arc_cancel: "Cancel", arc_restore: "Restore", arc_is: "Archived",
+      arc_by: (by, on) => `Archived${by ? " by " + by : ""}${on ? " on " + on : ""}.`, arc_why: m => `Reason: ${m}`,
+      arc_title_v: "Delete this venue?", arc_lead_v: "The venue is moved to Archived. Nothing is erased, and it can be restored at any time.", arc_is_v: "Archived",
+      arc_restored: "Restored.", arc_done: "Moved to Archived.", arc_saving: "Saving…",
+      arc_not_saved: "Not saved: nothing was changed. Try again.", arc_already: "Already archived by someone else. Nothing was changed.", arc_already_r: "Already restored. Nothing was changed.",
       title: "Decision", ignored: "A decision by another member is not applied.", await_d: "Waiting for David's decision.", confirm: "Confirm", dismiss: "Dismiss", undo: "Undo", credit: " (1 Apollo credit)",
       reason: "Reason (optional)", saving: "Saving…", saved: "Saved.",
       not_saved: "Not saved: nothing was changed. Try again.",
@@ -29,6 +42,13 @@
       already_undone: "This decision was already undone. Nothing was changed."
     },
     fr: {
+      arc_del: "Supprimer", arc_title: "Supprimer cette personne ?", arc_lead: "La fiche est rangée dans Archivés. Rien n'est effacé, et elle peut être restaurée à tout moment.",
+      arc_reason: "Motif (facultatif)", arc_go: "Supprimer", arc_cancel: "Annuler", arc_restore: "Restaurer", arc_is: "Archivée",
+      arc_by: (by, on) => `Archivée${by ? " par " + by : ""}${on ? " le " + on : ""}.`, arc_why: m => `Motif : ${m}`,
+      arc_title_v: "Supprimer cet établissement ?", arc_lead_v: "L'établissement est rangé dans Archivés. Rien n'est effacé, et il peut être restauré à tout moment.", arc_is_v: "Archivé",
+      arc_by_v: (by, on) => `Archivé${by ? " par " + by : ""}${on ? " le " + on : ""}.`, arc_already_v: "Déjà archivé par quelqu'un d'autre. Rien n'a été changé.", arc_done_v: "Rangé dans Archivés.", arc_restored_v: "Restauré.", arc_already_r_v: "Déjà restauré. Rien n'a été changé.",
+      arc_restored: "Restaurée.", arc_done: "Rangée dans Archivés.", arc_saving: "Enregistrement…",
+      arc_not_saved: "Non enregistré : rien n'a changé. Réessayez.", arc_already: "Déjà archivée par quelqu'un d'autre. Rien n'a été changé.", arc_already_r: "Déjà restaurée. Rien n'a été changé.",
       title: "Décision", ignored: "Décision d'un autre membre, non appliquée.", await_d: "Décision de David attendue.", confirm: "Confirmer", dismiss: "Écarter", undo: "Annuler", credit: " (1 crédit Apollo)",
       reason: "Motif (facultatif)", saving: "Enregistrement…", saved: "Enregistré.",
       not_saved: "Non enregistré : rien n'a changé. Réessayez.",
@@ -217,7 +237,136 @@
     }, () => {});
   }
 
+  // ------------------------------------------------------------------ archives des personnes repérées
+  const A = { docs: new Map(), meta: new Map(), cur: null, started: false, ok: false, flash: null };
+  const arcOn = d => !!d && d.archive === true;
+  // Textes propres aux établissements (kind « projet »), à défaut ceux des personnes.
+  const tv = (P, k, ...a) => (P && P.kind === "projet" && (TXT[lang()][k + "_v"] !== undefined || TXT.en[k + "_v"] !== undefined) ? t(k + "_v", ...a) : t(k, ...a));
+  const arcRefresh = P => { const pg = root.lunaPage, fn = P && P.kind === "projet" ? "refreshVenue" : "refreshPerson";
+    if (pg && typeof pg[fn] === "function") { try { pg[fn](); } catch (e) { /* fiche inchangée */ } } };
+  const arcPage = () => (root.lunaPage && typeof root.lunaPage.setHidden === "function" ? root.lunaPage : null);
+  function arcPush() {
+    const pg = arcPage();
+    if (!pg || !A.ok) return;
+    const ids = [];
+    A.docs.forEach((d, id) => { if (arcOn(d)) ids.push(id); });
+    try { pg.setHidden(ids); } catch (e) { /* écran inchangé */ }
+  }
+  async function arcLoadMeta(id) {
+    if (!arcOn(A.docs.get(id)) || A.meta.has(id)) return;
+    A.meta.set(id, { loading: true });
+    try {
+      const db = await getDb();
+      const m = await db.doc("archives/" + id).meta();
+      A.meta.set(id, m.exists ? { by: m.updated_by || "", at: m.updated_at || "" } : { by: "", at: "" });
+    } catch (e) { A.meta.delete(id); return; }
+    arcPaint();
+  }
+  function arcPaint() {
+    const P = A.cur;
+    if (!P) return;
+    if (!P.box.isConnected) { A.cur = null; return; }
+    const d = A.docs.get(P.id), archived = arcOn(d);
+    if (P.del) P.del.hidden = archived;
+    const msg = P.msg ? h("p", { class: "det-msg " + (P.msg.bad ? "err" : P.msg.ok ? "ok" : ""), role: "status", "aria-live": "polite", text: P.msg.text }) : h("p", { class: "det-msg", role: "status" });
+    const kids = [];
+    if (archived) {
+      arcLoadMeta(P.id);
+      const m = A.meta.get(P.id) || {};
+      kids.push(h("h4", { text: tv(P, "arc_is") }), h("p", { text: tv(P, "arc_by", m.by || "", m.at ? when(m.at) : "") }));
+      if (d.motif) kids.push(h("p", { class: "det-who", text: t("arc_why", d.motif) }));
+      kids.push(h("div", { class: "det-acts" }, h("button", { type: "button", class: "btn primary", disabled: P.busy, text: t("arc_restore"), onclick: () => arcWrite(false) })));
+    } else if (P.confirm) {
+      const input = h("input", { type: "text", maxlength: 500, autocomplete: "off", "aria-label": t("arc_reason") });
+      input.value = P.reason || "";
+      input.addEventListener("input", () => { P.reason = input.value; });
+      kids.push(h("h4", { text: tv(P, "arc_title") }), h("p", { class: "det-note", text: tv(P, "arc_lead") }),
+        h("label", { class: "det-reason" }, t("arc_reason"), input),
+        h("div", { class: "det-acts" },
+          h("button", { type: "button", class: "btn primary", disabled: P.busy, text: t("arc_go"), onclick: () => arcWrite(true) }),
+          h("button", { type: "button", class: "btn", disabled: P.busy, text: t("arc_cancel"), onclick: () => { P.confirm = false; P.msg = null; arcPaint(); } })));
+    }
+    if (kids.length || P.msg) kids.push(msg);
+    P.box.hidden = !kids.length;
+    P.box.replaceChildren(...kids);
+    if (P.focus && P.confirm) { P.focus = false; try { P.box.querySelector("input").focus(); } catch (e) { /* facultatif */ } }
+  }
+  async function arcWrite(archive) {
+    const P = A.cur;
+    if (!P || P.busy) return;
+    P.busy = true; P.msg = { text: t("arc_saving") }; arcPaint();
+    const motif = archive ? String(P.reason || "").trim().slice(0, 500) : "";
+    try {
+      const db = await getDb();
+      if (!db) throw new Error("base absente");
+      const done = await db.doc("archives/" + P.id).change(cur => {
+        if (arcOn(cur) === archive) { const e = new Error("deja"); e.deja = true; throw e; }
+        const next = { archive };
+        if (archive && motif) next.motif = motif;
+        return next;
+      });
+      A.docs.set(P.id, done); A.meta.delete(P.id);
+      P.reason = ""; P.confirm = false; P.msg = { text: tv(P, archive ? "arc_done" : "arc_restored"), ok: true };
+      arcPush(); A.flash = P.msg;
+      arcRefresh(P);
+    } catch (e) {
+      if (e && e.deja) {
+        P.confirm = false;
+        try {
+          const db = await getDb(), m = await db.doc("archives/" + P.id).meta();
+          if (m.exists) A.docs.set(P.id, m.data);
+          try { await db.collection("archives").get(); } catch (x) { /* le cache se relira seul */ }
+          A.meta.delete(P.id); arcPush();
+          P.msg = { text: tv(P, archive ? "arc_already" : "arc_already_r"), bad: true }; A.flash = P.msg;
+          arcRefresh(P);
+        } catch (x) { P.msg = { text: t("arc_not_saved"), bad: true }; }
+      } else P.msg = { text: t("arc_not_saved"), bad: true };
+    }
+    A.flash = null; P.busy = false;
+    if (A.cur === P) arcPaint();
+  }
+  function arcOpen(ev, kind) {
+    const d = (ev && ev.detail) || {};
+    const head = doc.getElementById("sheet-close");
+    const old = doc.getElementById("sheet-soft-del");
+    if (old) old.remove();
+    if (!d.body || typeof d.body.insertBefore !== "function" || !d.id || !head || !head.parentNode || !root.lunaSiteDb.archives) { A.cur = null; return; }
+    const id = (kind === "projet" ? "projet:" : "") + String(d.id);
+    const box = h("section", { class: "det-panel arc-panel", "aria-label": kind === "projet" ? t("arc_title_v") : t("arc_title") });
+    box.hidden = true;
+    d.body.insertBefore(box, d.body.children[1] || null);
+    const del = h("button", { type: "button", class: "btn", id: "sheet-soft-del", text: t("arc_del") });
+    head.parentNode.insertBefore(del, head);
+    const P = { kind: kind === "projet" ? "projet" : "personne", id, box, del, busy: false, msg: null, reason: "", confirm: false, focus: false };
+    del.addEventListener("click", () => {
+      if (A.cur !== P || P.busy || arcOn(A.docs.get(id))) return;
+      P.confirm = true; P.msg = null; P.focus = true; arcPaint();
+      try { box.scrollIntoView({ block: "nearest" }); } catch (e) { /* facultatif */ }
+    });
+    if (A.flash) { P.msg = A.flash; A.flash = null; }     // message de l'écriture qui vient de redessiner la fiche
+    A.cur = P;
+    arcPaint();
+  }
+  async function arcStart() {
+    if (A.started) return;
+    A.started = true;
+    const db = await getDb();
+    if (!db) return;
+    db.collection("archives").onSnapshot(snap => {
+      const next = new Map();
+      snap.docs.forEach(x => { if (x.exists) next.set(x.id, x.data()); });
+      next.forEach((v, k) => { const o = A.docs.get(k); if (!o || o.archive !== v.archive) A.meta.delete(k); });
+      A.docs = next; A.ok = true;
+      arcPush();
+      arcPaint();
+    }, () => {});     // lecture impossible : rien n'est caché
+  }
+
   function init() {
+    doc.addEventListener("luna:person-open", ev => arcOpen(ev, "personne"));
+    doc.addEventListener("luna:venue-open", ev => arcOpen(ev, "projet"));
+    doc.addEventListener("luna:plain-open", () => { const old = doc.getElementById("sheet-soft-del"); if (old) old.remove(); A.cur = null; });
+    arcStart();
     doc.addEventListener("luna:venue-open", ev => onOpen("projet", ev));
     doc.addEventListener("luna:person-open", ev => onOpen("personne", ev));
     try { new root.MutationObserver(() => paint()).observe(doc.documentElement, { attributes: true, attributeFilter: ["lang"] }); } catch (e) { /* facultatif */ }

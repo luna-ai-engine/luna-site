@@ -122,6 +122,7 @@
       note_hint: "Note the work, not private life (health, family, religion).", no_notes: "No note or activity yet.",
       by_x: who => `by ${who}`, about_x: name => `About ${name}`,
       no_history: "No history yet.", system: "Luna", changed_x: list => `Changed: ${list}`, empty_value: "empty",
+      del_btn: "Delete", del_title: "Delete this contact", del_title_co: "Delete this company", del_arch_lead: "The record is moved to Archived. Nothing is erased, and it can be restored at any time.", del_arch_reason: "Reason", del_arch_go: "Delete",
       archive_title: "Archive", archive_lead: "The record leaves the lists and stays in Archived, with the date and your name. You can restore it at any time.",
       del_lead: "This cannot be undone. Check what will be removed, choose a reason, then confirm.",
       del_will_delete: "Will be deleted", del_will_unlink: "Will be kept but detached",
@@ -183,7 +184,7 @@
       fld_deal_id: "deal", fld_label_en: "English label", fld_label_fr: "French label", fld_position: "order", fld_stage_outcome: "stage type",
       fld_code: "internal code", fld_months: "duration", fld_label: "name", fld_role: "role", fld_project_category: "category", fld_linkedin_url: "LinkedIn",
       pj_title: "Status, category and decision-maker", pj_status: "Status", pj_no_status: "No status yet",
-      pj_choose_status: "Choose a status", pj_change_status: "Change status", pj_status_lead: "Choosing a status sends nothing and contacts no one.",
+      opp_choose: "Choose status", pj_choose_status: "Choose a status", pj_change_status: "Change status", pj_status_lead: "Choosing a status sends nothing and contacts no one.",
       pj_category: "Category", pj_cat_auto: "As found by Luna", pj_cat_found: label => `Found by Luna: ${label}`,
       pj_dm: "Decision-maker", pj_dm_lead: "Nothing is filled in for you: enter only what you know. At least a name and the source.",
       pj_dm_save: "Save decision-maker", pj_dm_edit: "Edit decision-maker", f_mobile: "Mobile", pj_office: "Office phone", pj_open_deal: "Open deal", pj_open_contact: "Open contact",
@@ -284,6 +285,7 @@
       note_hint: "Notez le travail, pas la vie privée (santé, famille, religion).", no_notes: "Aucune note ni aucun échange pour l'instant.",
       by_x: who => `par ${who}`, about_x: name => `Au sujet de ${name}`,
       no_history: "Aucun historique pour l'instant.", system: "Luna", changed_x: list => `Modifié : ${list}`, empty_value: "vide",
+      del_btn: "Supprimer", del_title: "Supprimer ce contact", del_title_co: "Supprimer cette entreprise", del_arch_lead: "La fiche est rangée dans Archivés. Rien n'est effacé, et elle peut être restaurée à tout moment.", del_arch_reason: "Motif", del_arch_go: "Supprimer",
       archive_title: "Archiver", archive_lead: "La fiche quitte les listes et reste dans les Archivés, avec la date et votre nom. Vous pouvez la restaurer à tout moment.",
       del_lead: "Cette action est définitive. Vérifiez ce qui sera supprimé, choisissez un motif, puis confirmez.",
       del_will_delete: "Sera supprimé", del_will_unlink: "Sera gardé mais détaché",
@@ -345,7 +347,7 @@
       fld_deal_id: "affaire", fld_label_en: "libellé anglais", fld_label_fr: "libellé français", fld_position: "ordre", fld_stage_outcome: "type d'étape",
       fld_code: "code interne", fld_months: "durée", fld_label: "nom", fld_role: "rôle", fld_project_category: "catégorie", fld_linkedin_url: "LinkedIn",
       pj_title: "Statut, catégorie et décideur", pj_status: "Statut", pj_no_status: "Aucun statut pour l'instant",
-      pj_choose_status: "Choisir un statut", pj_change_status: "Changer de statut", pj_status_lead: "Choisir un statut n'envoie rien et ne contacte personne.",
+      opp_choose: "Choisir le statut", pj_choose_status: "Choisir un statut", pj_change_status: "Changer de statut", pj_status_lead: "Choisir un statut n'envoie rien et ne contacte personne.",
       pj_category: "Catégorie", pj_cat_auto: "Celle trouvée par Luna", pj_cat_found: label => `Trouvée par Luna : ${label}`,
       pj_dm: "Décideur", pj_dm_lead: "Rien n'est prérempli : saisissez seulement ce que vous savez. Au moins un nom et la source.",
       pj_dm_save: "Enregistrer le décideur", pj_dm_edit: "Modifier le décideur", f_mobile: "Mobile", pj_office: "Téléphone du bureau", pj_open_deal: "Ouvrir l'affaire", pj_open_contact: "Ouvrir le contact",
@@ -1167,6 +1169,7 @@
       title.textContent = view.title;
       put(body, ...view.nodes.filter(Boolean));
       body.scrollTop = scroll;
+      softDeleteButton();
       refreshIcons();
     } catch (e) {
       if (my !== S.seq.sheet) return true;
@@ -1202,6 +1205,28 @@
         try { await api().archive(type, row.id, row.version); closeDialog(true, tok); toast(t("archived_done")); await refreshAfterWrite(); }
         catch (e) { await failIn(msg, e, tok); }
       }), "primary")), msg);
+  }
+  // « Supprimer » à côté de « Fermer » sur la fiche d'un contact ou d'une entreprise : range la fiche dans Archivés (jamais d'effacement ; la
+  // suppression définitive de David reste un geste séparé, en bas de la fiche). Motif facultatif. Échec : « non enregistré ».
+  function softDeleteButton() {
+    const close = byId("crm-sheet-close");
+    if (!close) return;
+    const old = byId("crm-sheet-soft-del");
+    if (old) old.remove();
+    const cur = S.current;
+    if (!cur || (cur.type !== "contact" && cur.type !== "company") || !cur.row || cur.row.archived_at) return;
+    const b = btn(t("del_btn"), () => softDeleteDialog(cur.type, cur.row), "");
+    b.id = "crm-sheet-soft-del";
+    close.parentNode.insertBefore(b, close);
+  }
+  function softDeleteDialog(type, row) {
+    const msg = h("p", { class: "crm-msg", role: "status" });
+    const reason = fText("reason", t("del_arch_reason"), "", { max: 500 });
+    const tok = openDialog(t(type === "company" ? "del_title_co" : "del_title"), h("p", { class: "note", text: t("del_arch_lead") }), reason.node,
+      h("div", { class: "crm-actions" }, btn(t("cancel"), () => closeDialog()), actBtn(t("del_arch_go"), () => busyRun(tok, async () => {
+        try { await api().archive(type, row.id, row.version, reason.get()); closeDialog(true, tok); toast(t("archived_done")); await refreshAfterWrite(); }
+        catch (e) { await failIn(msg, e, tok); }
+      }), "danger")), msg);
   }
   function footer(type, row, onEdit) {
     return h("div", { class: "crm-foot" },
@@ -2046,7 +2071,7 @@
       return [r.engine_link_key, v];
     }) : [];
     try { pg.setOverlay(entries); } catch (e) { /* la page garde sa surcouche précédente */ }
-    sheetCategory();
+    sheetCategory(); paintOpps();
   }
   // Fiche projet ouverte : la ligne « Type » de la page suit la catégorie choisie (ou revient à celle de l'export, quand c'est
   // un code connu), sans rouvrir la fiche. La page écrit cette ligne « Type » dans les deux langues.
@@ -2054,6 +2079,8 @@
     const P = PJ.cur;
     if (!P || !P.box.isConnected || S.state !== "ready") return;
     const row = PJ.map.get(P.id), label = catLabel((row && row.project_category) || P.categorie);
+    const line = P.body.querySelector(".v-cat");        // fiche en sections : la ligne de catégorie du bloc Concept
+    if (label && line) { line.textContent = label; return; }
     const dl = P.body.querySelector("dl");
     if (!label || !dl) return;
     const kids = [...dl.children], i = kids.findIndex(x => x.tagName === "DT" && x.textContent.trim() === "Type");
@@ -2098,6 +2125,24 @@
     return api().createProjectDeal(id, changes);
   }
 
+  // Carte d'opportunité de la page (« luna:opp-card ») : statut réel du projet (étape de son affaire liée) et bouton qui ouvre le même
+  // choix d'étape que le bloc du projet ; même affaire (création au premier geste). Les emplacements sont repeints à chaque lecture.
+  const OPPS = new Set();
+  function paintOpp(o) {
+    const row = PJ.map.get(o.id) || null;
+    const pseudo = row || { id: null, stage_id: null, company_id: null };
+    put(o.slot, h("div", { class: "crm-stagehead" }, h("span", { class: "crm-proj-k", text: t("pj_status") }),
+      row ? chip(stageText(row), row.stage_outcome === "won" ? "good" : row.stage_outcome === "lost" ? "muted" : "") : h("span", { class: "crm-proj-v", text: t("pj_no_status") }),
+      btn(t("opp_choose"), () => stageDialog(pseudo, { title: t(row ? "pj_change_status" : "pj_choose_status"), write: changes => writeProject(o.id, changes), after: projectReload }), "sm")));
+  }
+  function paintOpps() { [...OPPS].forEach(o => { if (!o.slot.isConnected) OPPS.delete(o); else paintOpp(o); }); }
+  function onOppCard(ev) {
+    const d = (ev && ev.detail) || {};
+    if (!d.slot || !d.id) return;
+    const o = { id: String(d.id), slot: d.slot };
+    OPPS.add(o); paintOpp(o);
+    if (S.state === "ready" && !PJ.loaded) readProjectDeals();
+  }
   // Fiche projet ouverte : un bloc ajouté à la fin, rendu de nouveau à chaque changement d'état du CRM.
   function onVenueOpen(ev) {
     const d = (ev && ev.detail) || {};
@@ -2621,6 +2666,7 @@
     doc.addEventListener("visibilitychange", () => { if (!doc.hidden && S.state === "ready") { renderPanels(); if (page()) readProjectDeals(); } });
     // Lot 3 : fiche projet ouverte et projets arrivés (page commune, site seulement).
     doc.addEventListener("luna:venue-open", onVenueOpen);
+    doc.addEventListener("luna:opp-card", onOppCard);
     doc.addEventListener("luna:projects-data", onProjectsData);
     // Fiche personne (corrections, notes, Basculer dans Contacts) : indépendante de l'ouverture du CRM, sauf le basculement.
     doc.addEventListener("luna:person-open", onPersonOpen);

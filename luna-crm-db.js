@@ -434,10 +434,14 @@
     return writeOne(TABLES[type], id, payload);
   }
 
-  async function archive(type, id, version) {
+  async function archive(type, id, version, reason) {
     if (!ARCHIVABLE.includes(type)) throw new CrmError("invalid");
-    // La base pose la date et l'auteur de l'archivage ; seule compte ici la présence d'une date.
-    return writeOne(TABLES[type], id, { archived_at: new Date().toISOString(), version: needVersion(version) });
+    // La base pose la date et l'auteur de l'archivage ; seule compte ici la présence d'une date. Motif facultatif (500 caractères
+    // au plus, colonne archive_reason de la base) ; la restauration le remet à vide (déclencheur de la base).
+    const payload = { archived_at: new Date().toISOString(), version: needVersion(version) };
+    const why = typeof reason === "string" ? reason.trim().slice(0, 500) : "";
+    if (why) payload.archive_reason = why;
+    return writeOne(TABLES[type], id, payload);
   }
   async function restore(type, id, version) {
     if (!ARCHIVABLE.includes(type)) throw new CrmError("invalid");

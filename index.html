@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.116.0/dist/umd/supabase.js https://cdn.jsdelivr.net/npm/lucide@0.460.0/dist/umd/lucide.min.js 'sha256-gHmIlKNgcT6b2OP0GSPIyGf4f22p8xlZkEfeuWzJMXg='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src https://jqqzzakidyrcglyzgbrk.supabase.co wss://jqqzzakidyrcglyzgbrk.supabase.co; manifest-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.116.0/dist/umd/supabase.js https://cdn.jsdelivr.net/npm/lucide@0.460.0/dist/umd/lucide.min.js 'sha256-Cb/5rsCmwYbrNrudMth3R4q3nlyruSPe4m1oKdxKioM='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src https://jqqzzakidyrcglyzgbrk.supabase.co wss://jqqzzakidyrcglyzgbrk.supabase.co; manifest-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
 <meta name="robots" content="noindex, nofollow">
 <meta name="theme-color" content="#F7F3EC">
@@ -159,6 +159,7 @@ tr:last-child td{border-bottom:0}
 .pager{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;font-size:13px;color:var(--taupe-soft)}
 .linkbtn{font:inherit;color:var(--taupe);background:none;border:0;padding:0;cursor:pointer;text-decoration:underline;text-decoration-color:var(--border);text-underline-offset:3px;text-align:left}
 .linkbtn:hover{text-decoration-color:var(--tiffany-dark)}
+.dd-row{cursor:pointer}.dd-row:hover td{background:var(--cream)}.dd-row .dd-open{font-weight:inherit;font-size:inherit;color:inherit;text-decoration:none}.dd-row .dd-open:focus-visible{outline:2px solid var(--tiffany-dark);outline-offset:3px;border-radius:4px}
 /* graphiques */
 .chart{background:var(--cream);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);padding:20px 22px}
 .chart h4{margin:0 0 14px;font-size:13px;color:var(--taupe-soft);font-weight:500}
@@ -341,6 +342,10 @@ button.kpi > svg{position:absolute;top:20px;right:20px;width:16px;height:16px;co
 .pc-est,.pc-date{font-size:13.5px;color:var(--taupe-soft)}
 .pc-link{border:0;background:transparent;padding:0;font:inherit;font-weight:500;color:var(--active-ink);text-decoration:underline;cursor:pointer;text-align:left;margin-right:10px}
 .pc-state{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.tap{cursor:pointer}.tap:focus-visible{outline:2px solid var(--tiffany-dark);outline-offset:3px}
+@media (hover:hover){.card.tap:hover,.pcard.tap:hover{box-shadow:0 6px 22px rgba(81,75,69,.10)}}
+.sheet-body .v-sec{margin-top:0;padding-top:14px;gap:8px}.v-sec p.v-line{margin:0;font-size:14.5px;line-height:1.5;overflow-wrap:anywhere}.v-sec .note{margin:0}
+.src-date{color:var(--taupe-soft);font-size:12.5px}
 </style>
 <style>
 /* Luna, site autonome : écran de connexion et compléments (charte Luna : Ivory, Cream, Tiffany, Cormorant Garamond, Inter). */
@@ -386,6 +391,10 @@ body.luna-locked .app{display:none}
 .det-panel .det-msg{font-size:13.5px;min-height:0}
 .det-panel .det-msg:empty{display:none}
 .det-panel .det-msg.err{color:var(--crit)} .det-panel .det-msg.ok{color:var(--pos-ink)}
+/* Supprimer (archiver) une personne : bouton à côté de « Fermer » ; la fiche d'un établissement ne l'a jamais (luna-detections.js) */
+#sheet-soft-del{margin-left:auto}
+.arc-panel[hidden]{display:none}
+.sheet-head h2{flex:1 1 0;min-width:0;overflow-wrap:anywhere}.sheet-head .btn{flex:none}
 /* Luna, site autonome : écrans du CRM (chantier 1), charte Luna (Ivory, Cream, Tiffany, Cormorant Garamond, Inter).
    Conçus d'abord pour le téléphone (390 points de large) : aucun défilement horizontal, aucun texte coupé. */
 .nav-sep{height:1px;background:var(--line);margin:6px 12px}
@@ -442,6 +451,7 @@ body.luna-locked .app{display:none}
 .crm-sheet-head{display:grid;gap:6px;padding:14px 22px 12px;padding-top:calc(14px + env(safe-area-inset-top,0px));border-bottom:1px solid var(--line)}
 .crm-sheet-head .bar{display:flex;justify-content:space-between;align-items:center;gap:8px}
 .crm-sheet-head .bar .btn{padding:7px 14px}
+.crm-sheet-head .bar #crm-sheet-soft-del{margin-left:auto}
 .crm-sheet-head h2{font-size:28px;overflow-wrap:anywhere;min-height:1.1em}
 .crm-sheet-body{overflow-y:auto;overscroll-behavior:contain;padding:8px 22px 110px;display:grid;gap:0;align-content:start;min-width:0}
 .crm-sheet-body>.chips{margin-top:8px}
@@ -873,6 +883,18 @@ body.luna-locked .app{display:none}
   const $ = s => document.querySelector(s);
   const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
   const link = (url, text) => { const a = el("a", null, text || url); if (/^https?:\/\//.test(url)) { a.href = url; a.target = "_blank"; a.rel = "noopener noreferrer"; } return a; };
+  // Toucher n'importe où sur une carte ou une ligne l'ouvre ; un lien, un bouton ou un champ à l'intérieur garde son action ; Entrée
+  // ou Espace l'ouvrent au clavier ; un texte en cours de sélection n'ouvre rien.
+  const INNER = "a,button,input,select,textarea,label,summary";
+  function tapOpen(node, fn){
+    node.tabIndex = 0; node.setAttribute("role", "button"); node.classList.add("tap");
+    node.addEventListener("click", ev => { const tg = ev.target, inner = tg && tg.closest ? tg.closest(INNER) : null;
+      if (inner && inner !== node && node.contains(inner)) return;
+      try { if (window.getSelection && String(window.getSelection())) return; } catch(e) {}
+      fn(); });
+    node.addEventListener("keydown", ev => { if (ev.target !== node) return; if (ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); fn(); } });
+    return node;
+  }
   const store = { get(k){ try { return localStorage.getItem(k); } catch(e) { return null; } }, set(k,v){ try { localStorage.setItem(k,v); } catch(e) {} } };
 
   const T = {
@@ -932,7 +954,7 @@ body.luna-locked .app{display:none}
       lv_web_public:"Public web source", det_origin:"Origin", det_reserve:"Caveat", res_site:c => `Website outside the UAE${c ? " (" + c + ")" : ""}`, res_phone:c => `Phone number outside the UAE${c ? " (+" + c + ")" : ""}`, res_host:"Contact of the hotel or host venue", res_other:"Other caveat", det_li_apollo:"provided by Apollo", det_li_other:"other source",
       det_x_le:"Dismissed on", det_x_par:"Dismissed by", det_x_motif:"Dismissal reason",
       or_releve_presse:"Press", or_pistes_moteur:"Luna leads", or_opportunite_haute:"High-priority venue", or_opportunite_moyenne:"Medium-priority venue", or_opportunite_basse:"Low-priority venue", or_opportunite_inconnue:"Venue of unknown priority", or_licence_data_dubai:"Data Dubai licence", or_offre_emploi:"Job posting", or_reprise_projets:"Project takeover", or_autre:"Other",
-      det_new:"New detection", det_confirmed:"Confirmed", det_dismissed:"Dismissed", det_f_all:"All", det_f_new:n => `New detections (${n})`, det_f_dis:n => `Dismissed (${n})`, det_filter:"Detections", pp_sources:"Sources",
+      sec_cc:"Company contact", cc_note:"General contact of the company, not a person.", cc_email:"Email", cc_phone:"Phone", cc_src:"Source", cc_found:d => `Found on ${d}`, cc_cert:{sur:"certain", probable:"probable", incertain:"uncertain"}, pub_on:d => `Published ${d}`, seen_on_d:d => `Spotted ${d}`, lic_on:d => `licence dated ${d}`, sec_concept:"Concept", sec_operator:"Operator", sec_place:"Address or location", sec_open:"Opening", sec_people:"People", no_person_linked:"No person is attached to this venue yet.", open_project:"Open the project sheet", lead_match:"Matched by licence or name", licence_short:"Licence", det_new:"New detection", det_confirmed:"Confirmed", det_dismissed:"Dismissed", det_f_all:"All", det_f_new:n => `New detections (${n})`, det_f_dis:n => `Dismissed (${n})`, det_filter:"Detections", arc_chip:"Archived", arc_f:n => `Archived (${n})`, pp_sources:"Sources",
       sub_pistes:"Found by Luna", sub_press:"Press", sub_ver:"Verified on Google Maps", sub_dd:"Data Dubai (raw list)", tests_title:"Data quality tests",
       lead_opp:"One list of every opportunity, without duplicates: Luna's leads, press announcements and venues verified on Google Maps. Set a status and add notes: they are saved for everyone who opens this page.",
       search_opp:"Search a name, place or concept", show_side:"Show businesses that only added a café to another activity (gym, grocery, salon)",
@@ -964,7 +986,7 @@ body.luna-locked .app{display:none}
       all:"All", only_confirmed:"Confirmed only", only_probable:"Probable only", all_companies:"All companies", new_companies:"Companies created in 2026", older_companies:"Older companies",
       th_venue:"Venue", th_activity:"Activity", th_added:"Activity added", th_check:"Verification", th_trade:"Trade name", th_licence:"Licence created", th_form:"Legal form", th_licno:"Licence no.",
       v_confirmed:"Confirmed", v_probable:"Probable", open_yes:"Open", open_soon:"Opening soon", open_closed:"Closed", open_unknown:"Status unknown",
-      co_new:"Company created in 2026", co_old:"Older company", see_listing:"Open listing", no_link:"No link", none_match:"No venue matches these filters.", checking:"Verification in progress.",
+      co_new:"Company created in 2026", co_old:"Older company", see_listing:"View location", no_link:"No link", none_match:"No venue matches these filters.", checking:"Verification in progress.",
       press_lead:d => `Openings announced or very recent in Dubai, collected from the press on ${d}, then compared with Luna and with the official list.`,
       k_press:"venues collected", k_announced:"announced, not open yet", k_known:"already known to Luna", k_dd:"found in Data Dubai",
       ps_all:"Announced and opened", ps_ann:"Announced only", ps_open:"Recently opened", pl_all:"All", pl_dd:"Found in Data Dubai", pl_renata:"Known to Luna", pl_new:"Unknown to Luna",
@@ -974,7 +996,7 @@ body.luna-locked .app{display:none}
       k_venues:"venues", k_new2026:"companies created in 2026", k_rest:"restaurants", k_coffee:"coffee shops",
       chart_title:"Activities added per month", all_act:"All activities", all_months:"All months", only_new:"Only companies created in 2026",
       search_name:"Search a name or licence number", search_press:"Search a name, place or concept", search_dd:"Search a name or licence number",
-      page_info:(n,p,t) => `${n} venue(s), page ${p} of ${t}`, prev:"Previous", next:"Next", read_first:"Read before using this list", company:"Company", fresh:"new",
+      page_info:(n,p,t) => `${n} venue(s), page ${p} of ${t}`, prev:"Previous", next:"Next", read_first:"Read before using this list", company:"Company", fresh:"new", dd_open:n => `Open the sheet for ${n}`, dd_new_co:"New company in 2026", dd_yes:"Yes", dd_no:"No", dd_no_addr:"Data Dubai does not provide an address.", dd_nothing:"No other information for this venue.",
       t_web_exact:"certain identity through web search", t_web_prob:"probable through the web", t_maps_exact:"certain identity through Google Maps", t_maps_prob:"probable through Google Maps",
       t_maps_prop:"with a Google Maps suggestion", t_pending:"verification in progress",
       t_maps_note:m => `Google Maps suggested a place for ${m.propositions} venues, but ${m.faux} of these suggestions were another venue: every suggestion must be checked. For the ${m.exact} confirmed venues, the address is known ${m.exact_adresse} times, the website ${m.exact_site} times, and the precise cuisine only ${m.exact_cuisine} time(s). Google's terms forbid keeping this information: the page keeps none of it.`,
@@ -1042,7 +1064,7 @@ body.luna-locked .app{display:none}
       lv_web_public:"Source web publique", det_origin:"Origine", det_reserve:"Réserve", res_site:c => `Site hors des Émirats${c ? " (" + c + ")" : ""}`, res_phone:c => `Numéro hors des Émirats${c ? " (+" + c + ")" : ""}`, res_host:"Contact de l'hôtel ou du lieu d'accueil", res_other:"Autre réserve", det_li_apollo:"fourni par Apollo", det_li_other:"autre source",
       det_x_le:"Écarté le", det_x_par:"Écarté par", det_x_motif:"Motif de l'écart",
       or_releve_presse:"Presse", or_pistes_moteur:"Pistes de Luna", or_opportunite_haute:"Établissement à priorité haute", or_opportunite_moyenne:"Établissement à priorité moyenne", or_opportunite_basse:"Établissement à priorité basse", or_opportunite_inconnue:"Établissement de priorité inconnue", or_licence_data_dubai:"Licence Data Dubai", or_offre_emploi:"Offre d'emploi", or_reprise_projets:"Reprise de projets", or_autre:"Autre",
-      det_new:"Nouvelle détection", det_confirmed:"Confirmé", det_dismissed:"Écarté", det_f_all:"Tout", det_f_new:n => `Nouvelles détections (${n})`, det_f_dis:n => `Écartés (${n})`, det_filter:"Détections", pp_sources:"Sources",
+      sec_cc:"Contact général de l'entreprise", cc_note:"Contact général de la société, pas celui d'une personne.", cc_email:"Email", cc_phone:"Téléphone", cc_src:"Source", cc_found:d => `Relevé le ${d}`, cc_cert:{sur:"certain", probable:"probable", incertain:"incertain"}, pub_on:d => `Publié le ${d}`, seen_on_d:d => `Repéré le ${d}`, lic_on:d => `licence du ${d}`, sec_concept:"Concept", sec_operator:"Exploitant", sec_place:"Adresse ou lieu", sec_open:"Ouverture", sec_people:"Personnes", no_person_linked:"Aucune personne n'est rattachée à cet établissement.", open_project:"Ouvrir la fiche du projet", lead_match:"Rapproché par licence ou par nom", licence_short:"Licence", det_new:"Nouvelle détection", det_confirmed:"Confirmé", det_dismissed:"Écarté", det_f_all:"Tout", det_f_new:n => `Nouvelles détections (${n})`, det_f_dis:n => `Écartés (${n})`, det_filter:"Détections", arc_chip:"Archivé", arc_f:n => `Archivés (${n})`, pp_sources:"Sources",
       sub_pistes:"Trouvées par Luna", sub_press:"Presse", sub_ver:"Vérifiées sur Google Maps", sub_dd:"Data Dubai (liste brute)", tests_title:"Tests de qualité des données",
       lead_opp:"Une seule liste de toutes les opportunités, sans doublons : pistes de Luna, annonces de la presse et établissements vérifiés sur Google Maps. Choisissez un statut et ajoutez des notes : ils sont enregistrés pour tous ceux qui ouvrent cette page.",
       search_opp:"Chercher un nom, un lieu, un concept", show_side:"Afficher les commerces qui ont seulement ajouté un café à une autre activité (salle de sport, épicerie, salon)",
@@ -1074,7 +1096,7 @@ body.luna-locked .app{display:none}
       all:"Tous", only_confirmed:"Confirmés seulement", only_probable:"Probables seulement", all_companies:"Toutes les sociétés", new_companies:"Sociétés créées en 2026", older_companies:"Sociétés plus anciennes",
       th_venue:"Établissement", th_activity:"Activité", th_added:"Activité ajoutée", th_check:"Vérification", th_trade:"Nom commercial", th_licence:"Licence créée", th_form:"Forme", th_licno:"Licence n°",
       v_confirmed:"Confirmé", v_probable:"Probable", open_yes:"Ouvert", open_soon:"Ouverture prochaine", open_closed:"Fermé", open_unknown:"État inconnu",
-      co_new:"Société créée en 2026", co_old:"Société plus ancienne", see_listing:"Voir la fiche", no_link:"Lien indisponible", none_match:"Aucun établissement ne correspond à ces filtres.", checking:"La vérification est en cours.",
+      co_new:"Société créée en 2026", co_old:"Société plus ancienne", see_listing:"Voir la localisation", no_link:"Lien indisponible", none_match:"Aucun établissement ne correspond à ces filtres.", checking:"La vérification est en cours.",
       press_lead:d => `Ouvertures annoncées ou toutes récentes à Dubai, relevées dans la presse le ${d}, puis comparées avec Luna et avec la liste officielle.`,
       k_press:"établissements relevés", k_announced:"annoncés, pas encore ouverts", k_known:"déjà connus de Luna", k_dd:"retrouvés dans Data Dubai",
       ps_all:"Annoncés et ouverts", ps_ann:"Annoncés seulement", ps_open:"Ouverts récemment", pl_all:"Tous", pl_dd:"Trouvés dans Data Dubai", pl_renata:"Connus de Luna", pl_new:"Inconnus de Luna",
@@ -1084,7 +1106,7 @@ body.luna-locked .app{display:none}
       k_venues:"établissements", k_new2026:"sociétés créées en 2026", k_rest:"restaurants", k_coffee:"coffee shops",
       chart_title:"Activités ajoutées par mois", all_act:"Toutes les activités", all_months:"Tous les mois", only_new:"Seulement les sociétés créées en 2026",
       search_name:"Chercher un nom ou un numéro de licence", search_press:"Chercher un nom, un lieu, un concept", search_dd:"Chercher un nom ou un numéro de licence",
-      page_info:(n,p,t) => `${n} établissement(s), page ${p} sur ${t}`, prev:"Précédent", next:"Suivant", read_first:"À lire avant d'utiliser cette liste", company:"Société", fresh:"nouvelle",
+      page_info:(n,p,t) => `${n} établissement(s), page ${p} sur ${t}`, prev:"Précédent", next:"Suivant", read_first:"À lire avant d'utiliser cette liste", company:"Société", dd_open:n => `Ouvrir la fiche de ${n}`, dd_new_co:"Nouvelle société en 2026", dd_yes:"Oui", dd_no:"Non", dd_no_addr:"Data Dubai ne donne pas d'adresse.", dd_nothing:"Pas d'autre information pour cet établissement.", fresh:"nouvelle",
       t_web_exact:"identité certaine par la recherche web", t_web_prob:"probables par le web", t_maps_exact:"identité certaine par Google Maps", t_maps_prob:"probables par Google Maps",
       t_maps_prop:"avec une proposition Google Maps", t_pending:"vérification en cours",
       t_maps_note:m => `Google Maps a proposé un lieu pour ${m.propositions} établissements, mais ${m.faux} de ces propositions étaient un autre établissement : chaque proposition doit être vérifiée. Pour les ${m.exact} établissements confirmés, l'adresse est connue ${m.exact_adresse} fois, le site ${m.exact_site} fois, et le type de cuisine précis ${m.exact_cuisine} fois seulement. Les conditions de Google interdisent de conserver ces informations : la page n'en garde aucune.`,
@@ -1208,7 +1230,7 @@ body.luna-locked .app{display:none}
   const dateTime = iso => { const d = new Date(iso); return isNaN(d) ? "" : d.toLocaleString(lang === "fr" ? "fr-FR" : "en-GB", {timeZone:"Asia/Dubai", day:"2-digit", month:"short", hour:"2-digit", minute:"2-digit"}); };
 
   // Répertoires : établissements et contacts
-  let contacts = [], contactsRaw = [], dirPage = 0, dirBuilt = false, ctBuilt = false, dirType = ""; const DIR_PER = 30;
+  let contacts = [], contactsHid = [], contactsRaw = [], dirPage = 0, dirBuilt = false, ctBuilt = false, dirType = ""; const DIR_PER = 30;
   const peopleOf = o => contacts.filter(c => (c.etablissements || []).includes(o.id) && detState("personne", c) !== "ecarte");
   const sepC = () => lang === "fr" ? " : " : ": ";
   // Catégories d'un projet (demande de Renata du 01/10/2026) : sa catégorie principale quand l'export la fournit, sinon chacune
@@ -1232,16 +1254,26 @@ body.luna-locked .app{display:none}
   // Projects. « Warm Lead » : l'ouverture annoncée recoupe la fenêtre de 4 à 8 mois après le jour affiché (heure de Dubai) ;
   // « Newly opened » : ouverture constatée par un article daté (ouvert_le) il y a moins de 90 jours. Calculés à l'affichage,
   // jamais tirés d'une date de licence. Tri : Warm Leads, puis Newly opened, puis priorité, puis nom.
-  const dirAll = d => (d.opportunites || []).filter(o => !o.masque);
+  // Projets archivés (identifiant « projet:<id> » dans les identifiants cachés donnés par le site) : ils quittent Projects,
+  // Opportunités, les compteurs et les nouvelles détections, et ne se voient que dans le choix « Archivés ».
+  const dirAll = d => (d.opportunites || []).filter(o => !o.masque && !projHid(o));
+  const dirArch = d => (d.opportunites || []).filter(o => !o.masque && projHid(o));
   // « Nouvelle détection » (fiche besoin du 15/10/2026) : fonction du SITE seulement. Tant que la couche du site n'a pas appelé
   // lunaPage.setDetections, rien ne change : aucun filtre, aucune étiquette, et les candidats « à confirmer » ou écartés d'une
   // fiche personne ne sont jamais montrés (page privée). La page ne lit ni n'écrit aucune décision : elle reçoit seulement, par
   // identifiant, « confirme », « ecarte » ou « annule », et redessine.
   let detOn = false, detDec = new Map(), detF = {dir: "", ct: ""}, curVenue = null;
+  // Fiches rangées à part (le site donne leurs identifiants par lunaPage.setHidden) : elles quittent la liste, les compteurs et les
+  // nouvelles détections, et ne se voient que dans le choix « Archivés » de l'écran des personnes. La page privée n'en reçoit aucune.
+  let hidOn = false, hidSet = new Set();
+  const hidHas = c => hidOn && !!c && hidSet.has(String(c.id));
+  let hidProj = new Set();
+  function projHid(o){ return hidOn && !!o && hidProj.has(String(o.id)); }
   // Introduction de l'écran des personnes sur le site : les candidats y apparaissent avant validation (la page privée garde l'ancienne).
   function detLead(){ const e = document.querySelector('#p-ct .lead'); if (e && detOn) e.textContent = t("lead_ct_det"); }
   const detState = (kind, x) => {
     if (!detOn || !x) return "";
+    if (kind === "projet" && projHid(x)) return "";
     const d = detDec.get(kind + ":" + x.id);
     if (d === "confirme" || d === "ecarte") return d;
     if (d === "annule") return "new";
@@ -1276,9 +1308,10 @@ body.luna-locked .app{display:none}
     return out;
   }
   const detHasContact = c => !!(c.email || c.telephone || c.email_type || (Array.isArray(c.contact_types) ? c.contact_types : c.contact_types ? [c.contact_types] : []).some(x => !catFold(x).startsWith("aucun") && catFold(x)));
-  const detChip = (kind, x) => { const st = detState(kind, x); if (!st) return null;
+  const detChip = (kind, x) => { if ((kind === "personne" && hidHas(x)) || (kind === "projet" && projHid(x))) return el("span", "chip det-chip muted", t("arc_chip"));
+    const st = detState(kind, x); if (!st) return null;
     return el("span", "chip det-chip " + (st === "new" ? "good" : "muted"), t(st === "new" ? "det_new" : st === "confirme" ? "det_confirmed" : "det_dismissed")); };
-  const detPool = (kind, list, mode) => list.filter(x => { const st = detState(kind, x); return mode === "ecarte" ? st === "ecarte" : mode === "new" ? st === "new" : st !== "ecarte"; });
+  const detPool = (kind, list, mode) => mode === "archive" ? list.slice() : list.filter(x => { const st = detState(kind, x); return mode === "ecarte" ? st === "ecarte" : mode === "new" ? st === "new" : st !== "ecarte"; });
   function renderDetSelect(kind, items){
     const id = kind === "projet" ? "dir-det" : "ct-det"; let sel = $("#" + id);
     if (!detOn) { if (sel) sel.hidden = true; return; }
@@ -1287,6 +1320,9 @@ body.luna-locked .app{display:none}
     sel.hidden = false; sel.setAttribute("aria-label", t("det_filter"));
     const n = m => detPool(kind, items, m).length, cur = detF[kind === "projet" ? "dir" : "ct"];
     const opts = [["", t("det_f_all")], ["new", t("det_f_new")(n("new"))], ["ecarte", t("det_f_dis")(n("ecarte"))]];
+    const arcN = kind === "personne" ? contactsHid.length : (oppDoc() ? dirArch(oppDoc()).length : 0), fk = kind === "projet" ? "dir" : "ct";
+    if (hidOn && (arcN || cur === "archive")) opts.push(["archive", t("arc_f")(arcN)]);
+    else if (cur === "archive" && !hidOn) detF[fk] = "";
     sel.replaceChildren(...opts.map(([v, l]) => { const o = el("option", null, l); o.value = v; return o; })); sel.value = cur;
   }
   const isoDay = s => /^\d{4}-\d{2}-\d{2}/.test(String(s || "")) ? String(s).slice(0, 10) : "";
@@ -1385,12 +1421,13 @@ body.luna-locked .app{display:none}
     const d = oppDoc(); if (!d) return;
     const pick = (o, k) => lang === "en" ? (o[k + "_en"] || o[k]) : o[k];
     const q = $("#dir-q").value.trim().toLowerCase(), pp = $("#dir-people").value;
-    const today = todayDubai(), stage = new Map(detPool("projet", dirAll(d), detF.dir).map(o => [o, stageOf(o, today)]));
+    const arcMode = detF.dir === "archive" && hidOn;
+    const today = todayDubai(), stage = new Map(detPool("projet", arcMode ? dirArch(d) : dirAll(d), arcMode ? "archive" : detF.dir).map(o => [o, stageOf(o, today)]));
     renderDetSelect("projet", dirAll(d));
     $("#dir-note").hidden = [...stage.values()].includes("new") || !stage.size;
     const list = [...stage.keys()].sort((a,b) => STAGE_RANK[stage.get(a)] - STAGE_RANK[stage.get(b)] || (PRIO_RANK[a.priorite] ?? 3) - (PRIO_RANK[b.priorite] ?? 3)
-      || a.nom.localeCompare(b.nom)).filter(o => (!dirType || catsOf(o).some(s => catKey(s) === dirType))
-      && (!pp || (pp === "yes") === (peopleOf(o).length > 0))
+      || a.nom.localeCompare(b.nom)).filter(o => (arcMode || !dirType || catsOf(o).some(s => catKey(s) === dirType))
+      && (arcMode || !pp || (pp === "yes") === (peopleOf(o).length > 0))
       && (!q || [o.nom, pick(o,"lieu"), pick(o,"concept"), o.exploitant, o.licence].join(" ").toLowerCase().includes(q)));
     const pages = Math.max(1, Math.ceil(list.length / DIR_PER)); dirPage = Math.min(dirPage, pages-1);
     const body = $("#dir-body"); body.replaceChildren();
@@ -1560,10 +1597,61 @@ body.luna-locked .app{display:none}
     ss.append(kv(rows)); b.append(ss);
     // Point d'accroche neutre pour le site (comme « luna:venue-open ») : l'identifiant de la fiche, ses valeurs d'export et
     // l'élément à compléter. La page ne lit ni n'écrit rien d'autre ici.
-    document.dispatchEvent(new CustomEvent("luna:person-open", {detail: {detections: detOn, id: String(c.id == null ? "" : c.id), nom: c.nom || "", poste: c.poste || "",
+    document.dispatchEvent(new CustomEvent("luna:person-open", {detail: {detections: detOn, archived: hidHas(c), id: String(c.id == null ? "" : c.id), nom: c.nom || "", poste: c.poste || "",
       organisation: c.organisation || "", email: masked ? "" : c.email || "", telephone: masked ? "" : c.telephone || "", candidate: masked, hasContact: detHasContact(c), linkedin: c.linkedin || "", source: c.source || "", body: b,
       cells: masked ? {} : {email: vcells[0], telephone: vcells[1]}}}));
     openSheetLayer(); $("#sheet-close").focus(); refreshIcons();
+  }
+  // Fiche d'un établissement : sections courtes (Concept, Exploitant, Adresse ou lieu, Ouverture, Sources, Personnes) ; une section
+  // vide n'est pas montrée. Les sources sont des liens ; le lien Google Maps s'appelle « Voir la localisation ».
+  function venueSection(title, ...kids){
+    const kept = kids.flat().filter(k => k != null && k !== false && k !== "");
+    if (!kept.length) return null;
+    const sec = el("section","p-sec v-sec"); sec.append(el("h4",null,title)); kept.forEach(k => sec.append(typeof k === "string" ? el("p","v-line",k) : k)); return sec;
+  }
+  function sourcesList(items){
+    if (!items.length) return null;
+    const ul = el("ul","det-sources");
+    items.forEach(x => { const li = el("li"); if (x.url) li.append(link(x.url, x.label || x.url)); else li.append(document.createTextNode(x.label));
+      if (x.note) li.append(" ", el("small","src-date",x.note));
+      ul.append(li); });
+    return ul;
+  }
+  const projectLicence = o => o.licence ? `${t("licence_short")}${sepC()}${o.licence}${o.activite_ajoutee_le ? " (" + fmtDate(o.activite_ajoutee_le) + ")" : ""}` : "";
+  // Date à côté d'une source : publication (presse, pistes) ; pour Data Dubai, la date de la licence, jamais une publication ; rien pour
+  // Google Maps ni quand la date manque.
+  // Libellés décidés par Jack (JACK-1810-47) : « Repéré le … » (jour où Luna a vu la source, champ vu_le quand l'export le porte)
+  // et « Publié le … » (date de l'article ou de l'annonce), les deux quand on les a.
+  function srcDate(s){
+    if (!s || s.type === "google_maps") return "";
+    // Seule une vraie date (AAAA-MM-JJ, ou JJ/MM/AAAA) s'affiche ; un texte qui n'est pas une date est ignoré (recette du 18/10).
+    const isDay = v => /^\d{4}-\d{2}-\d{2}/.test(String(v || "")) || /^\d{2}\/\d{2}\/\d{4}$/.test(String(v || ""));
+    const d = isDay(s.date) ? fmtDate(s.date) : "", seen = isDay(s.vu_le) ? fmtDate(s.vu_le) : "";
+    const k = !d ? "" : s.date_type !== undefined ? (s.date_type === "licence" ? "lic_on" : s.date_type === "publication" ? "pub_on" : "") : (s.type === "data_dubai" ? "lic_on" : "pub_on");
+    return [seen ? t("seen_on_d")(seen) : "", k ? t(k)(d) : ""].filter(Boolean).join(" · ");
+  }
+  // Contact général de l'entreprise (site seulement : detOn) : jamais présenté comme celui d'une personne ; masqué si le champ est absent ou vide.
+  function companyContact(o){
+    const c = o && o.contact_entreprise; if (!detOn || !c || typeof c !== "object") return null;
+    const S = k => String(c[k] == null ? "" : c[k]).trim();
+    const email = S("email"), tel = S("telephone"); if (!email && !tel) return null;
+    const sec = el("section","p-sec v-sec"); sec.append(el("h4",null,t("sec_cc")), el("p","note",t("cc_note")));
+    const line = (label, node, srcText, extra) => { const p = el("p","v-line"); p.append(el("span","k",label + sepC()), node);
+      if (extra) p.append(" ", el("small","src-date",extra));
+      if (srcText) { p.append(" ", el("small","src-date",t("cc_src") + sepC()), sourceNode(srcText)); } sec.append(p); };
+    if (email) line(t("cc_email"), /^[^@\s]+@[^@\s]+$/.test(email) ? (() => { const a = el("a",null,email); a.href = "mailto:" + email; return a; })() : document.createTextNode(email), S("email_source"));
+    if (tel) { const dg = tel.replace(/[^\d+]/g, ""), cert = t("cc_cert")[S("telephone_certitude")] || "";
+      line(t("cc_phone"), dg ? (() => { const a = el("a",null,tel); a.href = "tel:" + dg; return a; })() : document.createTextNode(tel), S("telephone_source"), cert); }
+    const res = c.reserve_codes; if (Array.isArray(res) && res.length) sec.append(el("p","v-line",t("det_reserve") + sepC() + reserveText(res)));
+    const rl = S("releve_le"); if (rl) sec.append(el("p","v-line src-date",t("cc_found")(fmtDate(rl))));
+    return sec;
+  }
+  function peopleSection(ps){
+    const sec = el("section","p-sec v-sec"); sec.append(el("h4",null,t("sec_people")));
+    if (!ps.length) sec.append(el("p","note",t("no_person_linked")));
+    const wrap = el("div"); wrap.style.display = "grid"; wrap.style.gap = "8px"; ps.forEach(c => wrap.append(personCard(c)));
+    if (ps.length) sec.append(wrap);
+    return sec;
   }
   function openVenue(o){
     $("#sheet").classList.remove("pmode");
@@ -1577,17 +1665,13 @@ body.luna-locked .app{display:none}
     if (o.verification) chips.append(el("span","chip muted", o.verification === "EXACT" ? t("verified_place") : t("probable_place")));
     if (o.nouvelle_societe === "Oui") chips.append(el("span","chip muted", t("new_company")));
     b.append(chips);
-    const dl = el("dl");
-    [["type", catsOf(o).map(catLabel).join(", ")],["place",pick("lieu")],["concept",pick("concept")],["operator",o.exploitant],["opening",pick("ouverture")],
-     ["licence_no", o.licence ? `${o.licence}${o.activite_ajoutee_le ? " (" + fmtDate(o.activite_ajoutee_le) + ")" : ""}` : ""]]
-      .forEach(([k,v]) => { if (v) dl.append(el("dt",null,t(k)), el("dd",null,v)); });
-    b.append(dl);
-    const links = (o.sources || []).filter(s => s.url);
-    if (links.length) { const src = el("div","src"); src.append(el("div","label",t("where_found"))); const ul = el("ul");
-      links.forEach(s => { const li = el("li"); li.append(link(s.url, s.type === "google_maps" ? t("see_listing") : (s.libelle || s.url))); ul.append(li); }); src.append(ul); b.append(src); }
-    const ppl = el("div"); ppl.style.display = "grid"; ppl.style.gap = "8px"; ppl.append(el("div","label",t("people_title")));
-    const ps = peopleOf(o); if (!ps.length) ppl.append(el("p","note",t("no_people"))); ps.forEach(c => ppl.append(personCard(c)));
-    b.append(ppl);
+    const cats = catsOf(o).map(catLabel).join(", ");
+    [venueSection(t("sec_concept"), pick("concept"), cats ? el("p","v-line v-cat",cats) : "", projectLicence(o)), venueSection(t("sec_operator"), o.exploitant), venueSection(t("sec_place"), pick("lieu")),
+     venueSection(t("sec_open"), pick("ouverture")),
+     venueSection(t("pp_sources"), sourcesList((o.sources || []).filter(s => s.url || s.libelle).map(s => ({url: s.url || "", label: s.type === "google_maps" ? t("see_listing") : (s.libelle || s.url), note: srcDate(s)}))))]
+      .forEach(x => { if (x) b.append(x); });
+    const cc = companyContact(o); if (cc) b.append(cc);
+    b.append(peopleSection(peopleOf(o)));
     const fu = el("div"); fu.style.display = "grid"; fu.style.gap = "6px"; fu.append(el("div","label",t("follow_title")));
     const cur = suivi[o.id] || {};
     fu.append(el("span",null,t("cs_" + (cur.statut || "a_contacter"))));
@@ -1597,6 +1681,49 @@ body.luna-locked .app{display:none}
     fu.append(eb); b.append(fu);
     if (followReadOnly()) { eb.hidden = true; fu.append(el("p","note",t("follow_moved"))); }
     document.dispatchEvent(new CustomEvent("luna:venue-open", {detail: {detections: detOn, id: o.id, nom: o.nom, body: b, categorie: o.categorie || ""}}));
+    openSheetLayer(); $("#sheet-close").focus();
+  }
+  // Fiche d'une ligne des listes Pistes, Presse et Vérifiés : son détail, puis les personnes du projet qui correspond (même licence,
+  // sinon même nom) ; sans projet correspondant, la fiche dit qu'aucune personne n'est rattachée.
+  function matchProject(x){
+    const d = oppDoc(); if (!d) return null;
+    const all = (d.opportunites || []).filter(o => !projHid(o)), lic = String(x.licence || x.numero_licence || "").trim().toLowerCase(), nm = catFold(x.nom);
+    return (lic && all.find(o => String(o.licence || "").trim().toLowerCase() === lic || String(o.id).toLowerCase() === "lic-" + lic))
+      || (nm && all.find(o => catFold(o.nom) === nm)) || null;
+  }
+  function openSource(kind, x){
+    $("#sheet").classList.remove("pmode"); curVenue = null;
+    $("#sheet-title").textContent = x.nom || "";
+    const b = $("#sheet-body"); b.replaceChildren();
+    const proj = matchProject(x), chips = el("div","chips");
+    const en = lang === "en" && x.en ? x.en : {}, pick = k => lang === "en" ? (x[k + "_en"] != null ? x[k + "_en"] : x[k]) : x[k];
+    let sec = [], links = [];
+    if (kind === "pistes") {
+      chips.append(el("span","chip " + (x.preuves_independantes === "plusieurs" ? "" : "warn"), x.preuves_independantes === "plusieurs" ? t("confirmed_many") : t("unconfirmed")));
+      if (x.nom_a_verifier) chips.append(el("span","chip warn",t("name_check")));
+      const r = x.recherche ? (lang === "en" && x.recherche.en ? x.recherche.en : x.recherche) : {};
+      const clues = (en.indices || x.indices || []).join(", ");
+      sec = [venueSection(t("sec_concept"), r.concept, clues ? t("clue") + sepC() + clues : ""), venueSection(t("sec_operator"), r.operateur), venueSection(t("sec_place"), x.lieu || r.adresse),
+        venueSection(t("sec_open"), en.ouverture !== undefined ? en.ouverture : x.ouverture || r.ouverture)];
+      links = (x.liens || []).map(l => ({url: l.url, label: l.url.replace(/^https?:\/\//,"").replace(/\/$/,"")})).concat(((r.liens || [])).map(l => ({url: l.url, label: l.titre || l.url})));
+    } else if (kind === "press") {
+      chips.append(el("span","chip " + (x.statut === "annonce" ? "warn" : ""), x.statut === "annonce" ? t("announced") : t("opened")));
+      if (x.renata === "oui") chips.append(el("span","chip",t("known")));
+      sec = [venueSection(t("sec_concept"), pick("concept")), venueSection(t("sec_operator"), pick("exploitant")), venueSection(t("sec_place"), pick("lieu")), venueSection(t("sec_open"), pick("ouverture_annoncee"))];
+      links = (x.sources || []).filter(u => typeof u === "string").map(u => ({url: u, label: u.replace(/^https?:\/\/(www\.)?/,"").split("/")[0]}));
+    } else {
+      const OPEN = {oui:["open_yes","good"], bientot:["open_soon","warn"], ferme:["open_closed","warn"], inconnu:["open_unknown","muted"]}, op = OPEN[x.ouvert] || OPEN.inconnu;
+      chips.append(el("span","chip " + (x.identite === "EXACT" ? "" : "muted"), x.identite === "EXACT" ? t("v_confirmed") : t("v_probable")), el("span","chip " + op[1], t(op[0])));
+      if (x.nouvelle_societe === "Oui") chips.append(el("span","chip",t("co_new"))); else if (x.nouvelle_societe === "Non") chips.append(el("span","chip muted",t("co_old")));
+      sec = [venueSection(t("sec_concept"), x.activite ? act(x.activite) : "", x.licence ? `${t("licence_short")}${sepC()}${x.licence}${x.activite_ajoutee_le ? " (" + fmtDate(x.activite_ajoutee_le) + ")" : ""}` : "")];
+      if (x.maps) links = [{url: x.maps, label: t("see_listing")}];
+    }
+    if (chips.children.length) b.append(chips);
+    sec.forEach(v => { if (v) b.append(v); });
+    const ls = venueSection(t("pp_sources"), sourcesList(links)); if (ls) b.append(ls);
+    b.append(peopleSection(proj ? peopleOf(proj) : []));
+    if (proj) { const go = el("button","btn",t("open_project")); go.type = "button"; go.addEventListener("click", () => openVenue(proj)); b.append(go); }
+    document.dispatchEvent(new CustomEvent("luna:plain-open", {detail: {body: b}}));
     openSheetLayer(); $("#sheet-close").focus();
   }
   function openSheetLayer(){ const was = $("#sheet").hidden; $("#sheet").hidden = false; $("#sheet-back").hidden = false;
@@ -1612,7 +1739,8 @@ body.luna-locked .app{display:none}
   document.addEventListener("keydown", ev => { if (ev.key === "Escape" && !$("#sheet").hidden) closeSheetByUser(); });
 
   // Candidats « à confirmer » ou écartés : montrés seulement quand le site a activé les détections.
-  function syncContacts(){ contacts = detOn ? contactsRaw : contactsRaw.filter(c => c.statut !== "a_confirmer" && c.statut !== "ecarte"); }
+  function syncContacts(){ const all = detOn ? contactsRaw : contactsRaw.filter(c => c.statut !== "a_confirmer" && c.statut !== "ecarte");
+    contacts = all.filter(c => !hidHas(c)); contactsHid = all.filter(hidHas); }
   function detSheetSync(){
     const sh = $("#sheet"); if (sh.hidden) return;
     const person = sh.classList.contains("pmode"), x = person ? curPerson : curVenue; if (!x) return;
@@ -1649,7 +1777,7 @@ body.luna-locked .app{display:none}
       ests.forEach(o => { const b = el("button","pc-link", o.nom); b.type = "button"; b.addEventListener("click", () => openVenue(o)); r.append(b); }); a.append(r); }
     const cd = ctCreated(c); if (cd) { const r = el("div","pc-date"); r.append(el("span","k", t("pc_created") + sepC()), document.createTextNode(fmtDate(cd))); a.append(r); }
     a.append(contactState(c));
-    return a;
+    return tapOpen(a, () => openPerson(c));
   }
   function renderCt(){
     const main = detPool("personne", contacts, ""); $("#c-ct").textContent = main.length || "";
@@ -1663,12 +1791,13 @@ body.luna-locked .app{display:none}
     const d = oppDoc(); const byId = {}; (d ? d.opportunites : []).forEach(o => byId[o.id] = o);
     renderDetSelect("personne", contacts);
     const wk = new Set(weekCt().map(c => c.id)), onlyWeek = $("#ct-week").checked;
-    const list = detPool("personne", contacts, detF.ct).filter(c => (!fam || c.famille === fam) && (!has || (has === "email" ? !!c.email : has === "phone" ? !!c.telephone : !c.email && !c.telephone))
-      && (!onlyWeek || wk.has(c.id))
+    const arcMode = detF.ct === "archive" && hidOn;
+    const list = detPool("personne", arcMode ? contactsHid : contacts, arcMode ? "archive" : detF.ct).filter(c => (!fam || c.famille === fam) && (!has || (has === "email" ? !!c.email : has === "phone" ? !!c.telephone : !c.email && !c.telephone))
+      && (arcMode || !onlyWeek || wk.has(c.id))
       && (!q || [c.nom, c.poste, c.organisation, ...(c.etablissements || []).map(id => (byId[id] || {}).nom)].join(" ").toLowerCase().includes(q)))
       .sort((a,b) => String(a.nom).localeCompare(String(b.nom)));
     const box = $("#ct-list"); box.replaceChildren(); box.className = view === "cards" ? "pcards" : "people";
-    if (!list.length) { box.className = "people"; box.append(el("div","empty", contacts.length ? t("none_match") : t("no_contacts"))); return; }
+    if (!list.length) { box.className = "people"; box.append(el("div","empty", contacts.length || arcMode ? t("none_match") : t("no_contacts"))); return; }
     const byName = (a,b) => String(a.nom || "").localeCompare(String(b.nom || ""), lang === "fr" ? "fr" : "en", {sensitivity:"base"});
     const recent = $("#ct-sort").value === "recent";
     list.sort((a,b) => recent ? (ctCreated(b).localeCompare(ctCreated(a)) || byName(a,b)) : byName(a,b)).forEach(c => box.append(view === "cards" ? personCardFull(c, byId) : personRow(c)));
@@ -1695,7 +1824,7 @@ body.luna-locked .app{display:none}
   // Indicateurs cliquables de l'Accueil (fiche besoin du 18/10/2026) : le nombre affiché est calculé par la MÊME fonction que la
   // liste qu'il ouvre ; l'ouverture passe par show(), donc par l'historique (le retour ramène à l'Accueil).
   const closedSt = ["perdu","pas_pertinent","gagne"];
-  const isActiveOpp = o => !o.secondaire && !closedSt.includes(((suivi[o.id] || {}).statut) || "a_contacter");
+  const isActiveOpp = o => !o.secondaire && !projHid(o) && !closedSt.includes(((suivi[o.id] || {}).statut) || "a_contacter");
   const weekCt = () => { const ago = Date.now() - 7*864e5; return detPool("personne", contacts, "").filter(c => c.valide_le && Date.parse(c.valide_le) >= ago); };
   const signalCount = () => ((docs.pistes && docs.pistes.pistes) || []).length + ((docs.presse && docs.presse.etablissements) || []).length;
   function openList(kind){
@@ -1721,7 +1850,7 @@ body.luna-locked .app{display:none}
     const pend = requests.filter(r => ["recue","transmise"].includes(r.statut)).length;
     if (pend) item(t("att_req")(pend), t("att_req_s"), () => show("nav-req"));
     if (newCt) item(t("att_ct")(newCt), t("att_ct_s"), () => show("nav-ct"));
-    all.filter(o => o.priorite === "haute" && st(o) === "a_contacter").slice(0, 5)
+    all.filter(o => !projHid(o) && o.priorite === "haute" && st(o) === "a_contacter").slice(0, 5)
       .forEach(o => item(o.nom, t("att_high_s")(lang === "en" ? (o.lieu_en || o.lieu) : o.lieu), () => openVenue(o)));
     if (!box.children.length) box.append(el("div","empty",t("att_none")));
     refreshIcons();
@@ -1735,7 +1864,7 @@ body.luna-locked .app{display:none}
     }
     const q = $("#search-q").value.trim().toLowerCase(); const box = $("#search-results"); box.replaceChildren();
     if (q.length < 2) { box.append(el("p","note",t("type_more"))); return; }
-    const d = oppDoc(); const venues = (d ? d.opportunites : []).filter(o => [o.nom, o.lieu, o.lieu_en, o.concept, o.concept_en, o.exploitant, o.type, o.licence].join(" ").toLowerCase().includes(q)).slice(0, 12);
+    const d = oppDoc(); const venues = (d ? d.opportunites : []).filter(o => !projHid(o) && [o.nom, o.lieu, o.lieu_en, o.concept, o.concept_en, o.exploitant, o.type, o.licence].join(" ").toLowerCase().includes(q)).slice(0, 12);
     const people = contacts.filter(c => [c.nom, c.poste, c.organisation].join(" ").toLowerCase().includes(q)).slice(0, 12);
     const press = ((docs.presse && docs.presse.etablissements) || []).filter(x => [x.nom, x.lieu, x.concept, x.concept_en, x.exploitant].join(" ").toLowerCase().includes(q)).slice(0, 12);
     const group = (title, rows) => { if (!rows.length) return; const g = el("div"); g.style.display = "grid"; g.style.gap = "10px"; g.append(el("div","label",`${title} (${rows.length})`)); const a = el("div","attention"); rows.forEach(r => a.append(r)); g.append(a); box.append(g); };
@@ -1760,7 +1889,7 @@ body.luna-locked .app{display:none}
     rows.forEach(([label, v]) => { const r = el("div","hbar"); const tr = el("div","track"); const s = el("span"); s.style.width = (v/max*100) + "%"; tr.append(s); r.append(el("span",null,label), tr, el("span","v",nf().format(v))); box.append(r); });
   }
   function renderAna(){
-    const d = oppDoc(); if (!d) return; const all = d.opportunites.filter(o => !o.secondaire);
+    const d = oppDoc(); if (!d) return; const all = d.opportunites.filter(o => !o.secondaire && !projHid(o));
     hbars("ana-prio", [["haute","pr_haute"],["moyenne","pr_moyenne"],["basse","pr_basse"]].map(([k,l]) => [t(l), all.filter(o => o.priorite === k).length]));
     const st = o => (suivi[o.id] || {}).statut || "a_contacter";
     hbars("ana-follow", CS.map(c => [t("cs_" + c), all.filter(o => st(o) === c).length]).filter(r => r[1] > 0 || r[0] === t("cs_a_contacter")));
@@ -1774,7 +1903,10 @@ body.luna-locked .app{display:none}
   }
   function renderOpp(){
     const d = oppDoc(); if (!d) return;
-    const all = d.opportunites || []; const f = nf();
+    const all = (d.opportunites || []).filter(o => !projHid(o)); const f = nf();
+    const osel = $("#opp-stat"); let oa = osel.querySelector('option[value="archived"]'); const nArc = (d.opportunites || []).filter(projHid).length;
+    if (hidOn && (nArc || osel.value === "archived")) { if (!oa) { oa = el("option"); oa.value = "archived"; osel.append(oa); } oa.textContent = t("arc_f")(nArc); }
+    else if (oa) { if (osel.value === "archived") osel.value = ""; oa.remove(); }
     $("#c-opp").textContent = all.filter(o => !o.secondaire).length;
     const st = o => (suivi[o.id] || {}).statut || "a_contacter";
     kpis($("#opp-kpis"), [[f.format(all.filter(o => !o.secondaire).length),t("k_opp")],[f.format(all.filter(o => o.priorite === "haute").length),t("k_high")],
@@ -1792,7 +1924,8 @@ body.luna-locked .app{display:none}
     const q = $("#opp-q").value.trim().toLowerCase(), pr = $("#opp-prio").value, cs = $("#opp-stat").value, side = $("#opp-side").checked;
     const pick = (o, k) => lang === "en" ? (o[k + "_en"] || o[k]) : o[k];
     const st = o => (suivi[o.id] || {}).statut || "a_contacter";
-    const list = (d.opportunites||[]).filter(o => (side || !o.secondaire) && (!pr || o.priorite === pr) && (!cs || (cs === "active" ? isActiveOpp(o) : st(o) === cs))
+    const arcMode = cs === "archived" && hidOn;
+    const list = (d.opportunites||[]).filter(o => (arcMode ? projHid(o) : !projHid(o)) && (arcMode || side || !o.secondaire) && (!pr || o.priorite === pr) && (arcMode || !cs || (cs === "active" ? isActiveOpp(o) : st(o) === cs))
       && (!q || [o.nom, pick(o,"lieu"), pick(o,"concept"), o.exploitant, o.licence].join(" ").toLowerCase().includes(q)));
     const pages = Math.max(1, Math.ceil(list.length / OPP_PER)); oppPage = Math.min(oppPage, pages-1);
     const box = $("#opp-list");
@@ -1818,6 +1951,10 @@ body.luna-locked .app{display:none}
     if (links.length) { const src = el("div","src"); const ul = el("ul"); links.forEach(s => { const li = el("li"); li.append(link(s.url, s.type === "google_maps" ? t("see_listing") : (s.libelle || s.url))); ul.append(li); }); src.append(ul); c.append(src); }
     // suivi
     const fu = el("div","research"); fu.append(el("div","label",t("follow")));
+    // Sur le site, quand le statut se choisit sur le projet, la carte ne montre pas de menu désactivé : un emplacement que le site remplit
+    // (événement « luna:opp-card »), avec le statut réel du projet et le bouton qui ouvre le choix d'étape.
+    if (followReadOnly()) { const slot = el("div","opp-status"); fu.append(slot); c.append(fu);
+      document.dispatchEvent(new CustomEvent("luna:opp-card", {detail: {id: String(o.id), nom: o.nom, slot}})); return tapOpen(c, () => openVenue(o)); }
     const cur = suivi[o.id] || {};
     const sel = el("select"); sel.id = "st-" + o.id; sel.setAttribute("aria-label", t("follow"));
     CS.forEach(k => { const op = el("option",null,t("cs_" + k)); op.value = k; sel.append(op); }); sel.value = cur.statut || "a_contacter";
@@ -1838,7 +1975,7 @@ body.luna-locked .app{display:none}
     bar.append(sel, btn, msg); sel.style.width = "auto";
     fu.append(note, bar); c.append(fu);
     if (followReadOnly()) { sel.disabled = true; note.readOnly = true; btn.hidden = true; fu.append(el("p","note",t("follow_moved"))); }
-    return c;
+    return tapOpen(c, () => openVenue(o));
   }
 
   function renderStatus(){
@@ -1892,6 +2029,7 @@ body.luna-locked .app{display:none}
         if ((r.liens||[]).length) { const u2 = el("ul"); r.liens.forEach(l => { const li = el("li"); li.append(link(l.url, l.titre)); u2.append(li); }); dv.append(u2); }
         c.append(dv);
       }
+      tapOpen(c, () => openSource("pistes", p));
       box.append(c);
     });
   }
@@ -1920,6 +2058,7 @@ body.luna-locked .app{display:none}
       v.append(chips);
       const m = el("td"); if (x.maps) m.append(link(x.maps, t("see_listing"))); else m.textContent = t("no_link");
       tr.append(el("td","name",x.nom), el("td","act",act(x.activite)), el("td","date",fmtDate(x.activite_ajoutee_le)), v, m);
+      tapOpen(tr, () => openSource("ver", x));
       body.append(tr);
     });
   }
@@ -1958,6 +2097,7 @@ body.luna-locked .app{display:none}
       [["concept",pick(x,"concept")],["operator",pick(x,"exploitant")],["place",pick(x,"lieu")],["opening",pick(x,"ouverture_annoncee")]].forEach(([k,v]) => { if (v) { const s = el("span"); s.append(t(k) + sep, el("b",null,v)); row.append(s); } });
       c.append(row);
       if ((x.sources||[]).length) { const src = el("div","src"); const ul = el("ul"); x.sources.forEach(u => { const li = el("li"); li.append(link(u, u.replace(/^https?:\/\/(www\.)?/,"").split("/")[0])); ul.append(li); }); src.append(ul); c.append(src); }
+      tapOpen(c, () => openSource("press", x));
       box.append(c);
     });
   }
@@ -1993,13 +2133,37 @@ body.luna-locked .app{display:none}
     const body = $("#dd-body"); body.replaceChildren();
     if (!f.length) { const tr = el("tr"); const td = el("td","empty",t("none_match")); td.colSpan = 6; tr.append(td); body.append(tr); }
     f.slice(page*PER, page*PER+PER).forEach(r => {
-      const tr = el("tr"); const name = el("td","name", r[1] || r[0] || "");
+      const tr = el("tr"); const name = el("td","name");
+      const nb = el("button","linkbtn dd-open", r[1] || r[0] || ""); nb.type = "button"; nb.setAttribute("aria-label", t("dd_open")(r[1] || r[0] || "")); name.append(nb);
+      tr.classList.add("dd-row"); tr.addEventListener("click", ev => { if (!(ev.target.closest && ev.target.closest("a"))) openDD(r); });
       if (r[0] && r[1] && r[0].toUpperCase() !== r[1].toUpperCase()) name.append(el("span","legal", t("company") + (lang === "fr" ? " : " : ": ") + r[0]));
       tr.append(name, el("td","act",act(r[2])), el("td","date",fmtDate(r[3])), el("td","date",fmtDate(r[4]) + (r[5] === "Oui" ? " · " + t("fresh") : "")), el("td","hide-sm",form(r[6])), el("td","num hide-sm",r[7]));
       body.append(tr);
     });
     $("#dd-info").textContent = t("page_info")(nf().format(f.length), page+1, pages);
     $("#dd-prev").disabled = page === 0; $("#dd-next").disabled = page >= pages-1;
+  }
+
+  // Fiche d'une ligne Data Dubai : le projet lié (identifiant lic-<licence>, hors cafés masqués) s'il existe, sinon la fiche des
+  // champs que nous avons. Le lien Google Maps vient des établissements vérifiés (même licence) ; aucune adresse n'existe ici.
+  function openDD(r){
+    const lic = String(r[7] || "").trim(), d = oppDoc();
+    const proj = lic && d ? dirAll(d).find(o => String(o.id).toLowerCase() === ("lic-" + lic).toLowerCase()) : null;
+    if (proj) { openVenue(proj); return; }
+    $("#sheet").classList.remove("pmode"); curVenue = null;
+    $("#sheet-title").textContent = r[1] || r[0] || "";
+    const b = $("#sheet-body"); b.replaceChildren();
+    const ver = lic ? ((docs.verifies && docs.verifies.etablissements) || []).find(x => String(x.licence || "").trim() === lic && x.maps) : null;
+    const dl = el("dl");
+    [[t("th_trade"), r[1]], [t("company"), r[0]], [t("th_activity"), r[2] ? act(r[2]) : ""], [t("th_added"), r[3] ? fmtDate(r[3]) : ""], [t("th_licence"), r[4] ? fmtDate(r[4]) : ""],
+     [t("dd_new_co"), r[5] === "Oui" ? t("dd_yes") : r[5] === "Non" ? t("dd_no") : ""], [t("th_form"), r[6] ? form(r[6]) : ""], [t("th_licno"), lic]]
+      .forEach(([k, v]) => { if (v) dl.append(el("dt",null,k), el("dd",null,v)); });
+    b.append(dl);
+    if (ver) { const src = el("div","src"); const ul = el("ul"); const li = el("li"); li.append(link(ver.maps, t("see_listing"))); ul.append(li); src.append(ul); b.append(src); }
+    b.append(el("p","note",t("dd_no_addr")));
+    if (!ver) b.append(el("p","note",t("dd_nothing")));
+    document.dispatchEvent(new CustomEvent("luna:plain-open", {detail: {body: b}}));
+    openSheetLayer(); $("#sheet-close").focus();
   }
 
   function renderTests(){
@@ -2067,12 +2231,15 @@ body.luna-locked .app{display:none}
   // (« luna:projects-data »). La page privée n'a aucun module qui s'en sert.
   window.lunaPage = {
     setOverlay(entries){ overlay = new Map(entries || []); if (oppDoc()) renderDir(); },
-    projects(){ const d = oppDoc(); return d ? dirAll(d).map(o => ({id: o.id, nom: o.nom, categorie: o.categorie || ""})) : []; },
+    projects(){ const d = oppDoc(); return d ? (d.opportunites || []).filter(o => !o.masque).map(o => ({id: o.id, nom: o.nom, categorie: o.categorie || ""})) : []; },
     lang: () => lang, refresh(){ if (oppDoc()) renderDir(); },
     setPersonOverlay(entries){ personOv = new Map(entries || []); },
     setDetections(entries){ detOn = true; detLead(); detDec = new Map(entries || []); syncContacts(); if (oppDoc()) renderDir(); renderCt(); detSheetSync(); },
     detInfo(kind, id){ const d = oppDoc(), x = kind === "projet" ? (d ? (d.opportunites || []).find(o => o.id === id) : null) : contactsRaw.find(c => String(c.id) === String(id));
-      if (!x) return null; const st = detState(kind, x); return {state: st, applied: !!st && st !== "new" && detApplied(kind, x, st)}; },
+      if (!x) return null; const arc = kind === "personne" ? hidHas(x) : projHid(x), st = arc ? "" : detState(kind, x); return {archived: arc, state: st, applied: !!st && st !== "new" && detApplied(kind, x, st)}; },
+    setHidden(ids){ hidOn = true; const all = (ids || []).map(String); hidSet = new Set(all.filter(x => !x.startsWith("projet:"))); hidProj = new Set(all.filter(x => x.startsWith("projet:")).map(x => x.slice(7)));
+      syncContacts(); if (oppDoc()) { renderDir(); renderOpp(); renderAna(); } renderCt(); renderHome(); if ($("#search-q").value.trim().length >= 2) renderSearch(); detSheetSync(); },
+    refreshVenue(){ if (curVenue && !$("#sheet").hidden && !$("#sheet").classList.contains("pmode")) openVenue(curVenue); },
     refreshPerson(){ if (curPerson && !$("#sheet").hidden && $("#sheet").classList.contains("pmode")) openPerson(curPerson); }
   };
   // Le suivi passe en lecture seule (ou redevient modifiable) dès que le site le décide : les cartes affichées sont redessinées.

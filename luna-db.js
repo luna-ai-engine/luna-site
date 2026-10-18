@@ -25,8 +25,8 @@
   "use strict";
 
   const SCHEMA = "renata", TABLE = "luna_documents", MEMBERS = "luna_members";
-  const COLLECTIONS = ["renata", "contacts", "suivi", "demandes", "personnes", "detections"];
-  const WRITABLE = ["suivi", "demandes", "personnes", "detections"];
+  const COLLECTIONS = ["renata", "contacts", "suivi", "demandes", "personnes", "detections", "archives"];
+  const WRITABLE = ["suivi", "demandes", "personnes", "detections", "archives"];
   const POLL_MS = 60000, SAFETY_MS = 300000, TICK_MS = 15000, PAGE = 500, CHUNK = 40, DEBOUNCE_MS = 400;
 
   const cfg = () => root.LUNA_CONFIG || {};
@@ -453,7 +453,10 @@
   root.lunaAuth = lunaAuth;
   // Indicateur neutre : cette couche sait lire et écrire « detections » (site seulement). Les écrans de nouvelles détections
   // (luna-detections.js) ne s'activent que s'il est présent ; la page privée, qui lit une autre base, ne l'a jamais.
-  root.lunaSiteDb = Object.freeze({ detections: true });
+  // Archivage des personnes repérées et des projets (collection « archives ») : éteint jusqu'à la mise en ligne de la
+  // migration 0041 (lot découpé par Jack, JACK-1810-47) ; le passer à true l'active. Les contacts et entreprises du CRM
+  // s'archivent déjà, ils n'en dépendent pas.
+  root.lunaSiteDb = Object.freeze({ detections: true, archives: false });
   root.claude = {
     async use(name) {
       if (name !== "db" && name !== "user") return null;
