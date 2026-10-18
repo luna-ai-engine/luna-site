@@ -2303,6 +2303,10 @@
   // « Basculer dans Contacts » : un seul appel (crm.import_page_person), avec les valeurs corrigées quand elles existent.
   // Rien n'est envoyé, aucun brouillon n'est créé, « ne pas contacter » n'est jamais touché.
   const PE = { docs: new Map(), meta: new Map(), cur: null, db: null, dbp: null, linked: {}, seq: 0, who: "" };
+  // Saisies en cours de l'édition sur place, par fiche puis par champ : gardées quand l'enregistrement de l'autre champ
+  // redessine la fiche (recette de Jacob du 03/10/2026), effacées par « Annuler » ou par l'enregistrement du champ.
+  const peDrafts = new Map();
+  const peDraft = id => { const k = String(id); if (!peDrafts.has(k)) peDrafts.set(k, {}); return peDrafts.get(k); };
   const peDoc = id => PE.docs.get(String(id)) || null;
   function peDb() {
     if (!PE.dbp) PE.dbp = (root.claude ? root.claude.use("db") : Promise.resolve(null)).then(d => { PE.db = d; return d; }, () => null);
@@ -2384,16 +2388,19 @@
       const kids = [...cell.childNodes];
       let open = false;
       const edit = h("button", { type: "button", class: "btn sm crm-inline-edit", text: t("pe_edit"), "aria-label": t(aria) });
-      const openForm = () => {
+      const openForm = focus => {
         if (open) return;
         open = true;
-        const input = h("input", { type: type, value: peValue(P, key), maxlength: key === "email" ? 254 : 40, autocomplete: "off", inputmode: mode,
+        const drafts = peDraft(P.id), start = Object.prototype.hasOwnProperty.call(drafts, key) ? drafts[key] : peValue(P, key);
+        drafts[key] = start;
+        const input = h("input", { type: type, value: start, maxlength: key === "email" ? 254 : 40, autocomplete: "off", inputmode: mode,
           "aria-label": t(label), autocapitalize: type === "email" ? "off" : null, spellcheck: type === "email" ? "false" : null });
         const msg = h("p", { class: "crm-msg", role: "status", "aria-live": "polite" });
         const save = h("button", { type: "submit", class: "btn primary sm", text: t("save") });
         const cancel = h("button", { type: "button", class: "btn sm", text: t("cancel") });
         const form = h("form", { class: "crm-inline-form", novalidate: true }, input, h("div", { class: "crm-acts" }, save, cancel), msg);
-        cancel.addEventListener("click", () => { put(cell, kids); cell.append(edit); open = false; });
+        input.addEventListener("input", () => { peDraft(P.id)[key] = input.value; });
+        cancel.addEventListener("click", () => { delete peDraft(P.id)[key]; put(cell, kids); cell.append(edit); open = false; });
         let busy = false;
         form.addEventListener("submit", async ev => {
           ev.preventDefault();
@@ -2408,18 +2415,20 @@
             if (!PE.db) throw new Error("base absente");
             const done = await peRef(P.id).change(d => Object.assign(d, { [key]: next }));
             PE.docs.set(String(P.id), done);
+            delete peDraft(P.id)[key];
             try { await peRead(P.id); } catch (e) { /* la mention se lira à la prochaine ouverture */ }
             toast(t("saved"));
             peRefreshSheet();
           } catch (e) { msg.className = "crm-msg err"; msg.textContent = peErrorText(e); busy = false; save.disabled = false; cancel.disabled = false; }   // saisie gardée
         });
         put(cell, form);
-        try { input.focus(); } catch (e) { /* facultatif */ }
+        if (focus !== false) try { input.focus(); } catch (e) { /* facultatif */ }
       };
       edit.addEventListener("click", ev => { ev.stopPropagation(); openForm(); });
       cell.addEventListener("click", ev => { if (!open && !(ev.target && ev.target.closest && ev.target.closest("button"))) openForm(); });
       cell.classList.add("crm-editable");
       cell.append(edit);
+      if (Object.prototype.hasOwnProperty.call(peDraft(P.id), key)) openForm(false);   // saisie en cours avant le nouveau dessin
     });
   }
   function peNotesPart(P) {
@@ -2504,11 +2513,12 @@
   function paintPerson(P) {
     if (!P.box.isConnected) return;
     put(P.top, peCrmPart(P));
-    put(P.box, h("div", { class: "label", text: t("pe_title") }), peNotesPart(P));
+    put(P.box, peNotesPart(P));                                       // un seul titre « Notes » (recette de Jacob du 03/10/2026)
   }
   async function onPersonOpen(ev) {
     const d = (ev && ev.detail) || {};
     if (!d.body || typeof d.body.append !== "function" || !d.id) return;
+    if (d.candidate) return;     // candidat « à confirmer » ou écarté : ni coordonnées modifiables, ni notes, ni basculement dans Contacts
     const box = h("section", { class: "crm-pers crm-proj", "aria-label": t("pe_title") });
     d.body.append(box);
     // « Basculer dans Contacts » : en haut de la fiche, juste après les boutons d'action (sous le nom et le poste).

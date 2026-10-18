@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.116.0/dist/umd/supabase.js https://cdn.jsdelivr.net/npm/lucide@0.460.0/dist/umd/lucide.min.js 'sha256-XAu4yhgiDWFfxkxjQRDVD1yvM5FwydU+z8RMLXNInGo='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src https://jqqzzakidyrcglyzgbrk.supabase.co wss://jqqzzakidyrcglyzgbrk.supabase.co; manifest-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.116.0/dist/umd/supabase.js https://cdn.jsdelivr.net/npm/lucide@0.460.0/dist/umd/lucide.min.js 'sha256-8yhMl2SZYlkfHkNpmhvvVBKwLQPXn9zwQVdFECqCzsc='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src https://jqqzzakidyrcglyzgbrk.supabase.co wss://jqqzzakidyrcglyzgbrk.supabase.co; manifest-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
 <meta name="robots" content="noindex, nofollow">
 <meta name="theme-color" content="#F7F3EC">
@@ -276,7 +276,15 @@ details p{margin:8px 0 0}
 .lang button{border:0;background:transparent;color:var(--taupe-soft);font:500 12.5px var(--sans);letter-spacing:.06em;padding:6px 14px;border-radius:8px;cursor:pointer}
 .lang button[aria-pressed="true"]{background:var(--active-bg);color:var(--active-ink)}
 /* téléphone */
+/* Nouvelle détection (site seulement : les éléments ne sont créés que lorsque la couche du site les active) */
+.filters.f-det4{grid-template-columns:2fr 1fr 1fr 1fr}
+.filters.f-det5{grid-template-columns:2fr 1fr 1fr 1fr 1fr}
+.det-tag{margin-left:6px;vertical-align:middle;white-space:nowrap}
+.p-id .det-chip{display:inline-block;width:fit-content;justify-self:start;align-self:flex-start;margin-top:8px}
+.det-sources{margin:0;padding-left:18px;overflow-wrap:anywhere}
 @media (max-width:900px){
+  .filters.f-det4,.filters.f-det5{grid-template-columns:1fr 1fr}
+  .filters.f-det4 #dir-det,.filters.f-det5 #ct-det{grid-column:1/-1}
   .filters.f4{grid-template-columns:1fr 1fr}
   .filters.f4 #ct-sort{grid-column:1/-1}
   .app{grid-template-columns:1fr}
@@ -347,7 +355,18 @@ body.luna-locked .app{display:none}
 @media (hover:none){.ll-card .btn.ll-google:hover:not(:disabled){background:transparent}}
 @media (max-width:420px){.ll-card{padding:22px 18px}.ll-card h1{font-size:30px}}
 /* Page sur téléphone étroit : chaque filtre sur sa ligne, pour qu'aucun choix de liste ne soit coupé. */
-@media (max-width:480px){.filters,.filters.f4{grid-template-columns:1fr}.filters.f4 #ct-sort{grid-column:auto}}
+@media (max-width:480px){.filters,.filters.f4,.filters.f-det4,.filters.f-det5{grid-template-columns:1fr}.filters.f4 #ct-sort,.filters.f-det4 #dir-det,.filters.f-det5 #ct-det{grid-column:auto}}
+/* Nouvelle détection : zone de décision en tête d'une fiche (luna-detections.js) */
+.det-panel{display:grid;gap:10px;margin:0 0 16px;padding:14px 16px;background:var(--cream);border:1px solid var(--line);border-radius:14px}
+.det-panel h4{margin:0;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--taupe-soft);font-weight:500}
+.det-panel p{margin:0;font-size:14px;line-height:1.5;overflow-wrap:anywhere}
+.det-panel .det-note,.det-panel .det-who{color:var(--taupe-soft);font-size:13px}
+.det-panel .det-reason{display:grid;gap:4px;font-size:13px;color:var(--taupe-soft)}
+.det-panel .det-reason input{width:100%;box-sizing:border-box;font:14px var(--sans);color:var(--taupe);background:var(--ivory);border:1px solid var(--border);border-radius:12px;padding:10px 12px}
+.det-panel .det-acts{display:flex;flex-wrap:wrap;gap:8px}
+.det-panel .det-msg{font-size:13.5px;min-height:0}
+.det-panel .det-msg:empty{display:none}
+.det-panel .det-msg.err{color:var(--crit)} .det-panel .det-msg.ok{color:var(--pos-ink)}
 /* Luna, site autonome : écrans du CRM (chantier 1), charte Luna (Ivory, Cream, Tiffany, Cormorant Garamond, Inter).
    Conçus d'abord pour le téléphone (390 points de large) : aucun défilement horizontal, aucun texte coupé. */
 .nav-sep{height:1px;background:var(--line);margin:6px 12px}
@@ -557,6 +576,7 @@ body.luna-locked .app{display:none}
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.116.0/dist/umd/supabase.js" integrity="sha384-iLddHTLokph6Omwoyid4XKxHaWa6w41BnoEj0q5oOrzmYPpHIKt1wyjReA7s//pP" crossorigin="anonymous"></script>
 <script src="luna-db.js"></script>
 <script src="luna-login.js"></script>
+<script src="luna-detections.js"></script>
 <script src="luna-crm-db.js"></script>
 <script src="luna-crm.js"></script>
 </head>
@@ -839,6 +859,7 @@ body.luna-locked .app{display:none}
       tab_dir:"Venues", tab_ct:"People found",
       lead_dir:"Directory of every venue known to Luna. Click a venue to see everything about it, including the people identified there.",
       lead_ct:"Directory of people identified in these venues and groups. A person only appears here once David has validated them; an email or phone number shows how reliable it is.",
+      lead_ct_det:"Directory of people identified in these venues and groups. New detections wait for a decision (Confirm or Dismiss); an email or phone number shows how reliable it is.",
       search_dir:"Search a venue, place, concept or group", search_ct:"Search a name, position, group or venue",
       th_people:"People", pp_count:n => n === 1 ? "1 person" : `${n} people`, th_prio:"Priority", th_name:"Name", th_position:"Position", th_email:"Email", th_phone:"Phone", close:"Close",
       all_types:"All types", tag_warm:"Warm Lead", tag_new:"Newly opened", note_no_new:"No venue carries “Newly opened” yet: it only appears once a dated press article confirms the opening.", with_people:"With people identified", without_people:"Without people yet", all_people:"All venues",
@@ -877,6 +898,15 @@ body.luna-locked .app{display:none}
       pp_validated:"Validation", pp_no_details:"Email and phone have not been searched yet. They will be added on request, with their reliability shown.",
       sort_alpha:"Alphabetical", sort_recent:"Recently added", act_email:"Email", act_call:"Call", pp_contact:"Contact", pp_company_t:"Company",
       pp_group1:"Group-level relationship", pp_group2:"Exact venue not confirmed", pp_venue_level:"Venue-level relationship", pp_verif:"Verification",
+      det_t_email:"Email found", det_t_email_general:"General company email", det_t_email_named:"Named email", det_t_email_inferred:"Inferred email, not verified",
+      det_t_email_uncertain:"Email, uncertain (the server accepts every address)", det_t_email_published:"Email published by the company", det_t_phone:"Phone number found",
+      det_masked_note:"Contact details are shown after confirmation.", det_t_none:"No contact found yet; it is searched after confirmation.",
+      det_t_phone_general:"General company phone number", det_t_phone_named:"Named phone number", det_t_phone_provider:"Phone number verified by the provider", det_t_phone_inferred:"Inferred phone number, not verified",
+      det_t_email_provider:"Email verified by the provider", det_t_named_pub:" (published)", det_src_email:"Email source", det_src_phone:"Phone source", det_li_hint:"hint: search result (Google or Bing), LinkedIn page not opened",
+      lv_web_public:"Public web source", det_origin:"Origin", det_reserve:"Caveat", res_site:c => `Website outside the UAE${c ? " (" + c + ")" : ""}`, res_phone:c => `Phone number outside the UAE${c ? " (+" + c + ")" : ""}`, res_host:"Contact of the hotel or host venue", res_other:"Other caveat", det_li_apollo:"provided by Apollo", det_li_other:"other source",
+      det_x_le:"Dismissed on", det_x_par:"Dismissed by", det_x_motif:"Dismissal reason",
+      or_releve_presse:"Press", or_pistes_moteur:"Luna leads", or_opportunite_haute:"High-priority venue", or_opportunite_moyenne:"Medium-priority venue", or_opportunite_basse:"Low-priority venue", or_opportunite_inconnue:"Venue of unknown priority", or_licence_data_dubai:"Data Dubai licence", or_offre_emploi:"Job posting", or_reprise_projets:"Project takeover", or_autre:"Other",
+      det_new:"New detection", det_confirmed:"Confirmed", det_dismissed:"Dismissed", det_f_all:"All", det_f_new:n => `New detections (${n})`, det_f_dis:n => `Dismissed (${n})`, det_filter:"Detections", pp_sources:"Sources",
       sub_pistes:"Found by Luna", sub_press:"Press", sub_ver:"Verified on Google Maps", sub_dd:"Data Dubai (raw list)", tests_title:"Data quality tests",
       lead_opp:"One list of every opportunity, without duplicates: Luna's leads, press announcements and venues verified on Google Maps. Set a status and add notes: they are saved for everyone who opens this page.",
       search_opp:"Search a name, place or concept", show_side:"Show businesses that only added a café to another activity (gym, grocery, salon)",
@@ -937,6 +967,7 @@ body.luna-locked .app{display:none}
       tab_dir:"Établissements", tab_ct:"Personnes repérées",
       lead_dir:"Répertoire de tous les établissements connus de Luna. Cliquez sur un établissement pour tout voir, y compris les personnes identifiées qui y travaillent.",
       lead_ct:"Répertoire des personnes identifiées dans ces établissements et ces groupes. Une personne n'apparaît ici qu'après validation par David ; chaque email ou téléphone indique sa fiabilité.",
+      lead_ct_det:"Répertoire des personnes identifiées dans ces établissements et ces groupes. Les nouvelles détections attendent une décision (Confirmer ou Écarter) ; chaque email ou téléphone indique sa fiabilité.",
       search_dir:"Chercher un établissement, un lieu, un concept, un groupe", search_ct:"Chercher un nom, un poste, un groupe, un établissement",
       th_people:"Personnes", pp_count:n => n === 1 ? "1 personne" : `${n} personnes`, th_prio:"Priorité", th_name:"Nom", th_position:"Poste", th_email:"Email", th_phone:"Téléphone", close:"Fermer",
       all_types:"Tous les types", tag_warm:"Warm Lead", tag_new:"Tout juste ouvert", note_no_new:"Aucun établissement ne porte encore « Tout juste ouvert » : la mention n'apparaît que lorsqu'un article de presse daté confirme l'ouverture.", with_people:"Avec des personnes identifiées", without_people:"Sans personne pour l'instant", all_people:"Tous les établissements",
@@ -975,6 +1006,15 @@ body.luna-locked .app{display:none}
       pp_validated:"Validation", pp_no_details:"L'email et le téléphone n'ont pas encore été cherchés. Ils seront ajoutés sur demande, avec leur niveau de fiabilité.",
       sort_alpha:"Ordre alphabétique", sort_recent:"Récemment ajoutés", act_email:"Email", act_call:"Appeler", pp_contact:"Contact", pp_company_t:"Société",
       pp_group1:"Relation au niveau du groupe", pp_group2:"Établissement précis non confirmé", pp_venue_level:"Relation au niveau de l'établissement", pp_verif:"Vérification",
+      det_t_email:"Email trouvé", det_t_email_general:"Email général de l'entreprise", det_t_email_named:"Email nominatif", det_t_email_inferred:"Email déduit, non vérifié",
+      det_t_email_uncertain:"Email incertain (le serveur accepte toutes les adresses)", det_t_email_published:"Email publié par l'entreprise", det_t_phone:"Téléphone trouvé",
+      det_masked_note:"Les coordonnées s'affichent après la confirmation.", det_t_none:"Aucun contact trouvé ; il est cherché après la confirmation.",
+      det_t_phone_general:"Téléphone général de l'entreprise", det_t_phone_named:"Téléphone nominatif", det_t_phone_provider:"Téléphone vérifié par le fournisseur", det_t_phone_inferred:"Téléphone déduit, non vérifié",
+      det_t_email_provider:"Email vérifié par le fournisseur", det_t_named_pub:" (publié)", det_src_email:"Source de l'email", det_src_phone:"Source du téléphone", det_li_hint:"indice : résultat de recherche (Google ou Bing), page LinkedIn non ouverte",
+      lv_web_public:"Source web publique", det_origin:"Origine", det_reserve:"Réserve", res_site:c => `Site hors des Émirats${c ? " (" + c + ")" : ""}`, res_phone:c => `Numéro hors des Émirats${c ? " (+" + c + ")" : ""}`, res_host:"Contact de l'hôtel ou du lieu d'accueil", res_other:"Autre réserve", det_li_apollo:"fourni par Apollo", det_li_other:"autre source",
+      det_x_le:"Écarté le", det_x_par:"Écarté par", det_x_motif:"Motif de l'écart",
+      or_releve_presse:"Presse", or_pistes_moteur:"Pistes de Luna", or_opportunite_haute:"Établissement à priorité haute", or_opportunite_moyenne:"Établissement à priorité moyenne", or_opportunite_basse:"Établissement à priorité basse", or_opportunite_inconnue:"Établissement de priorité inconnue", or_licence_data_dubai:"Licence Data Dubai", or_offre_emploi:"Offre d'emploi", or_reprise_projets:"Reprise de projets", or_autre:"Autre",
+      det_new:"Nouvelle détection", det_confirmed:"Confirmé", det_dismissed:"Écarté", det_f_all:"Tout", det_f_new:n => `Nouvelles détections (${n})`, det_f_dis:n => `Écartés (${n})`, det_filter:"Détections", pp_sources:"Sources",
       sub_pistes:"Trouvées par Luna", sub_press:"Presse", sub_ver:"Vérifiées sur Google Maps", sub_dd:"Data Dubai (liste brute)", tests_title:"Tests de qualité des données",
       lead_opp:"Une seule liste de toutes les opportunités, sans doublons : pistes de Luna, annonces de la presse et établissements vérifiés sur Google Maps. Choisissez un statut et ajoutez des notes : ils sont enregistrés pour tous ceux qui ouvrent cette page.",
       search_opp:"Chercher un nom, un lieu, un concept", show_side:"Afficher les commerces qui ont seulement ajouté un café à une autre activité (salle de sport, épicerie, salon)",
@@ -1062,6 +1102,7 @@ body.luna-locked .app{display:none}
     document.documentElement.lang = lang;
     document.title = t("title");
     document.querySelectorAll("[data-i]").forEach(e => { const v = t(e.dataset.i); if (typeof v === "string") e.textContent = v; });
+    if (typeof detLead === "function") try { detLead(); } catch(e) {}
     document.querySelectorAll("[data-ph]").forEach(e => { e.placeholder = t(e.dataset.ph); });
     $("#lang-en").setAttribute("aria-pressed", lang === "en"); $("#lang-fr").setAttribute("aria-pressed", lang === "fr");
     const opts = (sel, pairs) => { const cur = sel.value; sel.replaceChildren(...pairs.map(([v,l]) => { const o = el("option", null, l); o.value = v; return o; })); sel.value = pairs.some(p => p[0] === cur) ? cur : ""; };
@@ -1138,8 +1179,8 @@ body.luna-locked .app{display:none}
   const dateTime = iso => { const d = new Date(iso); return isNaN(d) ? "" : d.toLocaleString(lang === "fr" ? "fr-FR" : "en-GB", {timeZone:"Asia/Dubai", day:"2-digit", month:"short", hour:"2-digit", minute:"2-digit"}); };
 
   // Répertoires : établissements et contacts
-  let contacts = [], dirPage = 0, dirBuilt = false, ctBuilt = false, dirType = ""; const DIR_PER = 30;
-  const peopleOf = o => contacts.filter(c => (c.etablissements || []).includes(o.id));
+  let contacts = [], contactsRaw = [], dirPage = 0, dirBuilt = false, ctBuilt = false, dirType = ""; const DIR_PER = 30;
+  const peopleOf = o => contacts.filter(c => (c.etablissements || []).includes(o.id) && detState("personne", c) !== "ecarte");
   const sepC = () => lang === "fr" ? " : " : ": ";
   // Catégories d'un projet (demande de Renata du 01/10/2026) : sa catégorie principale quand l'export la fournit, sinon chacune
   // de ses activités, jamais leur combinaison. La clé est celle de la traduction (catFold, plus haut), prise sur le libellé
@@ -1163,6 +1204,62 @@ body.luna-locked .app{display:none}
   // « Newly opened » : ouverture constatée par un article daté (ouvert_le) il y a moins de 90 jours. Calculés à l'affichage,
   // jamais tirés d'une date de licence. Tri : Warm Leads, puis Newly opened, puis priorité, puis nom.
   const dirAll = d => (d.opportunites || []).filter(o => !o.masque);
+  // « Nouvelle détection » (fiche besoin du 15/10/2026) : fonction du SITE seulement. Tant que la couche du site n'a pas appelé
+  // lunaPage.setDetections, rien ne change : aucun filtre, aucune étiquette, et les candidats « à confirmer » ou écartés d'une
+  // fiche personne ne sont jamais montrés (page privée). La page ne lit ni n'écrit aucune décision : elle reçoit seulement, par
+  // identifiant, « confirme », « ecarte » ou « annule », et redessine.
+  let detOn = false, detDec = new Map(), detF = {dir: "", ct: ""}, curVenue = null;
+  // Introduction de l'écran des personnes sur le site : les candidats y apparaissent avant validation (la page privée garde l'ancienne).
+  function detLead(){ const e = document.querySelector('#p-ct .lead'); if (e && detOn) e.textContent = t("lead_ct_det"); }
+  const detState = (kind, x) => {
+    if (!detOn || !x) return "";
+    const d = detDec.get(kind + ":" + x.id);
+    if (d === "confirme" || d === "ecarte") return d;
+    if (d === "annule") return "new";
+    if (kind === "projet") return x.ecarte === true ? "ecarte" : x.nouvelle_detection === true ? "new" : "";
+    return x.statut === "a_confirmer" ? "new" : x.statut === "ecarte" ? "ecarte" : "";
+  };
+  const detApplied = (kind, x, st) => kind === "projet" ? (st === "ecarte" ? x.ecarte === true : x.decision_appliquee === true)
+    : (st === "confirme" ? x.statut === "valide" : st === "ecarte" && x.statut === "ecarte");
+  // Avant confirmation (fiche « à confirmer » ou écartée), l'écran montre le TYPE du contact trouvé, jamais sa valeur.
+  const detMasked = c => detOn && (c.statut === "a_confirmer" || c.statut === "ecarte");
+  // Types de contact publiés par Kate (« contact_types », phrases françaises d'aujourd'hui ou codes à venir, et « email_type ») :
+  // une seule fonction, qui rend pour chaque nature (email, phone) la liste des types à écrire, dans la langue de l'écran, ou
+  // « none ». Jamais une valeur d'email ou de téléphone. Sans « contact_types » : repli sur email_statut et telephone_statut.
+  function detTypes(c){
+    const out = {email: [], phone: [], none: false}, seen = new Set();
+    const add = (kind, q, pub) => { const k = kind + ":" + q + (pub ? "p" : ""); if (seen.has(k)) return; seen.add(k);
+      const key = kind === "email" ? {general:"det_t_email_general", named:"det_t_email_named", provider:"det_t_email_provider", inferred:"det_t_email_inferred", found:"det_t_email"}[q]
+        : {general:"det_t_phone_general", named:"det_t_phone_named", provider:"det_t_phone_provider", inferred:"det_t_phone_inferred", found:"det_t_phone"}[q];
+      out[kind].push(t(key) + (pub && q === "named" ? t("det_t_named_pub") : "")); };
+    const list = Array.isArray(c.contact_types) ? c.contact_types : typeof c.contact_types === "string" ? [c.contact_types] : [];
+    list.forEach(x => { const f = catFold(x).replace(/ /g, "_"); if (!f) return;
+      if (f.startsWith("aucun")) { out.none = true; return; }
+      const kind = f.startsWith("email") ? "email" : f.startsWith("telephone") ? "phone" : "";
+      if (!kind) return;
+      const q = /deduit/.test(f) ? "inferred" : /fournisseur/.test(f) ? "provider" : /nominatif/.test(f) ? "named" : /general/.test(f) ? "general" : "found";
+      add(kind, q, /publie/.test(f)); });
+    if (c.email_type && !out.email.length) add("email", c.email_type === "general" ? "general" : "named", false);
+    if (!list.length) {      // repli : fiches sans « contact_types »
+      const st = c.email_statut, ty = c.email_type;
+      if (c.email || ty) add("email", ty === "general" ? "general" : ty === "nominatif" ? "named" : st === "INFERRED_PATTERN" ? "inferred" : st === "VERIFIED_PUBLISHED" ? "general" : st === "SMTP_CONFIRMED" || st === "CORROBORATED" ? "named" : "found", false);
+      if (c.telephone) { add("phone", "found", false); if (c.telephone_statut) { const lab = t("ph_" + c.telephone_statut); if (typeof lab === "string" && lab) out.phone[out.phone.length - 1] += " (" + lab + ")"; } } }
+    return out;
+  }
+  const detHasContact = c => !!(c.email || c.telephone || c.email_type || (Array.isArray(c.contact_types) ? c.contact_types : c.contact_types ? [c.contact_types] : []).some(x => !catFold(x).startsWith("aucun") && catFold(x)));
+  const detChip = (kind, x) => { const st = detState(kind, x); if (!st) return null;
+    return el("span", "chip det-chip " + (st === "new" ? "good" : "muted"), t(st === "new" ? "det_new" : st === "confirme" ? "det_confirmed" : "det_dismissed")); };
+  const detPool = (kind, list, mode) => list.filter(x => { const st = detState(kind, x); return mode === "ecarte" ? st === "ecarte" : mode === "new" ? st === "new" : st !== "ecarte"; });
+  function renderDetSelect(kind, items){
+    const id = kind === "projet" ? "dir-det" : "ct-det"; let sel = $("#" + id);
+    if (!detOn) { if (sel) sel.hidden = true; return; }
+    if (!sel) { sel = el("select"); sel.id = id; const box = $(kind === "projet" ? "#dir-people" : "#ct-sort").parentNode; box.append(sel); box.classList.add(kind === "projet" ? "f-det4" : "f-det5");
+      sel.addEventListener("input", () => { detF[kind === "projet" ? "dir" : "ct"] = sel.value; if (kind === "projet") { dirPage = 0; renderDirList(); } else renderCt(); }); }
+    sel.hidden = false; sel.setAttribute("aria-label", t("det_filter"));
+    const n = m => detPool(kind, items, m).length, cur = detF[kind === "projet" ? "dir" : "ct"];
+    const opts = [["", t("det_f_all")], ["new", t("det_f_new")(n("new"))], ["ecarte", t("det_f_dis")(n("ecarte"))]];
+    sel.replaceChildren(...opts.map(([v, l]) => { const o = el("option", null, l); o.value = v; return o; })); sel.value = cur;
+  }
   const isoDay = s => /^\d{4}-\d{2}-\d{2}/.test(String(s || "")) ? String(s).slice(0, 10) : "";
   const todayDubai = () => new Intl.DateTimeFormat("en-CA", {timeZone: "Asia/Dubai", year: "numeric", month: "2-digit", day: "2-digit"}).format(new Date());
   const addMonths = (iso, n) => { const [y, m, d] = iso.split("-").map(Number); const first = new Date(Date.UTC(y, m - 1 + n, 1));
@@ -1179,7 +1276,7 @@ body.luna-locked .app{display:none}
   const STAGE_RANK = {warm: 0, new: 1, "": 2}, PRIO_RANK = {haute: 0, moyenne: 1, basse: 2};
   function renderDir(){
     const d = oppDoc(); if (!d) return;
-    const all = dirAll(d);
+    const all = detPool("projet", dirAll(d), "");
     $("#c-dir").textContent = all.length;
     const cats = new Map();
     all.forEach(o => catsOf(o).forEach(s => { const k = catKey(s); const c = cats.get(k) || {key: k, raw: s, n: 0, spell: new Map()};
@@ -1259,7 +1356,8 @@ body.luna-locked .app{display:none}
     const d = oppDoc(); if (!d) return;
     const pick = (o, k) => lang === "en" ? (o[k + "_en"] || o[k]) : o[k];
     const q = $("#dir-q").value.trim().toLowerCase(), pp = $("#dir-people").value;
-    const today = todayDubai(), stage = new Map(dirAll(d).map(o => [o, stageOf(o, today)]));
+    const today = todayDubai(), stage = new Map(detPool("projet", dirAll(d), detF.dir).map(o => [o, stageOf(o, today)]));
+    renderDetSelect("projet", dirAll(d));
     $("#dir-note").hidden = [...stage.values()].includes("new") || !stage.size;
     const list = [...stage.keys()].sort((a,b) => STAGE_RANK[stage.get(a)] - STAGE_RANK[stage.get(b)] || (PRIO_RANK[a.priorite] ?? 3) - (PRIO_RANK[b.priorite] ?? 3)
       || a.nom.localeCompare(b.nom)).filter(o => (!dirType || catsOf(o).some(s => catKey(s) === dirType))
@@ -1279,7 +1377,8 @@ body.luna-locked .app{display:none}
       if (["haute","moyenne","basse"].includes(o.priorite)) pr.append(el("span","lg-only",t("pr_" + o.priorite)), el("span","sm-only",sg ? "" : t("pr_label")(o.priorite)));
       const cells = [el("td","act",catsOf(o).map(catLabel).join(", ")), el("td","place",pick(o,"lieu") || ""), ppl, pr];
       let first = true; cells.forEach(c => { if (!c.textContent) return; if (!first) c.classList.add("sep"); first = false; });
-      tr.append(el("td","name",o.nom), ...cells);
+      const nameCell = el("td","name",o.nom); const dc = detChip("projet", o); if (dc) { dc.classList.add("det-tag"); nameCell.append(" ", dc); }
+      tr.append(nameCell, ...cells);
       tr.addEventListener("click", () => openVenue(o));
       tr.addEventListener("keydown", ev => { if (ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); openVenue(o); } });
       body.append(tr);
@@ -1303,7 +1402,8 @@ body.luna-locked .app{display:none}
   function personRow(c, inline){
     const b = el("button","prow"); b.type = "button";
     const av = el("span","avatar", initials(c.nom));
-    const mid = el("span"); mid.append(el("div","pname", c.nom || ""), el("div","pmeta", [c.poste, c.organisation].filter(Boolean).join(" · ")));
+    const mid = el("span"); const pn = el("div","pname", c.nom || ""); const dc = detChip("personne", c); if (dc) { dc.classList.add("det-tag"); pn.append(" ", dc); }
+    mid.append(pn, el("div","pmeta", [c.poste, c.organisation].filter(Boolean).join(" · ")));
     const side = el("span","pside"); const dot = el("span", lvDot(c)); dot.title = t("lv_" + (c.niveau || "apollo")); side.append(dot, icon("chevron-right"));
     b.append(av, mid, side); b.addEventListener("click", () => openPerson(c));
     return b;
@@ -1317,7 +1417,10 @@ body.luna-locked .app{display:none}
     if (!LINKEDIN_RE.test(url)) { f.append(el("span","badge-nf", t("pp_missing"))); return f; }
     f.append(link(url, url.replace(/^https:\/\/([a-z]{2,3}\.)?linkedin\.com/i, "linkedin.com").replace(/\/$/, "")));
     const src = String(c.linkedin_source || "").trim();
-    if (src) f.append(el("small", null, lang === "fr" ? src.replace(/^provided by /i, "fourni par ") : src.replace(/^fourni par /i, "provided by ")));
+    if (/^(indice\s*:|indice_recherche$)/i.test(src)) f.append(el("small", null, t("det_li_hint")));
+    else if (/^fourni_par_apollo$/i.test(src)) f.append(el("small", null, t("det_li_apollo")));
+    else if (/^autre$/i.test(src)) f.append(el("small", null, t("det_li_other")));
+    else if (src) f.append(el("small", null, lang === "fr" ? src.replace(/^provided by /i, "fourni par ") : src.replace(/^fourni par /i, "provided by ")));
     return f;
   }
   // « Trouvé par » (JACK-0210-15, point 4) : chaque adresse web du texte devient un lien ouvert dans un nouvel onglet
@@ -1340,10 +1443,27 @@ body.luna-locked .app{display:none}
   // et un téléphone qui remplacent ceux de l'export (chaîne vide = effacé) et la mention à écrire dessous. La page privée ne la
   // reçoit jamais : sa fiche reste celle de l'export.
   let personOv = new Map(), curPerson = null;
+  // Réserve d'un candidat (JACK-1510-53 et -54) : liste de codes de Kate, « type » ou « type:valeur » : site_etranger:<extension
+  // de pays>, numero_etranger:<indicatif>, contact_hote, autre ; tout autre code devient « autre réserve ». Une phrase d'un
+  // ancien document (texte libre) s'affiche telle quelle. Jamais de valeur de contact dans ce champ.
+  function reserveText(r){
+    const parts = (Array.isArray(r) ? r : String(r).split(/\s*[;,]\s*/)).map(x => String(x).trim()).filter(Boolean);
+    const region = code => { const cc = code.toUpperCase() === "UK" ? "GB" : code.toUpperCase();
+      try { return new Intl.DisplayNames([lang === "fr" ? "fr" : "en"], {type: "region"}).of(cc) || cc; } catch(e) { return cc; } };
+    return parts.map(x => {
+      if (!/^[a-z_]+(:[a-z0-9]{1,4})?$/.test(x)) return x;                                     // texte libre d'un ancien document
+      const [k, v] = x.split(":");
+      if (k === "site_etranger" && v) return t("res_site")(region(v));
+      if (k === "numero_etranger" && v) return t("res_phone")(v.replace(/\D/g, ""));
+      if (k === "contact_hote") return t("res_host");
+      return t("res_other");
+    }).join(" · ");
+  }
   function openPerson(c){
     curPerson = c;
     const ov = personOv.get(String(c.id)) || {};
-    const shown = {email: ov.email !== undefined ? ov.email : c.email, telephone: ov.telephone !== undefined ? ov.telephone : c.telephone};
+    const masked = detMasked(c);
+    const shown = masked ? {email: "", telephone: ""} : {email: ov.email !== undefined ? ov.email : c.email, telephone: ov.telephone !== undefined ? ov.telephone : c.telephone};
     const d = oppDoc(); const byId = {}; (d ? d.opportunites : []).forEach(o => byId[o.id] = o);
     $("#sheet").classList.add("pmode");
     $("#sheet-title").textContent = c.nom || "";
@@ -1352,6 +1472,7 @@ body.luna-locked .app{display:none}
     const id = el("div","p-id");
     if (c.poste) id.append(el("div","p-role", c.poste));
     if (c.organisation) id.append(el("div","p-co", c.organisation));
+    const pdc = detChip("personne", c); if (pdc) id.append(pdc);
     b.append(id);
     // 2. actions rapides : désactivées proprement si l'information manque
     const acts = el("div","p-actions");
@@ -1373,10 +1494,14 @@ body.luna-locked .app{display:none}
       return f; };
     // 3. contact
     const sc = section(t("pp_contact"));
-    const kvEl = kv([[t("th_email"), valueOrMissing(shown.email, c.email_statut, "em_", ov.email_note)], [t("th_phone"), valueOrMissing(shown.telephone, c.telephone_statut, "ph_", ov.telephone_note)],
+    const dty = masked ? detTypes(c) : null;
+    const typeOnly = kind => { if (!dty[kind].length) return el("span", "badge-nf", t("pp_missing")); const f = document.createDocumentFragment(); dty[kind].forEach((x, i) => f.append(el("div", null, x))); return f; };
+    const kvEl = kv([[t("th_email"), masked ? typeOnly("email") : valueOrMissing(shown.email, c.email_statut, "em_", ov.email_note)],
+      [t("th_phone"), masked ? typeOnly("phone") : valueOrMissing(shown.telephone, c.telephone_statut, "ph_", ov.telephone_note)],
       [t("th_linkedin"), linkedinOf(c)]]);
     sc.append(kvEl); const vcells = kvEl.querySelectorAll(".v");
-    if (ov.stamp) sc.append(el("small", null, ov.stamp));
+    if (masked) { if ((dty.none || c.contact_a_chercher === true) && !dty.email.length && !dty.phone.length) sc.append(el("small", null, t("det_t_none"))); sc.append(el("small", null, t("det_masked_note"))); }
+    if (ov.stamp && !masked) sc.append(el("small", null, ov.stamp));
     b.append(sc);
     // 4. société
     if (c.organisation || c.poste) { const sco = section(t("pp_company_t"));
@@ -1395,20 +1520,29 @@ body.luna-locked .app{display:none}
     const ss = section(t("pp_source"), true);
     const rows = [[t("pp_found"), sourceNode(c.source || "Apollo")], [t("pp_verif"), t("lv_" + (c.niveau || "apollo"))]];
     if (c.valide_le) rows.push([t("pp_validated"), `${fmtDate(c.valide_le)}${c.valide_par ? " · " + c.valide_par : ""}`]);
+    if (detOn) { const og = t("or_" + String(c.origine || "")); if (c.origine && typeof og === "string") rows.push([t("det_origin"), og]);
+      if (c.reserve) rows.push([t("det_reserve"), reserveText(c.reserve)]);
+      if (c.statut === "ecarte") { if (c.ecarte_le) rows.push([t("det_x_le"), fmtDate(c.ecarte_le)]); if (c.ecarte_par) rows.push([t("det_x_par"), String(c.ecarte_par)]); if (c.ecarte_motif) rows.push([t("det_x_motif"), String(c.ecarte_motif)]); } }
+    if (detOn) [["email_source", "det_src_email"], ["telephone_source", "det_src_phone"]].forEach(([k, lab]) => { const v = String(c[k] || "").trim(); if (v && !v.includes("@")) rows.push([t(lab), sourceNode(v)]); });
+    if (detOn && Array.isArray(c.sources) && c.sources.length) { const ul = el("ul","det-sources");
+      c.sources.forEach(x => { const u = typeof x === "string" ? x : (x && x.url) || "", lab = typeof x === "string" ? "" : (x && (x.libelle || x.label)) || ""; if (!u && !lab) return;
+        const li = el("li"); if (/^https?:\/\//i.test(u)) li.append(link(u, lab || u)); else li.append(document.createTextNode(lab || u)); ul.append(li); });
+      if (ul.childNodes.length) rows.push([t("pp_sources"), ul]); }
     ss.append(kv(rows)); b.append(ss);
     // Point d'accroche neutre pour le site (comme « luna:venue-open ») : l'identifiant de la fiche, ses valeurs d'export et
     // l'élément à compléter. La page ne lit ni n'écrit rien d'autre ici.
-    document.dispatchEvent(new CustomEvent("luna:person-open", {detail: {id: String(c.id == null ? "" : c.id), nom: c.nom || "", poste: c.poste || "",
-      organisation: c.organisation || "", email: c.email || "", telephone: c.telephone || "", linkedin: c.linkedin || "", source: c.source || "", body: b,
-      cells: {email: vcells[0], telephone: vcells[1]}}}));
+    document.dispatchEvent(new CustomEvent("luna:person-open", {detail: {detections: detOn, id: String(c.id == null ? "" : c.id), nom: c.nom || "", poste: c.poste || "",
+      organisation: c.organisation || "", email: masked ? "" : c.email || "", telephone: masked ? "" : c.telephone || "", candidate: masked, hasContact: detHasContact(c), linkedin: c.linkedin || "", source: c.source || "", body: b,
+      cells: masked ? {} : {email: vcells[0], telephone: vcells[1]}}}));
     openSheetLayer(); $("#sheet-close").focus(); refreshIcons();
   }
   function openVenue(o){
     $("#sheet").classList.remove("pmode");
     const pick = k => lang === "en" ? (o[k + "_en"] || o[k]) : o[k];
-    $("#sheet-title").textContent = o.nom;
+    $("#sheet-title").textContent = o.nom; curVenue = o;
     const b = $("#sheet-body"); b.replaceChildren();
     const chips = el("div","chips");
+    const vdc = detChip("projet", o); if (vdc) chips.append(vdc);
     chips.append(el("span","chip " + (o.priorite === "haute" ? "good" : o.priorite === "moyenne" ? "" : "muted"), `${t("pr_label")(o.priorite)} · ${t("rs_" + o.raison)}`));
     chips.append(el("span","chip muted", t("et_" + o.etat) || o.etat));
     if (o.verification) chips.append(el("span","chip muted", o.verification === "EXACT" ? t("verified_place") : t("probable_place")));
@@ -1433,7 +1567,7 @@ body.luna-locked .app{display:none}
     eb.addEventListener("click", () => { closeSheet(); show("nav-opp"); $("#opp-side").checked = true; $("#opp-q").value = o.nom; oppPage = 0; renderOppList(); });
     fu.append(eb); b.append(fu);
     if (followReadOnly()) { eb.hidden = true; fu.append(el("p","note",t("follow_moved"))); }
-    document.dispatchEvent(new CustomEvent("luna:venue-open", {detail: {id: o.id, nom: o.nom, body: b, categorie: o.categorie || ""}}));
+    document.dispatchEvent(new CustomEvent("luna:venue-open", {detail: {detections: detOn, id: o.id, nom: o.nom, body: b, categorie: o.categorie || ""}}));
     openSheetLayer(); $("#sheet-close").focus();
   }
   function openSheetLayer(){ const was = $("#sheet").hidden; $("#sheet").hidden = false; $("#sheet-back").hidden = false;
@@ -1448,12 +1582,22 @@ body.luna-locked .app{display:none}
   $("#sheet-back").addEventListener("click", closeSheetByUser);
   document.addEventListener("keydown", ev => { if (ev.key === "Escape" && !$("#sheet").hidden) closeSheetByUser(); });
 
+  // Candidats « à confirmer » ou écartés : montrés seulement quand le site a activé les détections.
+  function syncContacts(){ contacts = detOn ? contactsRaw : contactsRaw.filter(c => c.statut !== "a_confirmer" && c.statut !== "ecarte"); }
+  function detSheetSync(){
+    const sh = $("#sheet"); if (sh.hidden) return;
+    const person = sh.classList.contains("pmode"), x = person ? curPerson : curVenue; if (!x) return;
+    const host = sh.querySelector(person ? ".p-id" : ".chips"); if (!host) return;
+    const fresh = detChip(person ? "personne" : "projet", x), old = host.querySelector(".det-chip");
+    if (old && fresh) { host.insertBefore(fresh, old); old.remove(); } else if (old) old.remove(); else if (fresh) host.append(fresh);
+  }
   function renderCt(){
-    $("#c-ct").textContent = contacts.length || "";
+    const main = detPool("personne", contacts, ""); $("#c-ct").textContent = main.length || "";
     if (!ctBuilt) { ["ct-q","ct-role","ct-has","ct-sort"].forEach(id => $("#"+id).addEventListener("input", renderCt)); ctBuilt = true; }
     const q = $("#ct-q").value.trim().toLowerCase(), fam = $("#ct-role").value, has = $("#ct-has").value;
     const d = oppDoc(); const byId = {}; (d ? d.opportunites : []).forEach(o => byId[o.id] = o);
-    const list = contacts.filter(c => (!fam || c.famille === fam) && (!has || (has === "email" ? !!c.email : has === "phone" ? !!c.telephone : !c.email && !c.telephone))
+    renderDetSelect("personne", contacts);
+    const list = detPool("personne", contacts, detF.ct).filter(c => (!fam || c.famille === fam) && (!has || (has === "email" ? !!c.email : has === "phone" ? !!c.telephone : !c.email && !c.telephone))
       && (!q || [c.nom, c.poste, c.organisation, ...(c.etablissements || []).map(id => (byId[id] || {}).nom)].join(" ").toLowerCase().includes(q)))
       .sort((a,b) => String(a.nom).localeCompare(String(b.nom)));
     const box = $("#ct-list"); box.replaceChildren();
@@ -1836,6 +1980,9 @@ body.luna-locked .app{display:none}
     projects(){ const d = oppDoc(); return d ? dirAll(d).map(o => ({id: o.id, nom: o.nom, categorie: o.categorie || ""})) : []; },
     lang: () => lang, refresh(){ if (oppDoc()) renderDir(); },
     setPersonOverlay(entries){ personOv = new Map(entries || []); },
+    setDetections(entries){ detOn = true; detLead(); detDec = new Map(entries || []); syncContacts(); if (oppDoc()) renderDir(); renderCt(); detSheetSync(); },
+    detInfo(kind, id){ const d = oppDoc(), x = kind === "projet" ? (d ? (d.opportunites || []).find(o => o.id === id) : null) : contactsRaw.find(c => String(c.id) === String(id));
+      if (!x) return null; const st = detState(kind, x); return {state: st, applied: !!st && st !== "new" && detApplied(kind, x, st)}; },
     refreshPerson(){ if (curPerson && !$("#sheet").hidden && $("#sheet").classList.contains("pmode")) openPerson(curPerson); }
   };
   // Le suivi passe en lecture seule (ou redevient modifiable) dès que le site le décide : les cartes affichées sont redessinées.
@@ -1855,7 +2002,7 @@ body.luna-locked .app{display:none}
       document.dispatchEvent(new CustomEvent("luna:projects-data")); },
       () => { $("#status").replaceChildren(el("span","pill crit",t("dberr"))); });
     db.collection("demandes").orderBy("cree_le","desc").limit(100).onSnapshot(snap => { requests = snap.docs.filter(d => d.exists).map(d => Object.assign({id: d.id}, d.data())); renderReq(); renderHome(); }, () => {});
-    db.collection("contacts").onSnapshot(snap => { contacts = snap.docs.filter(d => d.exists).map(d => Object.assign({id: d.id}, d.data())); renderCt(); renderDirList(); renderHome(); }, () => {});
+    db.collection("contacts").onSnapshot(snap => { contactsRaw = snap.docs.filter(d => d.exists).map(d => Object.assign({id: d.id}, d.data())); syncContacts(); renderCt(); renderDirList(); renderHome(); }, () => {});
     db.collection("suivi").onSnapshot(snap => { const s = {}; snap.docs.forEach(d => { if (d.exists) s[d.id] = d.data(); }); suivi = s; renderOpp(); renderHome(); renderAna(); }, () => {});
   })();
 })();

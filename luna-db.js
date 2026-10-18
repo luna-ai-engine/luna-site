@@ -12,8 +12,9 @@
      connexion (luna-login.js) reste affiché. Une personne connectée qui n'est pas membre est aussitôt déconnectée.
    - Lecture : temps réel si le canal Supabase est abonné ; sinon relecture toutes les 60 s ; toujours au retour sur l'onglet.
      Chaque relecture ne demande d'abord que (doc_id, version, updated_at), puis le contenu des seuls documents changés.
-   - Écriture : seulement « suivi », « demandes » et « personnes » (corrections et notes de l'écran Personnes repérées,
-     migration 0039 ; l'export de Kate n'y touche jamais). Les règles d'accès de la base décident en dernier ressort. Jamais de
+   - Écriture : seulement « suivi », « demandes », « personnes » (corrections et notes de l'écran Personnes repérées,
+     migration 0039 ; l'export de Kate n'y touche jamais) et « detections » (décisions Confirmer, Écarter et Annuler sur les
+     nouvelles détections, fiche besoin du 15/10/2026 ; un document par élément, « projet:<id> » ou « personne:<id> »). Les règles d'accès de la base décident en dernier ressort. Jamais de
      suppression. DocRef.change(fn) relit le document, calcule le nouveau contenu depuis ce qui vient d'être lu, puis écrit
      seulement si la version n'a pas bougé ; sinon il relit et recommence (quatre essais) : deux personnes qui écrivent en même
      temps ne perdent rien.
@@ -24,8 +25,8 @@
   "use strict";
 
   const SCHEMA = "renata", TABLE = "luna_documents", MEMBERS = "luna_members";
-  const COLLECTIONS = ["renata", "contacts", "suivi", "demandes", "personnes"];
-  const WRITABLE = ["suivi", "demandes", "personnes"];
+  const COLLECTIONS = ["renata", "contacts", "suivi", "demandes", "personnes", "detections"];
+  const WRITABLE = ["suivi", "demandes", "personnes", "detections"];
   const POLL_MS = 60000, SAFETY_MS = 300000, TICK_MS = 15000, PAGE = 500, CHUNK = 40, DEBOUNCE_MS = 400;
 
   const cfg = () => root.LUNA_CONFIG || {};
@@ -450,6 +451,9 @@
   };
 
   root.lunaAuth = lunaAuth;
+  // Indicateur neutre : cette couche sait lire et écrire « detections » (site seulement). Les écrans de nouvelles détections
+  // (luna-detections.js) ne s'activent que s'il est présent ; la page privée, qui lit une autre base, ne l'a jamais.
+  root.lunaSiteDb = Object.freeze({ detections: true });
   root.claude = {
     async use(name) {
       if (name !== "db" && name !== "user") return null;
