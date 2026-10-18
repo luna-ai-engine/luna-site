@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.116.0/dist/umd/supabase.js https://cdn.jsdelivr.net/npm/lucide@0.460.0/dist/umd/lucide.min.js 'sha256-8yhMl2SZYlkfHkNpmhvvVBKwLQPXn9zwQVdFECqCzsc='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src https://jqqzzakidyrcglyzgbrk.supabase.co wss://jqqzzakidyrcglyzgbrk.supabase.co; manifest-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.116.0/dist/umd/supabase.js https://cdn.jsdelivr.net/npm/lucide@0.460.0/dist/umd/lucide.min.js 'sha256-gHmIlKNgcT6b2OP0GSPIyGf4f22p8xlZkEfeuWzJMXg='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src https://jqqzzakidyrcglyzgbrk.supabase.co wss://jqqzzakidyrcglyzgbrk.supabase.co; manifest-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
 <meta name="robots" content="noindex, nofollow">
 <meta name="theme-color" content="#F7F3EC">
@@ -322,6 +322,25 @@ details p{margin:8px 0 0}
 }
 @media (max-width:900px) and (hover:hover){.dir-table tbody tr:hover{background:var(--hover)}.dir-table tbody tr:hover td{background:transparent}}
 @media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
+
+/* Accueil cliquable, cartes des personnes (fiche besoin du 18/10/2026) */
+button.kpi{display:block;width:100%;text-align:left;font:inherit;color:inherit;cursor:pointer;position:relative}
+button.kpi:focus-visible,.pc-name:focus-visible,.pc-link:focus-visible{outline:2px solid var(--tiffany-dark);outline-offset:2px}
+button.kpi > svg{position:absolute;top:20px;right:20px;width:16px;height:16px;color:var(--taupe-soft)}
+@media (hover:hover){button.kpi:hover{background:var(--hover)}}
+.ct-bar{display:flex;flex-wrap:wrap;align-items:center;gap:12px 20px}
+.signals{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px;margin-bottom:12px}
+.signals .note{margin:0}
+.pcards{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,290px),1fr));gap:16px}
+.pcard{background:var(--cream);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);padding:18px 20px;display:grid;gap:6px;align-content:start;min-width:0;overflow-wrap:anywhere}
+.pc-head{display:flex;flex-wrap:wrap;align-items:center;gap:8px 10px}
+.pc-name{display:flex;align-items:center;gap:12px;min-width:0;border:0;background:transparent;padding:0;font:inherit;color:inherit;text-align:left;cursor:pointer}
+.pc-nm{font-size:16px;color:var(--taupe);line-height:1.35}
+@media (hover:hover){.pc-name:hover .pc-nm{color:var(--active-ink)}}
+.pc-role{font-size:14.5px;color:var(--taupe)} .pc-co{font-size:13.5px;color:var(--taupe-soft)}
+.pc-est,.pc-date{font-size:13.5px;color:var(--taupe-soft)}
+.pc-link{border:0;background:transparent;padding:0;font:inherit;font-weight:500;color:var(--active-ink);text-decoration:underline;cursor:pointer;text-align:left;margin-right:10px}
+.pc-state{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
 </style>
 <style>
 /* Luna, site autonome : écran de connexion et compléments (charte Luna : Ivory, Cream, Tiffany, Cormorant Garamond, Inter). */
@@ -717,6 +736,10 @@ body.luna-locked .app{display:none}
         <select id="ct-has" aria-label="Details"></select>
         <select id="ct-sort" aria-label="Sort"></select>
       </div>
+      <div class="ct-bar">
+        <div class="lang" role="group" data-al="ct_view" aria-label="Display"><button type="button" id="ct-v-cards" aria-pressed="false" data-i="ct_cards"></button><button type="button" id="ct-v-list" aria-pressed="true" data-i="ct_list"></button></div>
+        <label class="check"><input type="checkbox" id="ct-week"> <span id="ct-week-l"></span></label>
+      </div>
       <div class="people" id="ct-list"></div>
     </section>
 
@@ -730,6 +753,7 @@ body.luna-locked .app{display:none}
       </div>
       <div class="subpanel" id="p-pistes">
         <p class="lead" data-i="lead_pistes"></p>
+        <div id="pistes-signals" class="signals"></div>
         <div id="pistes-list" style="display:grid;gap:16px"></div>
       </div>
       <div class="subpanel" id="p-ver" hidden>
@@ -896,6 +920,8 @@ body.luna-locked .app{display:none}
       pp_identity:"Contact details", pp_first:"First name", pp_last:"Last name", pp_company:"Company", pp_missing:"Not found yet",
       pp_venues:"Related venues", pp_group_note:o => `Works at group level (${o}): the exact venue is not proven.`, pp_source:"Source", pp_found:"Found through",
       pp_validated:"Validation", pp_no_details:"Email and phone have not been searched yet. They will be added on request, with their reliability shown.",
+      ct_view:"Display", ct_cards:"Cards", ct_list:"List", ct_week_f:n => `Validated this week (${n})`, cs_active:"Active", pc_est:"Venue", pc_created:"Lead created", pc_email:"Email", pc_phone:"Phone", pc_none:"No contact details yet", pc_no_email:"no email", pc_no_phone:"no phone", kpi_open:"Open",
+      sig_line:(n,a,b) => `${n} opening signals: ${a} leads below, and ${b} venues in the press digest.`, sig_open_press:"Open the Press tab",
       sort_alpha:"Alphabetical", sort_recent:"Recently added", act_email:"Email", act_call:"Call", pp_contact:"Contact", pp_company_t:"Company",
       pp_group1:"Group-level relationship", pp_group2:"Exact venue not confirmed", pp_venue_level:"Venue-level relationship", pp_verif:"Verification",
       det_t_email:"Email found", det_t_email_general:"General company email", det_t_email_named:"Named email", det_t_email_inferred:"Inferred email, not verified",
@@ -1004,6 +1030,8 @@ body.luna-locked .app{display:none}
       pp_identity:"Coordonnées", pp_first:"Prénom", pp_last:"Nom", pp_company:"Société", pp_missing:"Pas encore trouvé",
       pp_venues:"Établissements liés", pp_group_note:o => `Travaille au niveau du groupe (${o}) : l'établissement précis n'est pas prouvé.`, pp_source:"Source", pp_found:"Trouvé par",
       pp_validated:"Validation", pp_no_details:"L'email et le téléphone n'ont pas encore été cherchés. Ils seront ajoutés sur demande, avec leur niveau de fiabilité.",
+      ct_view:"Affichage", ct_cards:"Cartes", ct_list:"Liste", ct_week_f:n => `Validées cette semaine (${n})`, cs_active:"Actives", pc_est:"Établissement", pc_created:"Lead créé le", pc_email:"Email", pc_phone:"Téléphone", pc_none:"Aucun contact pour le moment", pc_no_email:"pas d'email", pc_no_phone:"pas de téléphone", kpi_open:"Ouvrir",
+      sig_line:(n,a,b) => `${n} signaux d'ouverture : ${a} pistes ci-dessous, et ${b} établissements dans le relevé de presse.`, sig_open_press:"Ouvrir l'onglet Presse",
       sort_alpha:"Ordre alphabétique", sort_recent:"Récemment ajoutés", act_email:"Email", act_call:"Appeler", pp_contact:"Contact", pp_company_t:"Société",
       pp_group1:"Relation au niveau du groupe", pp_group2:"Établissement précis non confirmé", pp_venue_level:"Relation au niveau de l'établissement", pp_verif:"Vérification",
       det_t_email:"Email trouvé", det_t_email_general:"Email général de l'entreprise", det_t_email_named:"Email nominatif", det_t_email_inferred:"Email déduit, non vérifié",
@@ -1104,6 +1132,7 @@ body.luna-locked .app{display:none}
     document.querySelectorAll("[data-i]").forEach(e => { const v = t(e.dataset.i); if (typeof v === "string") e.textContent = v; });
     if (typeof detLead === "function") try { detLead(); } catch(e) {}
     document.querySelectorAll("[data-ph]").forEach(e => { e.placeholder = t(e.dataset.ph); });
+    document.querySelectorAll("[data-al]").forEach(e => { e.setAttribute("aria-label", t(e.dataset.al)); });
     $("#lang-en").setAttribute("aria-pressed", lang === "en"); $("#lang-fr").setAttribute("aria-pressed", lang === "fr");
     const opts = (sel, pairs) => { const cur = sel.value; sel.replaceChildren(...pairs.map(([v,l]) => { const o = el("option", null, l); o.value = v; return o; })); sel.value = pairs.some(p => p[0] === cur) ? cur : ""; };
     opts($("#ver-id"), [["",t("all")],["EXACT",t("only_confirmed")],["PROBABLE",t("only_probable")]]);
@@ -1111,7 +1140,7 @@ body.luna-locked .app{display:none}
     opts($("#press-status"), [["",t("ps_all")],["annonce",t("ps_ann")],["ouvert_recemment",t("ps_open")]]);
     opts($("#press-link"), [["",t("pl_all")],["dd",t("pl_dd")],["renata",t("pl_renata")],["new",t("pl_new")]]);
     opts($("#opp-prio"), [["",t("pr_all")],["haute",t("pr_haute")],["moyenne",t("pr_moyenne")],["basse",t("pr_basse")]]);
-    opts($("#opp-stat"), [["",t("cs_all")], ...CS.map(c => [c, t("cs_" + c)])]);
+    opts($("#opp-stat"), [["",t("cs_all")], ["active",t("cs_active")], ...CS.map(c => [c, t("cs_" + c)])]);
     opts($("#dir-people"), [["",t("all_people")],["yes",t("with_people")],["no",t("without_people")]]);
     opts($("#ct-role"), [["",t("all_roles")], ...FAM.map(f => [f, t("fam_" + f)])]);
     opts($("#ct-has"), [["",t("has_any")],["email",t("has_email")],["phone",t("has_phone")],["none",t("has_none")]]);
@@ -1168,9 +1197,9 @@ body.luna-locked .app{display:none}
   });
 
   const docs = {}; let requests = []; let dbReady = false;
-  const kpis = (box, list) => { box.replaceChildren(); list.forEach(([n,l,ic]) => { const k = el("div","kpi");
+  const kpis = (box, list) => { box.replaceChildren(); list.forEach(([n,l,ic,go]) => { const k = go ? el("button","kpi kpi-btn") : el("div","kpi"); if (go) { k.setAttribute("type","button"); k.addEventListener("click", go); }
     if (ic) { const i = el("div","kico"); const g = document.createElement("i"); g.setAttribute("data-lucide", ic); i.append(g); k.append(i); }
-    k.append(el("div","l",l), el("div","n",n)); box.append(k); }); if (window.lucide) try { window.lucide.createIcons({attrs:{"stroke-width":1.5}}); } catch(e) {} };
+    k.append(el("div","l",l), el("div","n",n)); if (go) k.append(icon("arrow-right")); box.append(k); }); if (window.lucide) try { window.lucide.createIcons({attrs:{"stroke-width":1.5}}); } catch(e) {} };
 
   function render(){ renderStatus(); renderHome(); renderAuto(); renderAna(); renderSearch(); renderOpp(); renderDir(); renderCt(); renderPistes(); renderVer(); renderPress(); renderDD(); renderTests(); renderReq(); }
 
@@ -1591,20 +1620,58 @@ body.luna-locked .app{display:none}
     const fresh = detChip(person ? "personne" : "projet", x), old = host.querySelector(".det-chip");
     if (old && fresh) { host.insertBefore(fresh, old); old.remove(); } else if (old) old.remove(); else if (fresh) host.append(fresh);
   }
+  // Date de création du lead : validation, ou détection pour une nouvelle détection (candidat « à confirmer »).
+  const ctCreated = c => isoDay(detState("personne", c) === "new" ? (c.detecte_le || c.valide_le) : (c.valide_le || c.detecte_le));
+  const ctView = () => store.get("luna-ct-view") === "list" ? "list" : "cards";      // « Cartes » par défaut (JACK-1810-06)
+  function contactState(c){
+    const w = el("div","pc-state"), chip = (txt, cls) => w.append(el("span","chip " + (cls || "muted"), txt));
+    if (detMasked(c)) {                                   // avant confirmation : le TYPE seulement, jamais la valeur
+      const ty = detTypes(c); ty.email.forEach(x => chip(x, "")); ty.phone.forEach(x => chip(x, ""));
+      if (!ty.email.length && !ty.phone.length) chip(t("pc_none"));
+    } else {
+      const lab = (pre, st) => { const l = st ? t(pre + st) : ""; return typeof l === "string" ? l : ""; };
+      if (c.email) { const l = lab("em_", c.email_statut); chip(t("pc_email") + (l ? sepC() + l : ""), /VERIFIED|SMTP|CORROBORATED/.test(c.email_statut || "") && c.email_statut !== "UNVERIFIED" ? "good" : ""); } else chip(t("pc_no_email"));
+      if (c.telephone) { const l = lab("ph_", c.telephone_statut); chip(t("pc_phone") + (l ? sepC() + l : ""), c.telephone_statut === "VERIFIED" ? "good" : ""); } else chip(t("pc_no_phone"));
+    }
+    if (c.niveau && t("lv_" + c.niveau) && typeof t("lv_" + c.niveau) === "string") chip(t("lv_" + c.niveau));
+    return w;
+  }
+  function personCardFull(c, byId){
+    const a = el("article","pcard"); const head = el("div","pc-head");
+    const nm = el("button","pc-name"); nm.type = "button"; nm.append(el("span","avatar", initials(c.nom)), el("span","pc-nm", c.nom || ""));
+    nm.addEventListener("click", () => openPerson(c)); head.append(nm);
+    const dc = detChip("personne", c); if (dc) head.append(dc);
+    a.append(head);
+    const line = (cls, txt) => { if (txt) a.append(el("div", cls, txt)); };
+    line("pc-role", c.poste); line("pc-co", c.organisation);
+    const ests = (c.etablissements || []).map(id => byId[id]).filter(Boolean);
+    if (ests.length) { const r = el("div","pc-est"); r.append(el("span","k", t("pc_est") + sepC()));
+      ests.forEach(o => { const b = el("button","pc-link", o.nom); b.type = "button"; b.addEventListener("click", () => openVenue(o)); r.append(b); }); a.append(r); }
+    const cd = ctCreated(c); if (cd) { const r = el("div","pc-date"); r.append(el("span","k", t("pc_created") + sepC()), document.createTextNode(fmtDate(cd))); a.append(r); }
+    a.append(contactState(c));
+    return a;
+  }
   function renderCt(){
     const main = detPool("personne", contacts, ""); $("#c-ct").textContent = main.length || "";
-    if (!ctBuilt) { ["ct-q","ct-role","ct-has","ct-sort"].forEach(id => $("#"+id).addEventListener("input", renderCt)); ctBuilt = true; }
-    const q = $("#ct-q").value.trim().toLowerCase(), fam = $("#ct-role").value, has = $("#ct-has").value;
+    if (!ctBuilt) {
+      ["ct-q","ct-role","ct-has","ct-sort","ct-week"].forEach(id => $("#"+id).addEventListener("input", renderCt));
+      [["cards","#ct-v-cards"],["list","#ct-v-list"]].forEach(([v,sel]) => $(sel).addEventListener("click", () => { store.set("luna-ct-view", v); renderCt(); }));
+      ctBuilt = true; }
+    const q = $("#ct-q").value.trim().toLowerCase(), fam = $("#ct-role").value, has = $("#ct-has").value, view = ctView();
+    $("#ct-v-cards").setAttribute("aria-pressed", view === "cards"); $("#ct-v-list").setAttribute("aria-pressed", view === "list");
+    $("#ct-week-l").textContent = t("ct_week_f")(nf().format(weekCt().length));
     const d = oppDoc(); const byId = {}; (d ? d.opportunites : []).forEach(o => byId[o.id] = o);
     renderDetSelect("personne", contacts);
+    const wk = new Set(weekCt().map(c => c.id)), onlyWeek = $("#ct-week").checked;
     const list = detPool("personne", contacts, detF.ct).filter(c => (!fam || c.famille === fam) && (!has || (has === "email" ? !!c.email : has === "phone" ? !!c.telephone : !c.email && !c.telephone))
+      && (!onlyWeek || wk.has(c.id))
       && (!q || [c.nom, c.poste, c.organisation, ...(c.etablissements || []).map(id => (byId[id] || {}).nom)].join(" ").toLowerCase().includes(q)))
       .sort((a,b) => String(a.nom).localeCompare(String(b.nom)));
-    const box = $("#ct-list"); box.replaceChildren();
-    if (!list.length) { box.append(el("div","empty", contacts.length ? t("none_match") : t("no_contacts"))); return; }
+    const box = $("#ct-list"); box.replaceChildren(); box.className = view === "cards" ? "pcards" : "people";
+    if (!list.length) { box.className = "people"; box.append(el("div","empty", contacts.length ? t("none_match") : t("no_contacts"))); return; }
     const byName = (a,b) => String(a.nom || "").localeCompare(String(b.nom || ""), lang === "fr" ? "fr" : "en", {sensitivity:"base"});
     const recent = $("#ct-sort").value === "recent";
-    list.sort((a,b) => recent ? (String(b.valide_le || "").localeCompare(String(a.valide_le || "")) || byName(a,b)) : byName(a,b)).forEach(c => box.append(personRow(c)));
+    list.sort((a,b) => recent ? (ctCreated(b).localeCompare(ctCreated(a)) || byName(a,b)) : byName(a,b)).forEach(c => box.append(view === "cards" ? personCardFull(c, byId) : personRow(c)));
     refreshIcons();
   }
 
@@ -1625,16 +1692,30 @@ body.luna-locked .app{display:none}
     $("#home-hello").textContent = (h < 12 ? t("hello") : h < 18 ? t("hello_pm") : t("hello_ev"))(viewerName);
     $("#home-date").textContent = new Date().toLocaleDateString(lang === "fr" ? "fr-FR" : "en-GB", {weekday:"long", day:"numeric", month:"long", timeZone:"Asia/Dubai"});
   }
+  // Indicateurs cliquables de l'Accueil (fiche besoin du 18/10/2026) : le nombre affiché est calculé par la MÊME fonction que la
+  // liste qu'il ouvre ; l'ouverture passe par show(), donc par l'historique (le retour ramène à l'Accueil).
+  const closedSt = ["perdu","pas_pertinent","gagne"];
+  const isActiveOpp = o => !o.secondaire && !closedSt.includes(((suivi[o.id] || {}).statut) || "a_contacter");
+  const weekCt = () => { const ago = Date.now() - 7*864e5; return detPool("personne", contacts, "").filter(c => c.valide_le && Date.parse(c.valide_le) >= ago); };
+  const signalCount = () => ((docs.pistes && docs.pistes.pistes) || []).length + ((docs.presse && docs.presse.etablissements) || []).length;
+  function openList(kind){
+    const set = (id, v) => { const e = $("#" + id); if (e) e.value = v; };
+    if (kind === "ct") { show("nav-ct"); ["ct-q","ct-role","ct-has","ct-sort"].forEach(id => set(id, "")); detF.ct = ""; $("#ct-week").checked = true; renderCt(); }
+    else if (kind === "opp") { show("nav-opp"); set("opp-q",""); set("opp-prio",""); set("opp-stat","active"); $("#opp-side").checked = false; oppPage = 0; renderOppList(); }
+    else if (kind === "ver") { show("nav-src"); showSub("p-ver"); set("ver-q",""); set("ver-id",""); set("ver-new",""); renderVerList(); }
+    else { show("nav-src"); showSub("p-pistes"); }
+  }
   function renderHome(){
     greeting();
     const d = oppDoc(); const all = d ? d.opportunites : []; const f = nf();
     const st = o => (suivi[o.id] || {}).statut || "a_contacter";
     const weekAgo = Date.now() - 7*864e5;
-    const newCt = contacts.filter(c => c.valide_le && Date.parse(c.valide_le) >= weekAgo).length;
-    const active = all.filter(o => !o.secondaire && !["perdu","pas_pertinent","gagne"].includes(st(o))).length;
-    const screened = (docs.verifies && docs.verifies.a_verifier) || 0;
-    const signals = ((docs.pistes && docs.pistes.pistes) || []).length + ((docs.presse && docs.presse.etablissements) || []).length;
-    kpis($("#home-kpis"), [[f.format(newCt),t("k_new_contacts"),"users"],[f.format(active),t("k_active_opps"),"target"],[f.format(screened),t("k_searches"),"search"],[f.format(signals),t("k_signals"),"radar"]]);
+    const newCt = weekCt().length;
+    const active = all.filter(isActiveOpp).length;
+    const screened = ((docs.verifies && docs.verifies.etablissements) || []).length;
+    const signals = signalCount();
+    kpis($("#home-kpis"), [[f.format(newCt),t("k_new_contacts"),"users",() => openList("ct")],[f.format(active),t("k_active_opps"),"target",() => openList("opp")],
+      [f.format(screened),t("k_searches"),"search",() => openList("ver")],[f.format(signals),t("k_signals"),"radar",() => openList("pistes")]]);
     const box = $("#home-attention"); box.replaceChildren();
     const item = (title, sub, go) => { const b = el("button"); b.type = "button"; b.append(el("span","t",title), el("span","s",sub), icon("arrow-right")); b.addEventListener("click", go); box.append(b); };
     const pend = requests.filter(r => ["recue","transmise"].includes(r.statut)).length;
@@ -1711,7 +1792,7 @@ body.luna-locked .app{display:none}
     const q = $("#opp-q").value.trim().toLowerCase(), pr = $("#opp-prio").value, cs = $("#opp-stat").value, side = $("#opp-side").checked;
     const pick = (o, k) => lang === "en" ? (o[k + "_en"] || o[k]) : o[k];
     const st = o => (suivi[o.id] || {}).statut || "a_contacter";
-    const list = (d.opportunites||[]).filter(o => (side || !o.secondaire) && (!pr || o.priorite === pr) && (!cs || st(o) === cs)
+    const list = (d.opportunites||[]).filter(o => (side || !o.secondaire) && (!pr || o.priorite === pr) && (!cs || (cs === "active" ? isActiveOpp(o) : st(o) === cs))
       && (!q || [o.nom, pick(o,"lieu"), pick(o,"concept"), o.exploitant, o.licence].join(" ").toLowerCase().includes(q)));
     const pages = Math.max(1, Math.ceil(list.length / OPP_PER)); oppPage = Math.min(oppPage, pages-1);
     const box = $("#opp-list");
@@ -1771,7 +1852,15 @@ body.luna-locked .app{display:none}
     $("#foot").textContent = t("foot")(when(st.prochaine_verif_data_dubai || "lundi à 07:30"));
   }
 
+  function renderSignals(){
+    const box = $("#pistes-signals"); if (!box) return; box.replaceChildren();
+    const a = ((docs.pistes && docs.pistes.pistes) || []).length, b = ((docs.presse && docs.presse.etablissements) || []).length;
+    const p = el("p","note",t("sig_line")(nf().format(a + b), nf().format(a), nf().format(b)));
+    const go = el("button","btn",t("sig_open_press")); go.type = "button"; go.addEventListener("click", () => { show("nav-src"); showSub("p-press"); });
+    box.append(p, go);
+  }
   function renderPistes(){
+    renderSignals();
     const d = docs.pistes; const box = $("#pistes-list"); if (!d) return;
     const list = d.pistes || []; $("#c-pistes").textContent = list.length; box.replaceChildren();
     if (!list.length) { box.append(el("div","empty",t("no_leads"))); return; }
@@ -1812,7 +1901,7 @@ body.luna-locked .app{display:none}
     const d = docs.verifies; if (!d) return;
     const list = d.etablissements || []; $("#c-ver").textContent = list.length;
     const ex = list.filter(x => x.identite === "EXACT").length; const f = nf();
-    kpis($("#ver-kpis"), [[f.format(ex),t("k_confirmed")],[f.format(list.length - ex),t("k_probable")],[`${d.lots_verifies} / ${d.lots_prevus}`,t("k_batches")],[f.format(d.a_verifier),t("k_passed")]]);
+    kpis($("#ver-kpis"), [[f.format(ex),t("k_confirmed")],[f.format(list.length - ex),t("k_probable")],[`${d.lots_verifies} / ${d.lots_prevus}`,t("k_batches")],[f.format(list.length),t("k_passed")]]);   // un seul chiffre partout (JACK-1810-06) : celui de la liste
     if (!verBuilt) { ["ver-q","ver-id","ver-new"].forEach(id => $("#"+id).addEventListener("input", renderVerList)); verBuilt = true; }
     renderVerList();
   }
@@ -1837,6 +1926,7 @@ body.luna-locked .app{display:none}
 
   let pressBuilt = false;
   function renderPress(){
+    renderSignals();
     const d = docs.presse; if (!d) return;
     const list = d.etablissements || []; $("#c-press").textContent = list.length; const f = nf();
     $("#press-lead").textContent = t("press_lead")(d.fait_le || "");
