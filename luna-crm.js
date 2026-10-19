@@ -184,7 +184,7 @@
       fld_deal_id: "deal", fld_label_en: "English label", fld_label_fr: "French label", fld_position: "order", fld_stage_outcome: "stage type",
       fld_code: "internal code", fld_months: "duration", fld_label: "name", fld_role: "role", fld_project_category: "category", fld_linkedin_url: "LinkedIn",
       pj_title: "Status, category and decision-maker", pj_status: "Status", pj_no_status: "No status yet",
-      opp_choose: "Choose status", pj_choose_status: "Choose a status", pj_change_status: "Change status", pj_status_lead: "Choosing a status sends nothing and contacts no one.",
+      opp_choose: "Choose status", opp_change: "Change status", pj_choose_status: "Choose a status", pj_change_status: "Change status", pj_status_lead: "Choosing a status sends nothing and contacts no one.",
       pj_category: "Category", pj_cat_auto: "As found by Luna", pj_cat_found: label => `Found by Luna: ${label}`,
       pj_dm: "Decision-maker", pj_dm_lead: "Nothing is filled in for you: enter only what you know. At least a name and the source.",
       pj_dm_save: "Save decision-maker", pj_dm_edit: "Edit decision-maker", f_mobile: "Mobile", pj_office: "Office phone", pj_open_deal: "Open deal", pj_open_contact: "Open contact",
@@ -347,7 +347,7 @@
       fld_deal_id: "affaire", fld_label_en: "libellé anglais", fld_label_fr: "libellé français", fld_position: "ordre", fld_stage_outcome: "type d'étape",
       fld_code: "code interne", fld_months: "durée", fld_label: "nom", fld_role: "rôle", fld_project_category: "catégorie", fld_linkedin_url: "LinkedIn",
       pj_title: "Statut, catégorie et décideur", pj_status: "Statut", pj_no_status: "Aucun statut pour l'instant",
-      opp_choose: "Choisir le statut", pj_choose_status: "Choisir un statut", pj_change_status: "Changer de statut", pj_status_lead: "Choisir un statut n'envoie rien et ne contacte personne.",
+      opp_choose: "Choisir le statut", opp_change: "Changer le statut", pj_choose_status: "Choisir un statut", pj_change_status: "Changer de statut", pj_status_lead: "Choisir un statut n'envoie rien et ne contacte personne.",
       pj_category: "Catégorie", pj_cat_auto: "Celle trouvée par Luna", pj_cat_found: label => `Trouvée par Luna : ${label}`,
       pj_dm: "Décideur", pj_dm_lead: "Rien n'est prérempli : saisissez seulement ce que vous savez. Au moins un nom et la source.",
       pj_dm_save: "Enregistrer le décideur", pj_dm_edit: "Modifier le décideur", f_mobile: "Mobile", pj_office: "Téléphone du bureau", pj_open_deal: "Ouvrir l'affaire", pj_open_contact: "Ouvrir le contact",
@@ -2133,7 +2133,7 @@
     const pseudo = row || { id: null, stage_id: null, company_id: null };
     put(o.slot, h("div", { class: "crm-stagehead" }, h("span", { class: "crm-proj-k", text: t("pj_status") }),
       row ? chip(stageText(row), row.stage_outcome === "won" ? "good" : row.stage_outcome === "lost" ? "muted" : "") : h("span", { class: "crm-proj-v", text: t("pj_no_status") }),
-      btn(t("opp_choose"), () => stageDialog(pseudo, { title: t(row ? "pj_change_status" : "pj_choose_status"), write: changes => writeProject(o.id, changes), after: projectReload }), "sm")));
+      btn(t(row ? "opp_change" : "opp_choose"), () => stageDialog(pseudo, { title: t(row ? "pj_change_status" : "pj_choose_status"), write: changes => writeProject(o.id, changes), after: projectReload }), "sm")));
   }
   function paintOpps() { [...OPPS].forEach(o => { if (!o.slot.isConnected) OPPS.delete(o); else paintOpp(o); }); }
   function onOppCard(ev) {

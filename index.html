@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.116.0/dist/umd/supabase.js https://cdn.jsdelivr.net/npm/lucide@0.460.0/dist/umd/lucide.min.js 'sha256-Cb/5rsCmwYbrNrudMth3R4q3nlyruSPe4m1oKdxKioM='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src https://jqqzzakidyrcglyzgbrk.supabase.co wss://jqqzzakidyrcglyzgbrk.supabase.co; manifest-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.116.0/dist/umd/supabase.js https://cdn.jsdelivr.net/npm/lucide@0.460.0/dist/umd/lucide.min.js 'sha256-Kq3qOuqQ4YLRoYQCa32rVQokadlo7hAOCalS+A1Mw8Q='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src https://jqqzzakidyrcglyzgbrk.supabase.co wss://jqqzzakidyrcglyzgbrk.supabase.co; manifest-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
 <meta name="robots" content="noindex, nofollow">
 <meta name="theme-color" content="#F7F3EC">
@@ -102,8 +102,13 @@ q.quote{display:block;quotes:none;color:var(--taupe-soft);font-size:12.5px;margi
 .note{font-size:13px;color:var(--taupe-soft);max-width:75ch;margin:0}
 .empty{color:var(--taupe-soft);font-size:14px;padding:32px 16px;text-align:center}
 /* formulaires */
-.filters{display:grid;grid-template-columns:2fr 1fr 1fr;gap:12px}
-.filters.f4{grid-template-columns:2fr 1fr 1fr 1fr}
+.filters{display:flex;flex-wrap:wrap;gap:12px;align-items:stretch}
+/* Barre de filtres (JACK-1910-07) : la recherche prend la place restante, chaque menu prend la largeur de son libellé le plus long
+   (jamais coupé) et passe à la ligne quand la place manque. */
+.filters .q{flex:2 1 240px;min-width:0;width:auto}
+.filters select[hidden]{display:none}
+.filters select{flex:0 0 auto;width:auto;max-width:100%}
+.filters .pick{flex:0 1 auto;min-width:min(100%,11em);max-width:100%}
 input[type=search],select,textarea{width:100%;font:14px var(--sans);color:var(--taupe);background:var(--cream);border:1px solid var(--border);border-radius:12px;padding:10px 14px;transition:border-color .2s ease}
 input[type=search]:focus,select:focus,textarea:focus{outline:0;border-color:var(--tiffany)}
 input::placeholder,textarea::placeholder{color:#A69E94}
@@ -278,16 +283,10 @@ details p{margin:8px 0 0}
 .lang button[aria-pressed="true"]{background:var(--active-bg);color:var(--active-ink)}
 /* téléphone */
 /* Nouvelle détection (site seulement : les éléments ne sont créés que lorsque la couche du site les active) */
-.filters.f-det4{grid-template-columns:2fr 1fr 1fr 1fr}
-.filters.f-det5{grid-template-columns:2fr 1fr 1fr 1fr 1fr}
 .det-tag{margin-left:6px;vertical-align:middle;white-space:nowrap}
 .p-id .det-chip{display:inline-block;width:fit-content;justify-self:start;align-self:flex-start;margin-top:8px}
 .det-sources{margin:0;padding-left:18px;overflow-wrap:anywhere}
 @media (max-width:900px){
-  .filters.f-det4,.filters.f-det5{grid-template-columns:1fr 1fr}
-  .filters.f-det4 #dir-det,.filters.f-det5 #ct-det{grid-column:1/-1}
-  .filters.f4{grid-template-columns:1fr 1fr}
-  .filters.f4 #ct-sort{grid-column:1/-1}
   .app{grid-template-columns:1fr}
   .topbar{display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:30;padding:12px 16px;padding-top:calc(12px + env(safe-area-inset-top,0px));
     background:color-mix(in srgb,var(--ivory) 92%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
@@ -301,7 +300,6 @@ details p{margin:8px 0 0}
   .side-back{position:fixed;inset:0;z-index:34;background:rgba(81,75,69,.18)}
   main{padding:24px 16px 56px}
   h1,.h1{font-size:36px} h2,.h2{font-size:28px}
-  .filters{grid-template-columns:1fr 1fr}.filters .q{grid-column:1/-1}
   .research dl,.sheet-body dl{grid-template-columns:1fr}.research dt,.sheet-body dt{margin-top:4px}
   .hbar{grid-template-columns:110px 1fr 40px}
   .sheet{top:0;right:0;bottom:0;width:100%;border-radius:0;border:0}
@@ -378,8 +376,6 @@ body.luna-locked .app{display:none}
 @keyframes ll-pulse{0%,100%{opacity:.55}50%{opacity:1}}
 @media (hover:none){.ll-card .btn.ll-google:hover:not(:disabled){background:transparent}}
 @media (max-width:420px){.ll-card{padding:22px 18px}.ll-card h1{font-size:30px}}
-/* Page sur téléphone étroit : chaque filtre sur sa ligne, pour qu'aucun choix de liste ne soit coupé. */
-@media (max-width:480px){.filters,.filters.f4,.filters.f-det4,.filters.f-det5{grid-template-columns:1fr}.filters.f4 #ct-sort,.filters.f-det4 #dir-det,.filters.f-det5 #ct-det{grid-column:auto}}
 /* Nouvelle détection : zone de décision en tête d'une fiche (luna-detections.js) */
 .det-panel{display:grid;gap:10px;margin:0 0 16px;padding:14px 16px;background:var(--cream);border:1px solid var(--line);border-radius:14px}
 .det-panel h4{margin:0;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--taupe-soft);font-weight:500}
@@ -410,7 +406,9 @@ body.luna-locked .app{display:none}
 .crm-search input{height:48px}
 .crm-filters{border:0;padding:0}
 .crm-filters summary{display:inline-flex;align-items:center;min-height:36px;padding:6px 14px;border:1px solid var(--btn-border);border-radius:999px;font-size:13px;color:var(--taupe)}
-.crm-filter-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px;margin-top:12px;align-items:center}
+.crm-filter-grid{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px;align-items:center}
+/* Chaque menu prend la largeur de son libellé le plus long (jamais coupé), passe à la ligne quand la place manque (JACK-1910-07). */
+.crm-filter-grid select{flex:0 0 auto;width:auto;max-width:100%}
 .crm-bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
 .crm-bar select{width:auto;min-width:0;max-width:100%}
 .crm-seg{display:inline-flex;gap:4px;border:1px solid var(--btn-border);border-radius:12px;padding:3px}
@@ -744,11 +742,11 @@ body.luna-locked .app{display:none}
         <input class="q" type="search" id="ct-q" data-ph="search_ct" aria-label="Search">
         <select id="ct-role" aria-label="Role"></select>
         <select id="ct-has" aria-label="Details"></select>
+        <select id="ct-when" data-al="when_det" aria-label="Detection date"></select>
         <select id="ct-sort" aria-label="Sort"></select>
       </div>
       <div class="ct-bar">
         <div class="lang" role="group" data-al="ct_view" aria-label="Display"><button type="button" id="ct-v-cards" aria-pressed="false" data-i="ct_cards"></button><button type="button" id="ct-v-list" aria-pressed="true" data-i="ct_list"></button></div>
-        <label class="check"><input type="checkbox" id="ct-week"> <span id="ct-week-l"></span></label>
       </div>
       <div class="people" id="ct-list"></div>
     </section>
@@ -764,6 +762,10 @@ body.luna-locked .app{display:none}
       <div class="subpanel" id="p-pistes">
         <p class="lead" data-i="lead_pistes"></p>
         <div id="pistes-signals" class="signals"></div>
+        <div class="filters">
+          <select id="pistes-when" data-al="when_first" aria-label="Date first spotted"></select>
+          <select id="pistes-sort" data-al="sort_lbl" aria-label="Sort"></select>
+        </div>
         <div id="pistes-list" style="display:grid;gap:16px"></div>
       </div>
       <div class="subpanel" id="p-ver" hidden>
@@ -773,6 +775,8 @@ body.luna-locked .app{display:none}
           <input class="q" type="search" id="ver-q" data-ph="search_name" aria-label="Search">
           <select id="ver-id" aria-label="Verification"></select>
           <select id="ver-new" aria-label="Company"></select>
+          <select id="ver-when" data-al="when_lic" aria-label="Date the activity was added"></select>
+          <select id="ver-sort" data-al="sort_lbl" aria-label="Sort"></select>
         </div>
         <div class="tablebox">
           <table class="dd-table">
@@ -788,6 +792,8 @@ body.luna-locked .app{display:none}
           <input class="q" type="search" id="press-q" data-ph="search_press" aria-label="Search">
           <select id="press-status" aria-label="Status"></select>
           <select id="press-link" aria-label="Cross-check"></select>
+          <select id="press-when" data-al="when_art" aria-label="Date of the latest article"></select>
+          <select id="press-sort" data-al="sort_lbl" aria-label="Sort"></select>
         </div>
         <div id="press-list" style="display:grid;gap:16px"></div>
         <details><summary data-i="articles_read"></summary><div id="press-articles"></div></details>
@@ -800,6 +806,8 @@ body.luna-locked .app{display:none}
           <input class="q" type="search" id="dd-q" data-ph="search_dd" aria-label="Search">
           <select id="dd-act" aria-label="Activity"></select>
           <select id="dd-month" aria-label="Month"></select>
+          <select id="dd-when" data-al="when_lic" aria-label="Date the activity was added"></select>
+          <select id="dd-sort" data-al="sort_lbl" aria-label="Sort"></select>
         </div>
         <label class="check"><input type="checkbox" id="dd-new"> <span data-i="only_new"></span></label>
         <div class="tablebox">
@@ -926,7 +934,7 @@ body.luna-locked .app{display:none}
       res_venues:"Venues", res_contacts:"People found", res_press:"Press", no_results:"Nothing matches this search yet.", type_more:"Type at least two letters.",
       k_new_contacts:"New people found this week", k_active_opps:"Active opportunities", k_searches:"Venues screened", k_signals:"Opening signals",
       att_high:(n,p) => `${n}`, att_high_s:o => `High priority, not contacted yet${o ? " · " + o : ""}`,
-      att_req:n => `${n} request(s) waiting for David`, att_req_s:"Open the requests", att_ct:n => `${n} new person(s) validated`, att_ct_s:"Open people found",
+      att_req:n => `${n} request(s) waiting for David`, att_req_s:"Open the requests", att_ct:n => `${n} new person(s) detected this week`, att_ct_s:"Open people found",
       att_none:"Nothing urgent today.",
       lead_auto:"What Luna does on its own, without anyone having to think about it.",
       au_collect:"Automatic collection", au_collect_s:(d,n) => `Every hour, ${n || ""} sources${d ? " · last run " + d : ""}`,
@@ -942,9 +950,9 @@ body.luna-locked .app{display:none}
       pp_identity:"Contact details", pp_first:"First name", pp_last:"Last name", pp_company:"Company", pp_missing:"Not found yet",
       pp_venues:"Related venues", pp_group_note:o => `Works at group level (${o}): the exact venue is not proven.`, pp_source:"Source", pp_found:"Found through",
       pp_validated:"Validation", pp_no_details:"Email and phone have not been searched yet. They will be added on request, with their reliability shown.",
-      ct_view:"Display", ct_cards:"Cards", ct_list:"List", ct_week_f:n => `Validated this week (${n})`, cs_active:"Active", pc_est:"Venue", pc_created:"Lead created", pc_email:"Email", pc_phone:"Phone", pc_none:"No contact details yet", pc_no_email:"no email", pc_no_phone:"no phone", kpi_open:"Open",
+      ct_view:"Display", ct_cards:"Cards", ct_list:"List", cs_active:"Active", pc_est:"Venue", pc_created:"Detected on", pc_email:"Email", pc_phone:"Phone", pc_none:"No contact details yet", pc_no_email:"no email", pc_no_phone:"no phone", kpi_open:"Open",
       sig_line:(n,a,b) => `${n} opening signals: ${a} leads below, and ${b} venues in the press digest.`, sig_open_press:"Open the Press tab",
-      sort_alpha:"Alphabetical", sort_recent:"Recently added", act_email:"Email", act_call:"Call", pp_contact:"Contact", pp_company_t:"Company",
+      sort_alpha:"Alphabetical", sort_recent:"Most recent first", sort_recent_m:"Most recent first", sort_default:"Usual order", sort_lbl:"Sort", when_all:"All dates", when_day:"Today", when_week:"This week", when_month:"This month", when_det:"Detection date", when_first:"Date first spotted", when_art:"Date of the latest article", when_lic:"Date the activity was added", dt_first:"First spotted", dt_latest:"Latest article", act_email:"Email", act_call:"Call", pp_contact:"Contact", pp_company_t:"Company",
       pp_group1:"Group-level relationship", pp_group2:"Exact venue not confirmed", pp_venue_level:"Venue-level relationship", pp_verif:"Verification",
       det_t_email:"Email found", det_t_email_general:"General company email", det_t_email_named:"Named email", det_t_email_inferred:"Inferred email, not verified",
       det_t_email_uncertain:"Email, uncertain (the server accepts every address)", det_t_email_published:"Email published by the company", det_t_phone:"Phone number found",
@@ -1036,7 +1044,7 @@ body.luna-locked .app{display:none}
       res_venues:"Établissements", res_contacts:"Personnes repérées", res_press:"Presse", no_results:"Rien ne correspond encore à cette recherche.", type_more:"Tapez au moins deux lettres.",
       k_new_contacts:"Nouvelles personnes repérées cette semaine", k_active_opps:"Opportunités actives", k_searches:"Établissements passés au crible", k_signals:"Signaux d'ouverture",
       att_high:(n,p) => `${n}`, att_high_s:o => `Priorité haute, pas encore contacté${o ? " · " + o : ""}`,
-      att_req:n => `${n} demande(s) en attente de David`, att_req_s:"Ouvrir les demandes", att_ct:n => `${n} nouvelle(s) personne(s) validée(s)`, att_ct_s:"Ouvrir les personnes repérées",
+      att_req:n => `${n} demande(s) en attente de David`, att_req_s:"Ouvrir les demandes", att_ct:n => `${n} nouvelle(s) personne(s) repérée(s) cette semaine`, att_ct_s:"Ouvrir les personnes repérées",
       att_none:"Rien d'urgent aujourd'hui.",
       lead_auto:"Ce que Luna fait toute seule, sans que personne ait à y penser.",
       au_collect:"Collecte automatique", au_collect_s:(d,n) => `Toutes les heures, ${n || ""} sources${d ? " · dernier passage " + d : ""}`,
@@ -1052,9 +1060,9 @@ body.luna-locked .app{display:none}
       pp_identity:"Coordonnées", pp_first:"Prénom", pp_last:"Nom", pp_company:"Société", pp_missing:"Pas encore trouvé",
       pp_venues:"Établissements liés", pp_group_note:o => `Travaille au niveau du groupe (${o}) : l'établissement précis n'est pas prouvé.`, pp_source:"Source", pp_found:"Trouvé par",
       pp_validated:"Validation", pp_no_details:"L'email et le téléphone n'ont pas encore été cherchés. Ils seront ajoutés sur demande, avec leur niveau de fiabilité.",
-      ct_view:"Affichage", ct_cards:"Cartes", ct_list:"Liste", ct_week_f:n => `Validées cette semaine (${n})`, cs_active:"Actives", pc_est:"Établissement", pc_created:"Lead créé le", pc_email:"Email", pc_phone:"Téléphone", pc_none:"Aucun contact pour le moment", pc_no_email:"pas d'email", pc_no_phone:"pas de téléphone", kpi_open:"Ouvrir",
+      ct_view:"Affichage", ct_cards:"Cartes", ct_list:"Liste", cs_active:"Actives", pc_est:"Établissement", pc_created:"Détectée le", pc_email:"Email", pc_phone:"Téléphone", pc_none:"Aucun contact pour le moment", pc_no_email:"pas d'email", pc_no_phone:"pas de téléphone", kpi_open:"Ouvrir",
       sig_line:(n,a,b) => `${n} signaux d'ouverture : ${a} pistes ci-dessous, et ${b} établissements dans le relevé de presse.`, sig_open_press:"Ouvrir l'onglet Presse",
-      sort_alpha:"Ordre alphabétique", sort_recent:"Récemment ajoutés", act_email:"Email", act_call:"Appeler", pp_contact:"Contact", pp_company_t:"Société",
+      sort_alpha:"Ordre alphabétique", sort_recent:"Plus récentes d'abord", sort_recent_m:"Plus récents d'abord", sort_default:"Ordre habituel", sort_lbl:"Tri", when_all:"Toutes les dates", when_day:"Aujourd'hui", when_week:"Cette semaine", when_month:"Ce mois", when_det:"Date de détection", when_first:"Date de première détection", when_art:"Date du dernier article", when_lic:"Date d'ajout de l'activité", dt_first:"Première détection", dt_latest:"Dernier article", act_email:"Email", act_call:"Appeler", pp_contact:"Contact", pp_company_t:"Société",
       pp_group1:"Relation au niveau du groupe", pp_group2:"Établissement précis non confirmé", pp_venue_level:"Relation au niveau de l'établissement", pp_verif:"Vérification",
       det_t_email:"Email trouvé", det_t_email_general:"Email général de l'entreprise", det_t_email_named:"Email nominatif", det_t_email_inferred:"Email déduit, non vérifié",
       det_t_email_uncertain:"Email incertain (le serveur accepte toutes les adresses)", det_t_email_published:"Email publié par l'entreprise", det_t_phone:"Téléphone trouvé",
@@ -1167,6 +1175,8 @@ body.luna-locked .app{display:none}
     opts($("#ct-role"), [["",t("all_roles")], ...FAM.map(f => [f, t("fam_" + f)])]);
     opts($("#ct-has"), [["",t("has_any")],["email",t("has_email")],["phone",t("has_phone")],["none",t("has_none")]]);
     opts($("#ct-sort"), [["",t("sort_alpha")],["recent",t("sort_recent")]]);
+    [["ct-when"],["pistes-when"],["press-when"],["ver-when"],["dd-when"]].forEach(([id]) => opts($("#" + id), whenPairs()));
+    ["pistes-sort","press-sort","ver-sort","dd-sort"].forEach(id => opts($("#" + id), sortPairs()));
   }
   const CS = ["a_contacter","contacte","rendez_vous","proposition","gagne","perdu","pas_pertinent"];
   const FAM = ["direction","exploitation","projet","marketing"];
@@ -1330,6 +1340,23 @@ body.luna-locked .app{display:none}
   const addMonths = (iso, n) => { const [y, m, d] = iso.split("-").map(Number); const first = new Date(Date.UTC(y, m - 1 + n, 1));
     const last = new Date(Date.UTC(first.getUTCFullYear(), first.getUTCMonth() + 1, 0)).getUTCDate();
     return new Date(Date.UTC(first.getUTCFullYear(), first.getUTCMonth(), Math.min(d, last))).toISOString().slice(0, 10); };
+  // Date de détection (JACK-1910-07 et 1910-08) : toujours un jour de Dubai (AAAA-MM-JJ). JJ/MM/AAAA et AAAA-MM-JJ sont pris tels quels ;
+  // un horodatage complet est ramené à l'heure de Dubai ; tout autre texte donne "" (pas de date, jamais inventée).
+  const DUBAI_DAY = new Intl.DateTimeFormat("en-CA", {timeZone: "Asia/Dubai", year: "numeric", month: "2-digit", day: "2-digit"});
+  const dubaiDay = v => { const x = String(v == null ? "" : v).trim(), m = x.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+    if (m) return `${m[3]}-${m[2]}-${m[1]}`;
+    if (/^\d{4}-\d{2}-\d{2}$/.test(x)) return x;
+    if (/^\d{4}-\d{2}-\d{2}[T ]\d{2}:\d{2}/.test(x)) { const z = x.replace(" ", "T"), d = new Date(/(Z|[+-]\d{2}(:?\d{2})?)$/.test(z) ? z : z + "Z"); return isNaN(d) ? "" : DUBAI_DAY.format(d); }
+    return ""; };
+  const firstDay = (...vs) => { for (const v of vs) { const d = dubaiDay(v); if (d) return d; } return ""; };
+  // « Aujourd'hui » = le jour de Dubai ; « cette semaine » = les 7 derniers jours, aujourd'hui compris ; « ce mois » = le mois calendaire en cours.
+  const inWhen = (day, mode) => { if (!mode) return true; if (!day) return false; const today = todayDubai();
+    return mode === "day" ? day === today : mode === "week" ? day <= today && day >= addDays(today, -6) : day <= today && day.slice(0, 7) === today.slice(0, 7); };
+  const byDayDesc = (dayOf, then) => (a, b) => dayOf(b).localeCompare(dayOf(a)) || (then ? then(a, b) : 0);
+  const whenPairs = () => [["", t("when_all")], ["day", t("when_day")], ["week", t("when_week")], ["month", t("when_month")]];
+  const sortPairs = () => [["", t("sort_default")], ["recent", t("sort_recent_m")]];
+  // Aucune date fiable dans la liste : le filtre et le tri par date n'ont pas lieu d'être, on les cache.
+  function dateTools(whenId, sortId, any){ [whenId, sortId].forEach(id => { const e = $("#" + id); if (!e) return; e.hidden = !any; if (!any) e.value = ""; }); }
   const addDays = (iso, n) => { const [y, m, d] = iso.split("-").map(Number); return new Date(Date.UTC(y, m - 1, d + n)).toISOString().slice(0, 10); };
   function stageOf(o, today){
     const conf = isoDay(o.ouverture_confirmee), a = conf || isoDay(o.ouverture_debut) || isoDay(o.ouverture_fin), b = conf || isoDay(o.ouverture_fin) || a;
@@ -1749,7 +1776,9 @@ body.luna-locked .app{display:none}
     if (old && fresh) { host.insertBefore(fresh, old); old.remove(); } else if (old) old.remove(); else if (fresh) host.append(fresh);
   }
   // Date de création du lead : validation, ou détection pour une nouvelle détection (candidat « à confirmer »).
-  const ctCreated = c => isoDay(detState("personne", c) === "new" ? (c.detecte_le || c.valide_le) : (c.valide_le || c.detecte_le));
+  // Date de détection d'une personne (JACK-1910-07) : detecte_le pour une nouvelle détection, sinon valide_le, sinon releve_le ; jour de Dubai.
+  // Date de détection, la même pour tous (fiche besoin, recette JACOB-1910-36) : detecte_le, sinon valide_le, sinon releve_le.
+  const ctCreated = c => firstDay(c.detecte_le, c.valide_le, c.releve_le);
   const ctView = () => store.get("luna-ct-view") === "list" ? "list" : "cards";      // « Cartes » par défaut (JACK-1810-06)
   function contactState(c){
     const w = el("div","pc-state"), chip = (txt, cls) => w.append(el("span","chip " + (cls || "muted"), txt));
@@ -1782,18 +1811,17 @@ body.luna-locked .app{display:none}
   function renderCt(){
     const main = detPool("personne", contacts, ""); $("#c-ct").textContent = main.length || "";
     if (!ctBuilt) {
-      ["ct-q","ct-role","ct-has","ct-sort","ct-week"].forEach(id => $("#"+id).addEventListener("input", renderCt));
+      ["ct-q","ct-role","ct-has","ct-sort","ct-when"].forEach(id => $("#"+id).addEventListener("input", renderCt));
       [["cards","#ct-v-cards"],["list","#ct-v-list"]].forEach(([v,sel]) => $(sel).addEventListener("click", () => { store.set("luna-ct-view", v); renderCt(); }));
       ctBuilt = true; }
     const q = $("#ct-q").value.trim().toLowerCase(), fam = $("#ct-role").value, has = $("#ct-has").value, view = ctView();
     $("#ct-v-cards").setAttribute("aria-pressed", view === "cards"); $("#ct-v-list").setAttribute("aria-pressed", view === "list");
-    $("#ct-week-l").textContent = t("ct_week_f")(nf().format(weekCt().length));
     const d = oppDoc(); const byId = {}; (d ? d.opportunites : []).forEach(o => byId[o.id] = o);
     renderDetSelect("personne", contacts);
-    const wk = new Set(weekCt().map(c => c.id)), onlyWeek = $("#ct-week").checked;
+    const when = $("#ct-when").value;
     const arcMode = detF.ct === "archive" && hidOn;
     const list = detPool("personne", arcMode ? contactsHid : contacts, arcMode ? "archive" : detF.ct).filter(c => (!fam || c.famille === fam) && (!has || (has === "email" ? !!c.email : has === "phone" ? !!c.telephone : !c.email && !c.telephone))
-      && (arcMode || !onlyWeek || wk.has(c.id))
+      && (arcMode || inWhen(ctCreated(c), when))
       && (!q || [c.nom, c.poste, c.organisation, ...(c.etablissements || []).map(id => (byId[id] || {}).nom)].join(" ").toLowerCase().includes(q)))
       .sort((a,b) => String(a.nom).localeCompare(String(b.nom)));
     const box = $("#ct-list"); box.replaceChildren(); box.className = view === "cards" ? "pcards" : "people";
@@ -1825,14 +1853,15 @@ body.luna-locked .app{display:none}
   // liste qu'il ouvre ; l'ouverture passe par show(), donc par l'historique (le retour ramène à l'Accueil).
   const closedSt = ["perdu","pas_pertinent","gagne"];
   const isActiveOpp = o => !o.secondaire && !projHid(o) && !closedSt.includes(((suivi[o.id] || {}).statut) || "a_contacter");
-  const weekCt = () => { const ago = Date.now() - 7*864e5; return detPool("personne", contacts, "").filter(c => c.valide_le && Date.parse(c.valide_le) >= ago); };
+  // Même fonction pour le chiffre de l'Accueil et pour la liste qu'il ouvre (filtre « Cette semaine » de la liste des personnes).
+  const weekCt = () => detPool("personne", contacts, "").filter(c => inWhen(ctCreated(c), "week"));
   const signalCount = () => ((docs.pistes && docs.pistes.pistes) || []).length + ((docs.presse && docs.presse.etablissements) || []).length;
   function openList(kind){
     const set = (id, v) => { const e = $("#" + id); if (e) e.value = v; };
-    if (kind === "ct") { show("nav-ct"); ["ct-q","ct-role","ct-has","ct-sort"].forEach(id => set(id, "")); detF.ct = ""; $("#ct-week").checked = true; renderCt(); }
+    if (kind === "ct") { show("nav-ct"); ["ct-q","ct-role","ct-has","ct-sort"].forEach(id => set(id, "")); detF.ct = ""; set("ct-when", "week"); renderCt(); }
     else if (kind === "opp") { show("nav-opp"); set("opp-q",""); set("opp-prio",""); set("opp-stat","active"); $("#opp-side").checked = false; oppPage = 0; renderOppList(); }
-    else if (kind === "ver") { show("nav-src"); showSub("p-ver"); set("ver-q",""); set("ver-id",""); set("ver-new",""); renderVerList(); }
-    else { show("nav-src"); showSub("p-pistes"); }
+    else if (kind === "ver") { show("nav-src"); showSub("p-ver"); set("ver-q",""); set("ver-id",""); set("ver-new",""); set("ver-when",""); set("ver-sort",""); renderVerList(); }
+    else { show("nav-src"); showSub("p-pistes"); set("pistes-when",""); set("pistes-sort",""); renderPistes(); }
   }
   function renderHome(){
     greeting();
@@ -1996,11 +2025,20 @@ body.luna-locked .app{display:none}
     const go = el("button","btn",t("sig_open_press")); go.type = "button"; go.addEventListener("click", () => { show("nav-src"); showSub("p-press"); });
     box.append(p, go);
   }
+  let pistesBuilt = false;
   function renderPistes(){
     renderSignals();
     const d = docs.pistes; const box = $("#pistes-list"); if (!d) return;
-    const list = d.pistes || []; $("#c-pistes").textContent = list.length; box.replaceChildren();
-    if (!list.length) { box.append(el("div","empty",t("no_leads"))); return; }
+    const all = d.pistes || []; $("#c-pistes").textContent = all.length; box.replaceChildren();
+    if (!pistesBuilt) { ["pistes-when","pistes-sort"].forEach(id => $("#"+id).addEventListener("input", renderPistes)); pistesBuilt = true; }
+    // Date de détection d'une piste : le premier jour où Luna a vu un signal (le plus ancien « jour » de ses sources).
+    const pisteDay = p => (p.sources || []).map(x => dubaiDay(x.jour)).filter(Boolean).sort()[0] || "";
+    dateTools("pistes-when", "pistes-sort", all.some(pisteDay));
+    const when = $("#pistes-when").value;
+    const list = all.filter(p => inWhen(pisteDay(p), when));
+    if ($("#pistes-sort").value === "recent") list.sort(byDayDesc(pisteDay));
+    if (!all.length) { box.append(el("div","empty",t("no_leads"))); return; }
+    if (!list.length) { box.append(el("div","empty",t("none_match"))); return; }
     list.forEach(p => {
       const en = lang === "en" ? (p.en || {}) : {};
       const r = p.recherche ? (lang === "en" && p.recherche.en ? Object.assign({fait_le: p.recherche.fait_le}, p.recherche.en) : p.recherche) : null;
@@ -2016,6 +2054,7 @@ body.luna-locked .app{display:none}
       if (p.lieu) { const s = el("span"); s.append(t("place") + (lang === "fr" ? " : " : ": "), el("b",null,p.lieu)); row.append(s); }
       if (opening) { const s = el("span"); s.append(t("opening") + (lang === "fr" ? " " : ": "), el("b",null,opening)); row.append(s); }
       if (clues.length) { const s = el("span"); s.append(t("clue") + (lang === "fr" ? " : " : ": "), el("b",null,clues.join(", "))); row.append(s); }
+      { const pd = pisteDay(p); if (pd) { const s = el("span"); s.append(t("dt_first") + (lang === "fr" ? " : " : ": "), el("b",null,fmtDate(pd))); row.append(s); } }
       c.append(row);
       const src = el("div","src"); src.append(el("div","label",t("where_found"))); const ul = el("ul");
       (p.sources||[]).forEach((s,i) => ul.append(el("li",null,`${(en.sources||[])[i] || s.source}, ${t("seen_on")} ${s.jour}${s.date_source ? "" : " (" + t("spotted_date") + ")"}`)));
@@ -2040,13 +2079,17 @@ body.luna-locked .app{display:none}
     const list = d.etablissements || []; $("#c-ver").textContent = list.length;
     const ex = list.filter(x => x.identite === "EXACT").length; const f = nf();
     kpis($("#ver-kpis"), [[f.format(ex),t("k_confirmed")],[f.format(list.length - ex),t("k_probable")],[`${d.lots_verifies} / ${d.lots_prevus}`,t("k_batches")],[f.format(list.length),t("k_passed")]]);   // un seul chiffre partout (JACK-1810-06) : celui de la liste
-    if (!verBuilt) { ["ver-q","ver-id","ver-new"].forEach(id => $("#"+id).addEventListener("input", renderVerList)); verBuilt = true; }
+    if (!verBuilt) { ["ver-q","ver-id","ver-new","ver-when","ver-sort"].forEach(id => $("#"+id).addEventListener("input", renderVerList)); verBuilt = true; }
     renderVerList();
   }
   function renderVerList(){
     const d = docs.verifies; if (!d) return;
-    const q = $("#ver-q").value.trim().toLowerCase(), idf = $("#ver-id").value, nw = $("#ver-new").value;
-    const list = (d.etablissements||[]).filter(x => (!q || (x.nom + " " + x.licence).toLowerCase().includes(q)) && (!idf || x.identite === idf) && (!nw || x.nouvelle_societe === nw));
+    const q = $("#ver-q").value.trim().toLowerCase(), idf = $("#ver-id").value, nw = $("#ver-new").value, when = $("#ver-when").value;
+    // Pas de date de vérification dans les documents : la date retenue est celle où l'activité a été ajoutée au fichier des licences.
+    const vday = x => dubaiDay(x.activite_ajoutee_le);
+    dateTools("ver-when", "ver-sort", (d.etablissements||[]).some(vday));
+    const list = (d.etablissements||[]).filter(x => (!q || (x.nom + " " + x.licence).toLowerCase().includes(q)) && (!idf || x.identite === idf) && (!nw || x.nouvelle_societe === nw) && inWhen(vday(x), $("#ver-when").value));
+    if ($("#ver-sort").value === "recent") list.sort(byDayDesc(vday));
     const body = $("#ver-body"); body.replaceChildren();
     if (!list.length) { const tr = el("tr"); const td = el("td","empty", (d.etablissements||[]).length ? t("none_match") : t("checking")); td.colSpan = 5; tr.append(td); body.append(tr); return; }
     const OPEN = {oui:["open_yes","good"], bientot:["open_soon","warn"], ferme:["open_closed","warn"], inconnu:["open_unknown","muted"]};
@@ -2057,8 +2100,10 @@ body.luna-locked .app{display:none}
       if (x.nouvelle_societe === "Oui") chips.append(el("span","chip",t("co_new"))); else if (x.nouvelle_societe === "Non") chips.append(el("span","chip muted",t("co_old")));
       v.append(chips);
       const m = el("td"); if (x.maps) m.append(link(x.maps, t("see_listing"))); else m.textContent = t("no_link");
-      tr.append(el("td","name",x.nom), el("td","act",act(x.activite)), el("td","date",fmtDate(x.activite_ajoutee_le)), v, m);
-      tapOpen(tr, () => openSource("ver", x));
+      // La ligne reste une ligne de tableau pour les lecteurs d'écran (JACK-1910-07) : le nom est un bouton, la ligne entière reste cliquable à la souris.
+      const nm = el("td","name"), nb = el("button","linkbtn dd-open", x.nom || ""); nb.type = "button"; nb.setAttribute("aria-label", t("dd_open")(x.nom || "")); nm.append(nb);
+      tr.append(nm, el("td","act",act(x.activite)), el("td","date",fmtDate(x.activite_ajoutee_le)), v, m);
+      tr.classList.add("dd-row"); tr.addEventListener("click", ev => { if (!(ev.target.closest && ev.target.closest("a"))) openSource("ver", x); });
       body.append(tr);
     });
   }
@@ -2071,7 +2116,7 @@ body.luna-locked .app{display:none}
     $("#press-lead").textContent = t("press_lead")(d.fait_le || "");
     kpis($("#press-kpis"), [[f.format(list.length),t("k_press")],[f.format(list.filter(x => x.statut === "annonce").length),t("k_announced")],
       [f.format(list.filter(x => x.renata === "oui").length),t("k_known")],[f.format(list.filter(x => x.data_dubai !== "ABSENT").length),t("k_dd")]]);
-    if (!pressBuilt) { ["press-q","press-status","press-link"].forEach(id => $("#"+id).addEventListener("input", renderPressList)); pressBuilt = true; }
+    if (!pressBuilt) { ["press-q","press-status","press-link","press-when","press-sort"].forEach(id => $("#"+id).addEventListener("input", renderPressList)); pressBuilt = true; }
     const arts = $("#press-articles"); arts.replaceChildren(); const ul = el("ul");
     (d.articles||[]).forEach(a => { const li = el("li"); const title = lang === "en" ? (a.titre_en || a.titre) : a.titre; li.append(link(a.url, `${a.media || ""}${a.date ? ", " + a.date : ""} : ${title || a.url}`)); if (a.lu !== "oui") li.append(t("refused")); ul.append(li); });
     arts.append(ul);
@@ -2079,10 +2124,15 @@ body.luna-locked .app{display:none}
   }
   function renderPressList(){
     const d = docs.presse; if (!d) return;
-    const q = $("#press-q").value.trim().toLowerCase(), st = $("#press-status").value, lk = $("#press-link").value;
+    const q = $("#press-q").value.trim().toLowerCase(), st = $("#press-status").value, lk = $("#press-link").value, when = $("#press-when").value;
+    // Date de détection d'un établissement de la presse : la date de l'article le plus récent parmi ses sources (la date du relevé est la même pour tous).
+    const unslash = u => String(u || "").replace(/\/+$/, ""), artDay = new Map((d.articles || []).map(a => [unslash(a.url), dubaiDay(a.date)]));
+    const pday = x => (x.sources || []).map(u => artDay.get(unslash(u)) || "").filter(Boolean).sort().pop() || "";
+    dateTools("press-when", "press-sort", (d.etablissements || []).some(pday));
     const pick = (x, k) => lang === "en" ? (x[k + "_en"] != null ? x[k + "_en"] : x[k]) : x[k];
     const f = (d.etablissements||[]).filter(x => (!q || [x.nom,pick(x,"lieu"),pick(x,"concept"),x.exploitant].join(" ").toLowerCase().includes(q)) && (!st || x.statut === st)
-      && (!lk || (lk === "dd" && x.data_dubai !== "ABSENT") || (lk === "renata" && x.renata === "oui") || (lk === "new" && x.renata !== "oui")));
+      && (!lk || (lk === "dd" && x.data_dubai !== "ABSENT") || (lk === "renata" && x.renata === "oui") || (lk === "new" && x.renata !== "oui")) && inWhen(pday(x), $("#press-when").value));
+    if ($("#press-sort").value === "recent") f.sort(byDayDesc(pday));
     const box = $("#press-list"); box.replaceChildren();
     if (!f.length) { box.append(el("div","empty",t("none_match"))); return; }
     f.forEach(x => {
@@ -2095,6 +2145,7 @@ body.luna-locked .app{display:none}
       c.append(chips);
       const row = el("div","row"); const sep = lang === "fr" ? " : " : ": ";
       [["concept",pick(x,"concept")],["operator",pick(x,"exploitant")],["place",pick(x,"lieu")],["opening",pick(x,"ouverture_annoncee")]].forEach(([k,v]) => { if (v) { const s = el("span"); s.append(t(k) + sep, el("b",null,v)); row.append(s); } });
+      { const pd = pday(x); if (pd) { const s = el("span"); s.append(t("dt_latest") + sep, el("b",null,fmtDate(pd))); row.append(s); } }
       c.append(row);
       if ((x.sources||[]).length) { const src = el("div","src"); const ul = el("ul"); x.sources.forEach(u => { const li = el("li"); li.append(link(u, u.replace(/^https?:\/\/(www\.)?/,"").split("/")[0])); ul.append(li); }); src.append(ul); c.append(src); }
       tapOpen(c, () => openSource("press", x));
@@ -2119,7 +2170,7 @@ body.luna-locked .app{display:none}
       Object.keys(byAct).sort((x,y) => byAct[y]-byAct[x]).forEach(k => { const o = el("option",null,`${act(k)} (${byAct[k]})`); o.value = k; a.append(o); }); a.value = cur;
       const mo = $("#dd-month"), curm = mo.value; mo.replaceChildren(el("option",null,t("all_months"))); mo.firstChild.value = "";
       months.forEach(m => { const o = el("option",null,`${t("months")[+m.slice(5)-1]} ${m.slice(0,4)}`); o.value = m; mo.append(o); }); mo.value = curm;
-      if (!renderDD.wired) { ["dd-q","dd-act","dd-month","dd-new"].forEach(id => $("#"+id).addEventListener("input", () => { page = 0; renderTable(); }));
+      if (!renderDD.wired) { ["dd-q","dd-act","dd-month","dd-new","dd-when","dd-sort"].forEach(id => $("#"+id).addEventListener("input", () => { page = 0; renderTable(); }));
         $("#dd-prev").addEventListener("click", () => { page = Math.max(0, page-1); renderTable(); }); $("#dd-next").addEventListener("click", () => { page++; renderTable(); }); renderDD.wired = true; }
       ddBuilt = true;
     }
@@ -2127,8 +2178,12 @@ body.luna-locked .app{display:none}
     renderTable();
   }
   function renderTable(){
-    const q = $("#dd-q").value.trim().toLowerCase(), a = $("#dd-act").value, mon = $("#dd-month").value, onlyNew = $("#dd-new").checked;
-    const f = rows.filter(r => (!q || (r[0]+" "+r[1]+" "+r[7]).toLowerCase().includes(q)) && (!a || String(r[2]).split(",").map(s=>s.trim()).includes(a)) && (!mon || String(r[3]).startsWith(mon)) && (!onlyNew || r[5] === "Oui"));
+    const q = $("#dd-q").value.trim().toLowerCase(), a = $("#dd-act").value, mon = $("#dd-month").value, onlyNew = $("#dd-new").checked, when = $("#dd-when").value;
+    // Data Dubai : seule date par ligne, celle où l'activité a été ajoutée au fichier des licences (date de licence, pas de publication).
+    const dday = r => dubaiDay(r[3]);
+    dateTools("dd-when", "dd-sort", rows.some(dday));
+    const f = rows.filter(r => (!q || (r[0]+" "+r[1]+" "+r[7]).toLowerCase().includes(q)) && (!a || String(r[2]).split(",").map(s=>s.trim()).includes(a)) && (!mon || String(r[3]).startsWith(mon)) && (!onlyNew || r[5] === "Oui") && inWhen(dday(r), $("#dd-when").value));
+    if ($("#dd-sort").value === "recent") f.sort(byDayDesc(dday));
     const pages = Math.max(1, Math.ceil(f.length / PER)); page = Math.min(page, pages-1);
     const body = $("#dd-body"); body.replaceChildren();
     if (!f.length) { const tr = el("tr"); const td = el("td","empty",t("none_match")); td.colSpan = 6; tr.append(td); body.append(tr); }
@@ -2234,7 +2289,7 @@ body.luna-locked .app{display:none}
     projects(){ const d = oppDoc(); return d ? (d.opportunites || []).filter(o => !o.masque).map(o => ({id: o.id, nom: o.nom, categorie: o.categorie || ""})) : []; },
     lang: () => lang, refresh(){ if (oppDoc()) renderDir(); },
     setPersonOverlay(entries){ personOv = new Map(entries || []); },
-    setDetections(entries){ detOn = true; detLead(); detDec = new Map(entries || []); syncContacts(); if (oppDoc()) renderDir(); renderCt(); detSheetSync(); },
+    setDetections(entries){ detOn = true; detLead(); detDec = new Map(entries || []); syncContacts(); if (oppDoc()) renderDir(); renderCt(); renderHome(); detSheetSync(); },
     detInfo(kind, id){ const d = oppDoc(), x = kind === "projet" ? (d ? (d.opportunites || []).find(o => o.id === id) : null) : contactsRaw.find(c => String(c.id) === String(id));
       if (!x) return null; const arc = kind === "personne" ? hidHas(x) : projHid(x), st = arc ? "" : detState(kind, x); return {archived: arc, state: st, applied: !!st && st !== "new" && detApplied(kind, x, st)}; },
     setHidden(ids){ hidOn = true; const all = (ids || []).map(String); hidSet = new Set(all.filter(x => !x.startsWith("projet:"))); hidProj = new Set(all.filter(x => x.startsWith("projet:")).map(x => x.slice(7)));
