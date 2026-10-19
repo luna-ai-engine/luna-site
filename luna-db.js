@@ -453,10 +453,9 @@
   root.lunaAuth = lunaAuth;
   // Indicateur neutre : cette couche sait lire et écrire « detections » (site seulement). Les écrans de nouvelles détections
   // (luna-detections.js) ne s'activent que s'il est présent ; la page privée, qui lit une autre base, ne l'a jamais.
-  // Archivage des personnes repérées et des projets (collection « archives ») : éteint jusqu'à la mise en ligne de la
-  // migration 0041 (lot découpé par Jack, JACK-1810-47) ; le passer à true l'active. Les contacts et entreprises du CRM
-  // s'archivent déjà, ils n'en dépendent pas.
-  root.lunaSiteDb = Object.freeze({ detections: true, archives: false });
+  // Archivage des personnes repérées et des projets (collection « archives ») : allumé le 19/10/2026, migration 0041 appliquée
+  // en ligne à 10:34 (d'après Sun). Le passer à false l'éteint sans rien perdre.
+  root.lunaSiteDb = Object.freeze({ detections: true, archives: true });
   root.claude = {
     async use(name) {
       if (name !== "db" && name !== "user") return null;
