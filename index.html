@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.116.0/dist/umd/supabase.js https://cdn.jsdelivr.net/npm/lucide@0.460.0/dist/umd/lucide.min.js 'sha256-Kq3qOuqQ4YLRoYQCa32rVQokadlo7hAOCalS+A1Mw8Q='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src https://jqqzzakidyrcglyzgbrk.supabase.co wss://jqqzzakidyrcglyzgbrk.supabase.co; manifest-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.116.0/dist/umd/supabase.js https://cdn.jsdelivr.net/npm/lucide@0.460.0/dist/umd/lucide.min.js 'sha256-94r7DLMaeam5/Mts4vEriGiyWL1HoT2tUQyKPotb8NY='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src https://jqqzzakidyrcglyzgbrk.supabase.co wss://jqqzzakidyrcglyzgbrk.supabase.co; manifest-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
 <meta name="robots" content="noindex, nofollow">
 <meta name="theme-color" content="#F7F3EC">
@@ -95,6 +95,9 @@ a:hover{text-decoration-color:var(--tiffany-dark)}
 .src ul,.research ul{margin:0;padding-left:16px}
 .label{font-size:12px;letter-spacing:.06em;text-transform:uppercase;font-weight:500;color:var(--taupe-soft);margin:2px 0}
 q.quote{display:block;quotes:none;color:var(--taupe-soft);font-size:12.5px;margin-top:4px;padding-left:12px;border-left:2px solid var(--beige)}
+q.quote::before{content:"\201C";color:var(--border)} q.quote::after{content:"\201D";color:var(--border)}
+q.quote.clamp{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;line-clamp:2;overflow:hidden}
+.quote-box{margin-top:4px} .quote-more{font-size:12px;margin:2px 0 0 12px;color:var(--taupe-soft)}
 .research{border-top:1px solid var(--line);padding-top:14px;display:grid;gap:8px;font-size:13.5px}
 .research dl{display:grid;grid-template-columns:max-content 1fr;gap:6px 18px;margin:0}
 .research dt{color:var(--taupe-soft);font-weight:500}
@@ -951,7 +954,7 @@ body.luna-locked .app{display:none}
       pp_venues:"Related venues", pp_group_note:o => `Works at group level (${o}): the exact venue is not proven.`, pp_source:"Source", pp_found:"Found through",
       pp_validated:"Validation", pp_no_details:"Email and phone have not been searched yet. They will be added on request, with their reliability shown.",
       ct_view:"Display", ct_cards:"Cards", ct_list:"List", cs_active:"Active", pc_est:"Venue", pc_created:"Detected on", pc_email:"Email", pc_phone:"Phone", pc_none:"No contact details yet", pc_no_email:"no email", pc_no_phone:"no phone", kpi_open:"Open",
-      sig_line:(n,a,b) => `${n} opening signals: ${a} leads below, and ${b} venues in the press digest.`, sig_open_press:"Open the Press tab",
+      sig_line:(n,a,b) => `${n} opening signal${Number(n) === 1 ? "" : "s"}: ${a} lead${Number(a) === 1 ? "" : "s"} below, and ${b} venue${Number(b) === 1 ? "" : "s"} in the press digest.`, sig_open_press:"Open the Press tab",
       sort_alpha:"Alphabetical", sort_recent:"Most recent first", sort_recent_m:"Most recent first", sort_default:"Usual order", sort_lbl:"Sort", when_all:"All dates", when_day:"Today", when_week:"This week", when_month:"This month", when_det:"Detection date", when_first:"Date first spotted", when_art:"Date of the latest article", when_lic:"Date the activity was added", dt_first:"First spotted", dt_latest:"Latest article", act_email:"Email", act_call:"Call", pp_contact:"Contact", pp_company_t:"Company",
       pp_group1:"Group-level relationship", pp_group2:"Exact venue not confirmed", pp_venue_level:"Venue-level relationship", pp_verif:"Verification",
       det_t_email:"Email found", det_t_email_general:"General company email", det_t_email_named:"Named email", det_t_email_inferred:"Inferred email, not verified",
@@ -988,7 +991,7 @@ body.luna-locked .app{display:none}
       from:"From", reply:"Reply",
       unconfirmed:"To be confirmed: one source only", confirmed_many:"Confirmed by several sources", name_check:"Name to check: a job title, not a venue name", dup:"Probable duplicate",
       where_found:"Where Luna found it", research:"Additional research of", place:"Location", opening:"Opening", clue:"Clue",
-      concept:"Concept", operator:"Operator", address:"Address", status:"Status", seen_on:"seen on", spotted_date:"date spotted",
+      concept:"Concept", operator:"Operator", address:"Address", status:"Status", seen_on:"seen on", spotted_date:"date spotted", read_more:"Read more", read_less:"Read less",
       no_leads:"No lead over the last 60 days.",
       k_confirmed:"venues confirmed", k_probable:"probable, to be confirmed", k_batches:"verification batches done", k_passed:"venues checked on Google Maps",
       all:"All", only_confirmed:"Confirmed only", only_probable:"Probable only", all_companies:"All companies", new_companies:"Companies created in 2026", older_companies:"Older companies",
@@ -1061,7 +1064,7 @@ body.luna-locked .app{display:none}
       pp_venues:"Établissements liés", pp_group_note:o => `Travaille au niveau du groupe (${o}) : l'établissement précis n'est pas prouvé.`, pp_source:"Source", pp_found:"Trouvé par",
       pp_validated:"Validation", pp_no_details:"L'email et le téléphone n'ont pas encore été cherchés. Ils seront ajoutés sur demande, avec leur niveau de fiabilité.",
       ct_view:"Affichage", ct_cards:"Cartes", ct_list:"Liste", cs_active:"Actives", pc_est:"Établissement", pc_created:"Détectée le", pc_email:"Email", pc_phone:"Téléphone", pc_none:"Aucun contact pour le moment", pc_no_email:"pas d'email", pc_no_phone:"pas de téléphone", kpi_open:"Ouvrir",
-      sig_line:(n,a,b) => `${n} signaux d'ouverture : ${a} pistes ci-dessous, et ${b} établissements dans le relevé de presse.`, sig_open_press:"Ouvrir l'onglet Presse",
+      sig_line:(n,a,b) => `${n} signa${Number(n) > 1 ? "ux" : "l"} d'ouverture : ${a} piste${Number(a) > 1 ? "s" : ""} ci-dessous, et ${b} établissement${Number(b) > 1 ? "s" : ""} dans le relevé de presse.`, sig_open_press:"Ouvrir l'onglet Presse",
       sort_alpha:"Ordre alphabétique", sort_recent:"Plus récentes d'abord", sort_recent_m:"Plus récents d'abord", sort_default:"Ordre habituel", sort_lbl:"Tri", when_all:"Toutes les dates", when_day:"Aujourd'hui", when_week:"Cette semaine", when_month:"Ce mois", when_det:"Date de détection", when_first:"Date de première détection", when_art:"Date du dernier article", when_lic:"Date d'ajout de l'activité", dt_first:"Première détection", dt_latest:"Dernier article", act_email:"Email", act_call:"Appeler", pp_contact:"Contact", pp_company_t:"Société",
       pp_group1:"Relation au niveau du groupe", pp_group2:"Établissement précis non confirmé", pp_venue_level:"Relation au niveau de l'établissement", pp_verif:"Vérification",
       det_t_email:"Email trouvé", det_t_email_general:"Email général de l'entreprise", det_t_email_named:"Email nominatif", det_t_email_inferred:"Email déduit, non vérifié",
@@ -1098,7 +1101,7 @@ body.luna-locked .app{display:none}
       from:"De", reply:"Réponse",
       unconfirmed:"À confirmer : une seule source", confirmed_many:"Confirmée par plusieurs sources", name_check:"Nom à vérifier : intitulé de poste, pas un nom d'établissement", dup:"Doublon probable",
       where_found:"Où Luna l'a trouvé", research:"Recherche complémentaire du", place:"Lieu", opening:"Ouverture", clue:"Indice",
-      concept:"Concept", operator:"Exploitant", address:"Adresse", status:"Statut", seen_on:"vu le", spotted_date:"date de repérage",
+      concept:"Concept", operator:"Exploitant", address:"Adresse", status:"Statut", seen_on:"vu le", spotted_date:"date de repérage", read_more:"Lire plus", read_less:"Lire moins",
       no_leads:"Aucune piste sur les 60 derniers jours.",
       k_confirmed:"établissements confirmés", k_probable:"probables, à confirmer", k_batches:"lots de vérification terminés", k_passed:"établissements passés sur Google Maps",
       all:"Tous", only_confirmed:"Confirmés seulement", only_probable:"Probables seulement", all_companies:"Toutes les sociétés", new_companies:"Sociétés créées en 2026", older_companies:"Sociétés plus anciennes",
@@ -1194,7 +1197,7 @@ body.luna-locked .app{display:none}
   let curNav = "", navArmed = false;
   const navPush = state => { if (navHist) try { history.pushState(state, ""); } catch(e) {} };
   function show(id, fromHistory){ tabs.forEach(([tb,p]) => { const on = tb === id; if (on) $("#"+tb).setAttribute("aria-current","page"); else $("#"+tb).removeAttribute("aria-current"); $("#"+p).hidden = !on; });
-    store.set("luna-nav", id); closeMenu(); window.scrollTo({top:0});
+    store.set("luna-nav", id); closeMenu(); window.scrollTo({top:0}); if (typeof fitQuotesSoon === "function") fitQuotesSoon();
     if (navArmed && !fromHistory && id !== curNav) navPush({lunaNav: id});
     curNav = id; }
   tabs.forEach(([tb]) => $("#"+tb).addEventListener("click", () => show(tb)));
@@ -1202,7 +1205,7 @@ body.luna-locked .app{display:none}
   function closeMenu(){ $("#side").classList.remove("open"); $("#side-back").hidden = true; }
   $("#menu-open").addEventListener("click", openMenu); $("#side-back").addEventListener("click", closeMenu);
   const subs = ["p-pistes","p-press","p-ver","p-dd"];
-  function showSub(id){ document.querySelectorAll(".subtabs button").forEach(b => b.setAttribute("aria-pressed", b.dataset.sub === id)); subs.forEach(s => { $("#"+s).hidden = s !== id; }); store.set("renata-sub", id); }
+  function showSub(id){ document.querySelectorAll(".subtabs button").forEach(b => b.setAttribute("aria-pressed", b.dataset.sub === id)); subs.forEach(s => { $("#"+s).hidden = s !== id; }); store.set("renata-sub", id); if (typeof fitQuotesSoon === "function") fitQuotesSoon(); }
   document.querySelectorAll(".subtabs button").forEach(b => b.addEventListener("click", () => showSub(b.dataset.sub)));
   const hashMap = {accueil:["nav-home"], home:["nav-home"], recherche:["nav-search"], search:["nav-search"], opportunites:["nav-opp"], opportunities:["nav-opp"], sources:["nav-src"],
     projets:["nav-dir"], projects:["nav-dir"], contacts:["nav-ct"], pistes:["nav-src","p-pistes"], leads:["nav-src","p-pistes"], verifies:["nav-src","p-ver"], verified:["nav-src","p-ver"],
@@ -1644,19 +1647,52 @@ body.luna-locked .app{display:none}
       ul.append(li); });
     return ul;
   }
+  let quoteSeq = 0;
+  // Verified : jour où Luna a trouvé l'information (champ repere_le de l'export, ISO ; rien d'affiché s'il manque ou n'est pas une date).
+  // Forme fournie par Sun : pas de champ nouveau dans « verifies » ; valeur = 10e valeur de la ligne dd-lot de même licence, sinon vu_le de la
+  // source data_dubai du projet lic-<licence> ; rien s'il manque ou si ce n'est pas une date.
+  function spottedOf(x){
+    const lic = String((x && x.licence) || "").trim().toLowerCase(); if (!lic) return "";
+    const meta = docs["dd-meta"];
+    if (meta) for (let i = 1; i <= (meta.lots || 0); i++) { const lot = docs["dd-lot-" + String(i).padStart(2,"0")];
+      const r = lot && (lot.lignes || []).find(r => String(r[7] || "").trim().toLowerCase() === lic); if (r) { if (isoDay(r[9])) return fmtDate(r[9]); break; } }
+    const d = oppDoc(), pr = d && (d.opportunites || []).find(o => String(o.id).toLowerCase() === "lic-" + lic);
+    const s = pr && (pr.sources || []).find(u => u.type === "data_dubai" && isoDay(u.vu_le));
+    return s ? fmtDate(s.vu_le) : "";
+  }
   const projectLicence = o => o.licence ? `${t("licence_short")}${sepC()}${o.licence}${o.activite_ajoutee_le ? " (" + fmtDate(o.activite_ajoutee_le) + ")" : ""}` : "";
   // Date à côté d'une source : publication (presse, pistes) ; pour Data Dubai, la date de la licence, jamais une publication ; rien pour
   // Google Maps ni quand la date manque.
   // Libellés décidés par Jack (JACK-1810-47) : « Repéré le … » (jour où Luna a vu la source, champ vu_le quand l'export le porte)
   // et « Publié le … » (date de l'article ou de l'annonce), les deux quand on les a.
   function srcDate(s){
-    if (!s || s.type === "google_maps") return "";
+    if (!s) return "";
     // Seule une vraie date (AAAA-MM-JJ, ou JJ/MM/AAAA) s'affiche ; un texte qui n'est pas une date est ignoré (recette du 18/10).
     const isDay = v => /^\d{4}-\d{2}-\d{2}/.test(String(v || "")) || /^\d{2}\/\d{2}\/\d{4}$/.test(String(v || ""));
+    const seen0 = isDay(s.vu_le) ? fmtDate(s.vu_le) : ""; if (s.type === "google_maps") return seen0 ? t("seen_on_d")(seen0) : "";   // Maps : « Repéré le » seulement, jamais de publication
     const d = isDay(s.date) ? fmtDate(s.date) : "", seen = isDay(s.vu_le) ? fmtDate(s.vu_le) : "";
     const k = !d ? "" : s.date_type !== undefined ? (s.date_type === "licence" ? "lic_on" : s.date_type === "publication" ? "pub_on" : "") : (s.type === "data_dubai" ? "lic_on" : "pub_on");
     return [seen ? t("seen_on_d")(seen) : "", k ? t(k)(d) : ""].filter(Boolean).join(" · ");
   }
+  // Extrait cité (JACK-1910-20) : texte nettoyé (séparateurs « | » en points médians, espaces en double retirés), deux lignes, dépli au bouton ;
+  // textContent seulement, jamais de HTML.
+  const cleanQuote = q => String(q == null ? "" : q).replace(/\s*\|\s*/g, " · ").replace(/(\s*·\s*){2,}/g, " · ").replace(/^\s*·\s*|\s*·\s*$/g, "").replace(/\s+/g, " ").trim();
+  function quoteBlock(raw){
+    const txt = cleanQuote(raw); if (!txt) return null;
+    const box = el("div","quote-box"), q = el("q","quote clamp",txt); q.id = "qt" + (++quoteSeq); box.append(q);
+    const btn = el("button","linkbtn quote-more",t("read_more")); btn.type = "button"; btn.setAttribute("aria-expanded","false"); btn.setAttribute("aria-controls",q.id); btn.hidden = true;
+    btn.addEventListener("click", () => { const open = q.classList.toggle("clamp") === false; btn.setAttribute("aria-expanded", open ? "true" : "false"); btn.textContent = t(open ? "read_less" : "read_more"); });
+    box.append(btn);
+    // Le bouton n'apparaît que si le texte dépasse vraiment deux lignes. La mesure est refaite quand l'écran ou l'onglet devient
+    // visible et quand la largeur change (recette JACOB-1910-38) : un extrait construit dans un onglet caché n'a pas de hauteur.
+    box._fit = () => { try { if (!q.classList.contains("clamp")) return; if (q.clientHeight > 0) btn.hidden = q.scrollHeight <= q.clientHeight + 1; } catch(e) {} };
+    fitQuotesSoon();
+    return box;
+  }
+  var fitPending = false;   // var : show() peut appeler fitQuotesSoon avant cette ligne (au démarrage)
+  function fitQuotesSoon(){ if (fitPending || typeof requestAnimationFrame !== "function") return; fitPending = true;
+    requestAnimationFrame(() => { fitPending = false; document.querySelectorAll(".quote-box").forEach(b => { if (b._fit) b._fit(); }); }); }
+  try { window.addEventListener("resize", fitQuotesSoon); } catch(e) {}
   // Contact général de l'entreprise (site seulement : detOn) : jamais présenté comme celui d'une personne ; masqué si le champ est absent ou vide.
   function companyContact(o){
     const c = o && o.contact_entreprise; if (!detOn || !c || typeof c !== "object") return null;
@@ -1743,7 +1779,9 @@ body.luna-locked .app{display:none}
       chips.append(el("span","chip " + (x.identite === "EXACT" ? "" : "muted"), x.identite === "EXACT" ? t("v_confirmed") : t("v_probable")), el("span","chip " + op[1], t(op[0])));
       if (x.nouvelle_societe === "Oui") chips.append(el("span","chip",t("co_new"))); else if (x.nouvelle_societe === "Non") chips.append(el("span","chip muted",t("co_old")));
       sec = [venueSection(t("sec_concept"), x.activite ? act(x.activite) : "", x.licence ? `${t("licence_short")}${sepC()}${x.licence}${x.activite_ajoutee_le ? " (" + fmtDate(x.activite_ajoutee_le) + ")" : ""}` : "")];
-      if (x.maps) links = [{url: x.maps, label: t("see_listing")}];
+      const sp = spottedOf(x);
+      if (x.maps) links = [{url: x.maps, label: t("see_listing"), note: sp ? t("seen_on_d")(sp) : ""}];
+      else if (sp) sec.push(el("p","v-line src-date",t("seen_on_d")(sp)));
     }
     if (chips.children.length) b.append(chips);
     sec.forEach(v => { if (v) b.append(v); });
@@ -1977,7 +2015,7 @@ body.luna-locked .app{display:none}
       .forEach(([k,v]) => { if (v) { const s = el("span"); s.append(t(k) + sep, el("b",null,v)); row.append(s); } });
     c.append(row);
     const links = (o.sources||[]).filter(s => s.url);
-    if (links.length) { const src = el("div","src"); const ul = el("ul"); links.forEach(s => { const li = el("li"); li.append(link(s.url, s.type === "google_maps" ? t("see_listing") : (s.libelle || s.url))); ul.append(li); }); src.append(ul); c.append(src); }
+    if (links.length) { const src = el("div","src"); const ul = el("ul"); links.forEach(s => { const li = el("li"); li.append(link(s.url, s.type === "google_maps" ? t("see_listing") : (s.libelle || s.url))); const nt = srcDate(s); if (nt) li.append(" ", el("small","src-date",nt)); ul.append(li); }); src.append(ul); c.append(src); }
     // suivi
     const fu = el("div","research"); fu.append(el("div","label",t("follow")));
     // Sur le site, quand le statut se choisit sur le projet, la carte ne montre pas de menu désactivé : un emplacement que le site remplit
@@ -2057,8 +2095,15 @@ body.luna-locked .app{display:none}
       { const pd = pisteDay(p); if (pd) { const s = el("span"); s.append(t("dt_first") + (lang === "fr" ? " : " : ": "), el("b",null,fmtDate(pd))); row.append(s); } }
       c.append(row);
       const src = el("div","src"); src.append(el("div","label",t("where_found"))); const ul = el("ul");
-      (p.sources||[]).forEach((s,i) => ul.append(el("li",null,`${(en.sources||[])[i] || s.source}, ${t("seen_on")} ${s.jour}${s.date_source ? "" : " (" + t("spotted_date") + ")"}`)));
-      (p.liens||[]).forEach(l => { const li = el("li"); li.append(link(l.url, l.url.replace(/^https?:\/\//,"").replace(/\/$/,""))); if (l.extrait) li.append(el("q","quote",l.extrait)); ul.append(li); });
+      // « Publié le » seulement quand la source a daté sa page : date_source texte = la date de publication ; date_source vrai = le jour du
+      // groupe est lui-même la date de publication de la source ; sinon seul « Repéré le » (jour où Luna a vu la page), jamais une publication.
+      const okDay = v => /^\d{4}-\d{2}-\d{2}/.test(String(v || "")) || /^\d{2}\/\d{2}\/\d{4}$/.test(String(v || ""));
+      (p.sources||[]).forEach((s,i) => { const nm = (en.sources||[])[i] || s.source, day = okDay(s.jour) ? fmtDate(s.jour) : "";
+        const pubOnly = s.date_source === true, pub = pubOnly ? day : (typeof s.date_source === "string" && /^\d{4}-\d{2}-\d{2}|^\d{2}\/\d{2}\/\d{4}$/.test(s.date_source) ? fmtDate(s.date_source) : "");
+        ul.append(el("li",null,[nm, pubOnly || !day ? "" : t("seen_on_d")(day), pub ? t("pub_on")(pub) : ""].filter(Boolean).join(", "))); });
+      (p.liens||[]).forEach(l => { const li = el("li"); li.append(link(l.url, l.url.replace(/^https?:\/\//,"").replace(/\/$/,"")));
+        const nt = srcDate(Object.assign({}, l, {date_type: "publication"})); if (nt) li.append(" ", el("small","src-date",nt));
+        const qb = quoteBlock(l.extrait); if (qb) li.append(qb); ul.append(li); });
       src.append(ul); c.append(src);
       if (r) {
         const dv = el("div","research"); dv.append(el("div","label",`${t("research")} ${r.fait_le || ""}`));
@@ -2102,7 +2147,8 @@ body.luna-locked .app{display:none}
       const m = el("td"); if (x.maps) m.append(link(x.maps, t("see_listing"))); else m.textContent = t("no_link");
       // La ligne reste une ligne de tableau pour les lecteurs d'écran (JACK-1910-07) : le nom est un bouton, la ligne entière reste cliquable à la souris.
       const nm = el("td","name"), nb = el("button","linkbtn dd-open", x.nom || ""); nb.type = "button"; nb.setAttribute("aria-label", t("dd_open")(x.nom || "")); nm.append(nb);
-      tr.append(nm, el("td","act",act(x.activite)), el("td","date",fmtDate(x.activite_ajoutee_le)), v, m);
+      const dtd = el("td","date",fmtDate(x.activite_ajoutee_le)), sp = spottedOf(x); if (sp) dtd.append(el("br"), el("small","src-date",t("seen_on_d")(sp)));
+      tr.append(nm, el("td","act",act(x.activite)), dtd, v, m);
       tr.classList.add("dd-row"); tr.addEventListener("click", ev => { if (!(ev.target.closest && ev.target.closest("a"))) openSource("ver", x); });
       body.append(tr);
     });
@@ -2214,6 +2260,7 @@ body.luna-locked .app{display:none}
      [t("dd_new_co"), r[5] === "Oui" ? t("dd_yes") : r[5] === "Non" ? t("dd_no") : ""], [t("th_form"), r[6] ? form(r[6]) : ""], [t("th_licno"), lic]]
       .forEach(([k, v]) => { if (v) dl.append(el("dt",null,k), el("dd",null,v)); });
     b.append(dl);
+    if (isoDay(r[9])) b.append(el("p","v-line src-date",t("seen_on_d")(fmtDate(r[9]))));
     if (ver) { const src = el("div","src"); const ul = el("ul"); const li = el("li"); li.append(link(ver.maps, t("see_listing"))); ul.append(li); src.append(ul); b.append(src); }
     b.append(el("p","note",t("dd_no_addr")));
     if (!ver) b.append(el("p","note",t("dd_nothing")));
