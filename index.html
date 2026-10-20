@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.116.0/dist/umd/supabase.js https://cdn.jsdelivr.net/npm/lucide@0.460.0/dist/umd/lucide.min.js 'sha256-8cgf21VFyuj9FKvJxxZKcBw9316KaBIQZqmkQVa3B0k='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src https://jqqzzakidyrcglyzgbrk.supabase.co wss://jqqzzakidyrcglyzgbrk.supabase.co; manifest-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.116.0/dist/umd/supabase.js https://cdn.jsdelivr.net/npm/lucide@0.460.0/dist/umd/lucide.min.js 'sha256-UbNX096RCkixa4L8gtH3t28IEkgu0uwH2E/rciNg5iY='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src https://jqqzzakidyrcglyzgbrk.supabase.co wss://jqqzzakidyrcglyzgbrk.supabase.co; manifest-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
 <meta name="robots" content="noindex, nofollow">
 <meta name="theme-color" content="#F7F3EC">
@@ -367,6 +367,12 @@ button.kpi > svg{position:absolute;top:20px;right:20px;width:16px;height:16px;co
   .job-table .sm-only{display:inline;white-space:nowrap}
   .job-table .lg-only{display:none}
 }
+.job-block{display:grid;gap:12px}
+.job-block-h{margin:0;font:500 15px var(--sans);color:var(--taupe)}
+.job-cur-btn{display:inline-flex;align-items:center;gap:8px;font:inherit;color:inherit;background:transparent;border:1px solid var(--btn-border);border-radius:10px;padding:9px 16px;cursor:pointer}
+.job-cur-btn i,.job-cur-btn svg{width:16px;height:16px;transition:transform .2s ease}
+.job-cur-btn.open i,.job-cur-btn.open svg{transform:rotate(90deg)}
+.job-open-chip{background:var(--warn-bg);color:var(--warn-ink)}
 </style>
 <style>
 /* Luna, site autonome : écran de connexion et compléments (charte Luna : Ivory, Cream, Tiffany, Cormorant Garamond, Inter). */
@@ -865,14 +871,31 @@ body.luna-locked .app{display:none}
       <div class="ct-bar" id="job-bar">
         <div class="lang" role="group" data-al="ct_view" aria-label="Display"><button type="button" id="job-v-cards" aria-pressed="false" data-i="ct_cards"></button><button type="button" id="job-v-list" aria-pressed="true" data-i="ct_list"></button></div>
       </div>
-      <div class="tablebox" id="job-tablebox">
-        <table class="dir-table job-table">
-          <thead><tr><th data-i="job_th_co"></th><th data-i="job_th_pos"></th><th data-i="job_th_pub"></th><th data-i="job_th_seen"></th><th data-i="job_th_src"></th></tr></thead>
-          <tbody id="job-body"></tbody>
-        </table>
-      </div>
-      <div class="pcards" id="job-list"></div>
-      <div class="pager"><span id="job-info" role="status"></span><button type="button" class="btn" id="job-more" hidden></button></div>
+      <section class="job-block" id="job-open-block" aria-labelledby="job-open-h">
+        <h3 class="job-block-h" id="job-open-h"></h3>
+        <p class="empty" id="job-open-none" hidden></p>
+        <div class="tablebox" id="job-open-tablebox">
+          <table class="dir-table job-table">
+            <thead><tr><th data-i="job_th_co"></th><th data-i="job_th_pos"></th><th data-i="job_th_pub"></th><th data-i="job_th_seen"></th><th data-i="job_th_src"></th></tr></thead>
+            <tbody id="job-open-body"></tbody>
+          </table>
+        </div>
+        <div class="pcards" id="job-open-list"></div>
+      </section>
+      <p class="empty" id="job-none" hidden></p>
+      <section class="job-block" id="job-cur-block">
+        <h3 class="job-block-h"><button type="button" class="job-cur-btn" id="job-cur-btn" aria-expanded="false" aria-controls="job-cur-wrap"><i data-lucide="chevron-right"></i><span id="job-cur-label"></span></button></h3>
+        <div id="job-cur-wrap" hidden>
+          <div class="tablebox" id="job-tablebox">
+            <table class="dir-table job-table">
+              <thead><tr><th data-i="job_th_co"></th><th data-i="job_th_pos"></th><th data-i="job_th_pub"></th><th data-i="job_th_seen"></th><th data-i="job_th_src"></th></tr></thead>
+              <tbody id="job-body"></tbody>
+            </table>
+          </div>
+          <div class="pcards" id="job-list"></div>
+          <div class="pager"><span id="job-info" role="status"></span><button type="button" class="btn" id="job-more" hidden></button></div>
+        </div>
+      </section>
     </section>
 
     <section class="panel" id="p-auto" hidden>
@@ -1208,6 +1231,14 @@ body.luna-locked .app{display:none}
     job_view:"View the posting", job_untitled:"Untitled posting", job_employer:"Employer", job_dates:"Dates", job_ad:"Posting", job_site:"Site", job_linked:"Linked venue", job_open_ad:"Open the posting",
     job_none_data:"No job postings yet. They will appear here as soon as Luna has picked some up.", job_none_match:"No job posting matches these filters.",
     job_info:(n,total) => `${n} of ${total} job posting${Number(total) === 1 ? "" : "s"} shown`, job_more:n => `Show ${n} more`
+  });
+  Object.assign(T.en, {
+    job_opening:"Opening", job_open_h:n => `Opening (${n})`, job_open_none:"No opening posting for these filters",
+    job_cur_lbl:n => `Ongoing hiring (${n})`
+  });
+  Object.assign(T.fr, {
+    job_opening:"Ouverture", job_open_h:n => `Ouverture (${n})`, job_open_none:"Aucune offre d'ouverture pour ces filtres",
+    job_cur_lbl:n => `Recrutement courant (${n})`
   });
   Object.assign(T.en, { job_th_co:"Company", job_th_pos:"Position", job_th_pub:"Published on", job_th_seen:"Spotted on", job_th_src:"Source" });
   Object.assign(T.en, {
@@ -1984,13 +2015,30 @@ body.luna-locked .app{display:none}
   // toujours un jour de Dubai ; « Dubai seulement » est le réglage par défaut, et le nombre du menu est celui de la liste ainsi réglée.
   // Affichage progressif : 60 cartes d'abord, puis un bouton en ajoute 60 (la page reste fluide avec plus de 1 200 offres).
   // Les variables sont déclarées par « var » : la page les lit au démarrage avant cette ligne (piège des « let »).
-  var JOB_PER = 60, JOB = {shown: 60, built: false, emp: "", cache: null};
+  var JOB_PER = 60, JOB = {shown: 60, built: false, emp: "", cache: null, curOpen: false};
+  // RÈGLE UNIQUE « offre d'ouverture » (demande de David, JACK-2010-87). Déterministe, jamais deviné au-delà de ces mots : l'intitulé
+  // ou le lieu contient, sans tenir compte de la casse ni des accents (et la ponctuation comptant pour une espace, donc « Pre-Opening »
+  // = « pre opening »), « pre opening », « preopening », « opening » en MOT ENTIER (« reopening » et « openings » ne comptent pas ;
+  // « opening hours » ne devrait pas arriver dans un intitulé), « new restaurant », « new venue », « new outlet », « launch » ou
+  // « launching » en mot entier. Un futur champ booléen « ouverture » de l'export, s'il est vrai, suffit aussi (il s'ajoute, il n'est pas exigé).
+  var JOB_OPEN_RE = /(?:^| )(?:pre ?opening|preopening|opening|new restaurant|new venue|new outlet|launch|launching)(?: |$)/;
+  // Exception décidée par Jack (JACK-2010-93) : « opening » suivi d'un poste de service (supervisor, manager, shift, team member…)
+  // désigne l'ouverture d'un service, pas d'un établissement : il ne compte pas, sauf si « pre-opening » ou « opening team » figure.
+  // Les autres mots (new restaurant, launch…) gardent leur effet.
+  var JOB_OPEN_KEEP = /(?:^| )(?:pre ?opening|preopening|opening team)(?: |$)/;
+  var JOB_OPEN_SERVICE = /(?:^| )opening (?:supervisor|manager|shift|team member|team leader|lead|crew|staff|attendant|duty manager|cashier)(?= |$)/g;
+  function jobIsOpening(x, title, place){
+    if (x && x.ouverture === true) return true;
+    let f = catFold(title + " " + place);
+    if (!JOB_OPEN_KEEP.test(f)) f = f.replace(JOB_OPEN_SERVICE, " ");
+    return JOB_OPEN_RE.test(f);
+  }
   const jobText = v => String(v == null ? "" : v).replace(/\s+/g, " ").trim();
   function jobItem(x){
     const pub = dubaiDay(x.publie_le), seen = dubaiDay(x.vu_le), title = jobText(x.intitule), emp = jobText(x.employeur), place = jobText(x.lieu);
     return {x, id: jobText(x.id), title, emp, place, pub, seen, day: pub || seen, site: jobText(x.site), url: jobText(x.url), dubai: x.dubai !== false,
       live: x.active === true ? true : x.active === false ? false : null, pid: jobText(x.projet_id).toLowerCase(),
-      hay: catFold([title, emp, place].join(" ")), ek: catFold(emp) || "~none"};
+      hay: catFold([title, emp, place].join(" ")), ek: catFold(emp) || "~none", open: jobIsOpening(x, title, place)};
   }
   // null : les documents ne sont pas là ; sinon la liste de toutes les offres de l'export.
   function jobItems(){
@@ -2030,12 +2078,13 @@ body.luna-locked .app{display:none}
     $("#job-emp-label").textContent = cur ? cur.label : t("job_all_emp");
     if (had != null) { const f = [...list.children].find(li => li.dataset.value === had); if (f) f.focus(); }
   }
+  const jobOpenChip = j => (j.open ? el("span", "chip job-open-chip", t("job_opening")) : null);
   function jobAdLink(j){ return jobHttp(j.url) ? link(jobUrl(j.url), t("job_view")) : null; }
   function jobCard(j, projects){
     const a = el("article", "pcard jobcard");
     a.append(el("div", "pc-nm job-title", j.title || t("job_untitled")));
     const line = (cls, txt) => { if (txt) a.append(el("div", cls, txt)); };
-    { const zc = zoneChip(j.x); if (zc) { const r = el("div", "pc-zone"); r.append(zc); a.append(r); } }
+    { const zc = zoneChip(j.x), oc = jobOpenChip(j); if (zc || oc) { const r = el("div", "pc-zone"); if (oc) r.append(oc); if (zc) { if (oc) r.append(" "); r.append(zc); } a.append(r); } }
     line("pc-role", j.emp); line("pc-co", j.place);
     if (j.pub) line("pc-date", t("pub_on")(fmtDate(j.pub)));
     if (j.seen) line("pc-date", t("seen_on_d")(fmtDate(j.seen)));
@@ -2050,7 +2099,7 @@ body.luna-locked .app{display:none}
   // informations à la suite, séparées par un point, avec leur libellé ; le lien garde son action, le reste de la ligne ouvre la fiche.
   function jobRow(j){
     const tr = el("tr", "job-row");
-    const co = el("td", "name", j.emp || t("job_emp_none")); { const zc = zoneChip(j.x); if (zc) { zc.classList.add("det-tag"); co.append(" ", zc); } }
+    const co = el("td", "name", j.emp || t("job_emp_none")); { const oc = jobOpenChip(j); if (oc) { oc.classList.add("det-tag"); co.append(" ", oc); } const zc = zoneChip(j.x); if (zc) { zc.classList.add("det-tag"); co.append(" ", zc); } }
     const pos = el("td", "job-pos", j.title || t("job_untitled"));
     const dateCell = (day, key) => { const td = el("td", "date"); if (day) td.append(el("span", "lg-only", fmtDate(day)), el("span", "sm-only", t(key)(fmtDate(day)))); return td; };
     // Source : le nom du site (champ « site », sinon le domaine de l'adresse) ; lien souligné vers l'annonce si l'adresse est en http ou https.
@@ -2068,6 +2117,7 @@ body.luna-locked .app{display:none}
     const chips = el("div", "chips");
     if (j.live === true) chips.append(el("span", "chip good", t("job_live"))); else if (j.live === false) chips.append(el("span", "chip muted", t("job_gone")));
     if (!j.dubai) chips.append(el("span", "chip muted", t("job_outside")));
+    { const oc = jobOpenChip(j); if (oc) chips.append(oc); }
     chips.append(zoneChip(j.x, true));
     if (chips.children.length) b.append(chips);
     const adP = (() => { if (!j.url) return null; const p = el("p", "v-line"); if (jobHttp(j.url)) p.append(link(jobUrl(j.url), t("job_open_ad"))); else p.append(document.createTextNode(j.url)); return p; })();
@@ -2082,6 +2132,12 @@ body.luna-locked .app{display:none}
     document.dispatchEvent(new CustomEvent("luna:plain-open", {detail: {body: b}}));
     openSheetLayer(); $("#sheet-close").focus(); refreshIcons();
   }
+  // Remplit un bloc (liste ou cartes) avec les offres données ; retourne le nombre de lignes écrites.
+  function jobFillBlock(view, cardsBox, tbox, tbody, items, projects){
+    cardsBox.replaceChildren(); tbody.replaceChildren();
+    cardsBox.hidden = view === "list" || !items.length; tbox.hidden = view !== "list" || !items.length;
+    if (view === "list") items.forEach(j => tbody.append(jobRow(j))); else items.forEach(j => cardsBox.append(jobCard(j, projects)));
+  }
   function renderJobs(){
     if (!JOB.built) {
       const again = () => { JOB.shown = JOB_PER; renderJobs(); };
@@ -2089,19 +2145,21 @@ body.luna-locked .app{display:none}
       wirePick("#job-emp", "#job-emp-list", "#job-emp-pick", v => { JOB.emp = v; again(); });
       [["cards", "#job-v-cards"], ["list", "#job-v-list"]].forEach(([v, sel]) => $(sel).addEventListener("click", () => { store.set("luna-job-view", v); renderJobs(); }));
       $("#job-more").addEventListener("click", () => { JOB.shown += JOB_PER; renderJobs(); });
+      // Bloc « Recrutement courant » : replié par défaut, déplié par un vrai bouton (clavier : Entrée ou Espace), état dans aria-expanded.
+      $("#job-cur-btn").addEventListener("click", () => { JOB.curOpen = !JOB.curOpen; renderJobs(); });
       JOB.built = true;
     }
-    const all = jobItems(), box = $("#job-list"), more = $("#job-more"), info = $("#job-info");
+    const all = jobItems(), info = $("#job-info"), more = $("#job-more");
     const dflt = all ? all.filter(j => j.dubai).length : 0;
     $("#c-jobs").textContent = dflt || "";
     const any = !!all && all.length > 0;
     const lv = $("#job-live"); lv.hidden = !(any && all.some(j => j.live !== null)); if (lv.hidden) lv.value = "";
     $("#job-filters").hidden = !any;
-    const view = jobView(), tbox = $("#job-tablebox"), tbody = $("#job-body");
-    $("#job-bar").hidden = !any; tbox.hidden = true; tbody.replaceChildren(); box.hidden = false;
+    const view = jobView(), none = $("#job-none");
+    $("#job-bar").hidden = !any;
     $("#job-v-cards").setAttribute("aria-pressed", view === "cards"); $("#job-v-list").setAttribute("aria-pressed", view === "list");
-    box.replaceChildren();
-    if (!any) { box.className = "people"; box.append(el("div", "empty", t("job_none_data"))); info.textContent = ""; more.hidden = true; more.textContent = ""; return; }
+    const hideAll = () => { ["#job-open-list", "#job-open-body", "#job-list", "#job-body"].forEach(sel => $(sel).replaceChildren()); ["#job-open-tablebox", "#job-tablebox"].forEach(sel => { $(sel).hidden = true; }); $("#job-open-block").hidden = true; $("#job-cur-block").hidden = true; info.textContent = ""; more.hidden = true; more.textContent = ""; };
+    if (!any) { hideAll(); none.hidden = false; none.textContent = t("job_none_data"); return; }
     jobPickFill(jobFilter(all, true));
     const list = jobFilter(all, false), col = new Intl.Collator(lang === "fr" ? "fr" : "en", {sensitivity: "base"});
     // JACK-2010-29 : une offre sans intitulé se range à la fin du tri par intitulé ; une date future (ou une date de relevé future)
@@ -2109,14 +2167,28 @@ body.luna-locked .app{display:none}
     const byTitle = (a, b) => (!a.title) - (!b.title) || col.compare(a.title, b.title);
     const today = todayDubai(), sd = d => (d && d <= today ? d : "");
     const key = j => sd(j.pub) || sd(j.seen);
-    list.sort($("#job-sort").value === "alpha" ? byTitle : (a, b) => zoneRank(a.x) - zoneRank(b.x) || key(b).localeCompare(key(a)) || byTitle(a, b));
-    if (!list.length) { box.className = "people"; box.append(el("div", "empty", t("job_none_match"))); info.textContent = ""; more.hidden = true; more.textContent = ""; return; }
-    box.className = "pcards";
-    const projects = jobProjects(), shown = Math.min(JOB.shown, list.length);
-    if (view === "list") { box.hidden = true; tbox.hidden = false; list.slice(0, shown).forEach(j => tbody.append(jobRow(j))); }
-    else list.slice(0, shown).forEach(j => box.append(jobCard(j, projects)));
-    info.textContent = t("job_info")(shown, list.length);
-    more.hidden = shown >= list.length; more.textContent = more.hidden ? "" : t("job_more")(Math.min(JOB_PER, list.length - shown));
+    // Le tri choisi s'applique à l'intérieur de chaque bloc (ouverture d'abord, recrutement courant ensuite).
+    const order = $("#job-sort").value === "alpha" ? byTitle : (a, b) => zoneRank(a.x) - zoneRank(b.x) || key(b).localeCompare(key(a)) || byTitle(a, b);
+    const opening = list.filter(j => j.open).sort(order), current = list.filter(j => !j.open).sort(order);
+    // Aucune offre après filtrage : le bloc d'en-tête dit quand même qu'il n'y a pas d'ouverture, et le message général suit.
+    if (!list.length) { hideAll(); $("#job-open-block").hidden = false; $("#job-open-h").textContent = t("job_open_h")(0); $("#job-open-none").hidden = false; $("#job-open-none").textContent = t("job_open_none"); none.hidden = false; none.textContent = t("job_none_match"); return; }
+    none.hidden = true;
+    const projects = jobProjects();
+    // Bloc d'en-tête : toutes les offres d'ouverture (peu nombreuses), sans affichage progressif.
+    $("#job-open-block").hidden = false;
+    $("#job-open-h").textContent = t("job_open_h")(opening.length);
+    $("#job-open-none").hidden = opening.length > 0; $("#job-open-none").textContent = opening.length ? "" : t("job_open_none");
+    jobFillBlock(view, $("#job-open-list"), $("#job-open-tablebox"), $("#job-open-body"), opening, projects);
+    // Bloc courant : replié par défaut ; l'affichage progressif par 60 ne vaut qu'une fois déplié.
+    const curBlock = $("#job-cur-block"), btn = $("#job-cur-btn"), wrap = $("#job-cur-wrap");
+    curBlock.hidden = false;
+    $("#job-cur-label").textContent = t("job_cur_lbl")(current.length);
+    btn.setAttribute("aria-expanded", String(JOB.curOpen)); wrap.hidden = !JOB.curOpen;
+    btn.classList[JOB.curOpen ? "add" : "remove"]("open");
+    const shown = JOB.curOpen ? Math.min(JOB.shown, current.length) : 0;
+    jobFillBlock(view, $("#job-list"), $("#job-tablebox"), $("#job-body"), current.slice(0, shown), projects);
+    info.textContent = JOB.curOpen && current.length ? t("job_info")(shown, current.length) : "";
+    more.hidden = !JOB.curOpen || shown >= current.length; more.textContent = more.hidden ? "" : t("job_more")(Math.min(JOB_PER, current.length - shown));
   }
 
   // Nouvelle charte : accueil, recherche, automatisations, analyses, navigation latérale
