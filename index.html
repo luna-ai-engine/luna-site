@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.116.0/dist/umd/supabase.js https://cdn.jsdelivr.net/npm/lucide@0.460.0/dist/umd/lucide.min.js 'sha256-Cvftv+GXyMXpaUmhU6MAUowrc+7sGXq0v04rQO2azwo='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src https://jqqzzakidyrcglyzgbrk.supabase.co wss://jqqzzakidyrcglyzgbrk.supabase.co; manifest-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.116.0/dist/umd/supabase.js https://cdn.jsdelivr.net/npm/lucide@0.460.0/dist/umd/lucide.min.js 'sha256-8cgf21VFyuj9FKvJxxZKcBw9316KaBIQZqmkQVa3B0k='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src https://jqqzzakidyrcglyzgbrk.supabase.co wss://jqqzzakidyrcglyzgbrk.supabase.co; manifest-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
 <meta name="robots" content="noindex, nofollow">
 <meta name="theme-color" content="#F7F3EC">
@@ -352,6 +352,9 @@ button.kpi > svg{position:absolute;top:20px;right:20px;width:16px;height:16px;co
 /* Offres d'emploi (demande de David du 19/10/2026) */
 .job-title{font-size:16px;font-weight:500;line-height:1.35;margin:0}
 .jobcard .pc-est a{font-weight:500}
+.zone-chip{white-space:nowrap}
+.pc-zone{margin:0 0 2px}
+.p-id .zone-block{display:inline-block;width:fit-content;justify-self:start;align-self:flex-start;margin-top:8px}
 .job-table tbody tr{cursor:pointer}
 .job-table .sm-only{display:none}
 .job-table td.job-src a{text-decoration:underline}
@@ -733,6 +736,7 @@ body.luna-locked .app{display:none}
         <input class="q" type="search" id="opp-q" data-ph="search_opp" aria-label="Search">
         <select id="opp-prio" aria-label="Priority"></select>
         <select id="opp-stat" aria-label="Status"></select>
+        <select id="opp-zone" data-al="zone_lbl" aria-label="Zone"></select>
       </div>
       <label class="check"><input type="checkbox" id="opp-side"> <span data-i="show_side"></span></label>
       <div id="opp-list" style="display:grid;gap:16px"></div>
@@ -746,6 +750,7 @@ body.luna-locked .app{display:none}
         <input class="q" type="search" id="dir-q" data-ph="search_dir" aria-label="Search">
         <div class="pick" id="dir-type-pick"><button type="button" class="pick-btn" id="dir-type" aria-haspopup="listbox" aria-expanded="false" aria-controls="dir-type-list"><span class="pick-label" id="dir-type-label" data-i="all_types"></span><i data-lucide="chevron-down"></i></button><ul class="pick-list" id="dir-type-list" role="listbox" aria-label="Type" hidden></ul></div>
         <select id="dir-people" aria-label="People"></select>
+        <select id="dir-zone" data-al="zone_lbl" aria-label="Zone"></select>
       </div>
       <p class="note" id="dir-note" data-i="note_no_new" hidden></p>
       <div class="tablebox">
@@ -765,6 +770,7 @@ body.luna-locked .app{display:none}
         <select id="ct-has" aria-label="Details"></select>
         <select id="ct-when" data-al="when_det" aria-label="Detection date"></select>
         <select id="ct-sort" aria-label="Sort"></select>
+        <select id="ct-zone" data-al="zone_lbl" aria-label="Zone"></select>
       </div>
       <div class="ct-bar">
         <div class="lang" role="group" data-al="ct_view" aria-label="Display"><button type="button" id="ct-v-cards" aria-pressed="false" data-i="ct_cards"></button><button type="button" id="ct-v-list" aria-pressed="true" data-i="ct_list"></button></div>
@@ -786,6 +792,7 @@ body.luna-locked .app{display:none}
         <div class="filters">
           <select id="pistes-when" data-al="when_first" aria-label="Date first spotted"></select>
           <select id="pistes-sort" data-al="sort_lbl" aria-label="Sort"></select>
+        <select id="pistes-zone" data-al="zone_lbl" aria-label="Zone"></select>
         </div>
         <div id="pistes-list" style="display:grid;gap:16px"></div>
       </div>
@@ -798,6 +805,7 @@ body.luna-locked .app{display:none}
           <select id="ver-new" aria-label="Company"></select>
           <select id="ver-when" data-al="when_lic" aria-label="Date the activity was added"></select>
           <select id="ver-sort" data-al="sort_lbl" aria-label="Sort"></select>
+        <select id="ver-zone" data-al="zone_lbl" aria-label="Zone"></select>
         </div>
         <div class="tablebox">
           <table class="dd-table">
@@ -815,6 +823,7 @@ body.luna-locked .app{display:none}
           <select id="press-link" aria-label="Cross-check"></select>
           <select id="press-when" data-al="when_art" aria-label="Date of the latest article"></select>
           <select id="press-sort" data-al="sort_lbl" aria-label="Sort"></select>
+        <select id="press-zone" data-al="zone_lbl" aria-label="Zone"></select>
         </div>
         <div id="press-list" style="display:grid;gap:16px"></div>
         <details><summary data-i="articles_read"></summary><div id="press-articles"></div></details>
@@ -851,6 +860,7 @@ body.luna-locked .app{display:none}
         <div class="pick" id="job-emp-pick"><button type="button" class="pick-btn" id="job-emp" data-al="job_emp_lbl" aria-label="Employer" aria-haspopup="listbox" aria-expanded="false" aria-controls="job-emp-list"><span class="pick-label" id="job-emp-label" data-i="job_all_emp"></span><i data-lucide="chevron-down"></i></button><ul class="pick-list" id="job-emp-list" role="listbox" aria-label="Employer" hidden></ul></div>
         <select id="job-live" data-al="job_live_lbl" aria-label="Status" hidden></select>
         <select id="job-sort" data-al="job_sort_lbl" aria-label="Sort"></select>
+        <select id="job-zone" data-al="zone_lbl" aria-label="Zone"></select>
       </div>
       <div class="ct-bar" id="job-bar">
         <div class="lang" role="group" data-al="ct_view" aria-label="Display"><button type="button" id="job-v-cards" aria-pressed="false" data-i="ct_cards"></button><button type="button" id="job-v-list" aria-pressed="true" data-i="ct_list"></button></div>
@@ -948,6 +958,24 @@ body.luna-locked .app{display:none}
     return node;
   }
   const store = { get(k){ try { return localStorage.getItem(k); } catch(e) { return null; } }, set(k,v){ try { localStorage.setItem(k,v); } catch(e) {} } };
+
+  // Zones de Dubai (JACK-2010-40, liste validée par David le 20/10/2026) : le champ « zone » vaut « premium », « secondaire » ou
+  // « inconnue » ; un champ absent ou une autre valeur compte comme « inconnue » (jamais deviné). Fonctions déclarées (remontées) et
+  // « var » : la page les lit au démarrage avant leur ligne (piège des « let »).
+  var ZONES = ["premium", "secondaire", "inconnue"];
+  function zoneVal(x){ const z = x && typeof x === "object" && x.zone != null ? String(x.zone).trim().toLowerCase() : ""; return ZONES.indexOf(z) < 0 ? "" : z; }
+  function zoneOf(x){ return zoneVal(x) || "inconnue"; }
+  function zoneRank(x){ return ZONES.indexOf(zoneOf(x)); }
+  function zoneAny(items){ for (let i = 0; i < items.length; i++) if (zoneVal(items[i])) return true; return false; }
+  // Tri par défaut : premium, puis secondaire, puis inconnue ; chaque groupe garde l'ordre en place (tri stable).
+  function zoneFirst(list, of){ const g = of || (x => x); return list.map((x, i) => [x, i]).sort((a, b) => zoneRank(g(a[0])) - zoneRank(g(b[0])) || a[1] - b[1]).map(p => p[0]); }
+  // Filtre de zone des écrans où la zone peut manquer partout (Verified, Data Dubai) : caché tant qu'aucun élément ne porte de zone.
+  function zoneTools(id, any){ const e = document.getElementById(id); if (!e) return; e.hidden = !any; if (!any) e.value = ""; }
+  function zoneSel(id){ const e = document.getElementById(id + "-zone"); return e && !e.hidden ? e.value : ""; }
+  function zoneOk(id, x){ const v = zoneSel(id); return !v || zoneOf(x) === v; }
+  // Pastille : « Zone premium » (vert), « Zone secondaire » (gris) ; « inconnue » ne s'écrit que dans les fiches (always).
+  function zoneChip(x, always){ const z = zoneOf(x); if (z === "inconnue" && !always) return null;
+    return el("span", "chip zone-chip " + (z === "premium" ? "good" : "muted"), t("zone_chip_" + z)); }
 
   const T = {
     en: {
@@ -1182,10 +1210,18 @@ body.luna-locked .app{display:none}
     job_info:(n,total) => `${n} of ${total} job posting${Number(total) === 1 ? "" : "s"} shown`, job_more:n => `Show ${n} more`
   });
   Object.assign(T.en, { job_th_co:"Company", job_th_pos:"Position", job_th_pub:"Published on", job_th_seen:"Spotted on", job_th_src:"Source" });
+  Object.assign(T.en, {
+    zone_lbl:"Zone", zone_all:"Zone: all", zone_premium:"Zone: premium", zone_secondaire:"Zone: secondary", zone_inconnue:"Zone: unknown",
+    zone_chip_premium:"Premium zone", zone_chip_secondaire:"Secondary zone", zone_chip_inconnue:"Zone unknown"
+  });
+  Object.assign(T.fr, {
+    zone_lbl:"Zone", zone_all:"Zone : toutes", zone_premium:"Zone : premium", zone_secondaire:"Zone : secondaire", zone_inconnue:"Zone : inconnue",
+    zone_chip_premium:"Zone premium", zone_chip_secondaire:"Zone secondaire", zone_chip_inconnue:"Zone inconnue"
+  });
   Object.assign(T.fr, {
     nav_jobs:"Offres d'emploi", pt_jobs:"Offres d'emploi",
     lead_jobs:"Offres d'emploi de la restauration et de l'hôtellerie relevées par Luna, qu'un établissement y soit rattaché ou non. Touchez une offre pour voir tout son détail.",
-    when_pub:"Date de publication", job_search:"Chercher un intitulé, un employeur ou un lieu", job_scope_lbl:"Zone", job_dubai:"Dubai seulement", job_all:"Partout", job_emp_lbl:"Employeur", job_all_emp:"Tous les employeurs", job_emp_none:"Employeur non indiqué",
+    when_pub:"Date de publication", job_search:"Chercher un intitulé, un employeur ou un lieu", job_scope_lbl:"Périmètre", job_dubai:"Dubai seulement", job_all:"Partout", job_emp_lbl:"Employeur", job_all_emp:"Tous les employeurs", job_emp_none:"Employeur non indiqué",
     job_live_lbl:"État", job_live_all:"Toutes les offres", job_live:"Encore en ligne", job_gone:"Plus en ligne", job_outside:"Hors de Dubai", job_sort_lbl:"Tri", job_sort_alpha:"Par intitulé",
     job_view:"Voir l'annonce", job_untitled:"Offre sans intitulé", job_employer:"Employeur", job_dates:"Dates", job_ad:"Annonce", job_site:"Site", job_linked:"Établissement lié", job_open_ad:"Ouvrir l'annonce",
     job_none_data:"Aucune offre d'emploi pour l'instant. Elles apparaîtront ici dès que Luna en aura relevé.", job_none_match:"Aucune offre ne correspond à ces filtres.",
@@ -1246,6 +1282,7 @@ body.luna-locked .app{display:none}
     opts($("#job-when"), whenPairs());
     opts($("#job-live"), [["", t("job_live_all")], ["live", t("job_live")]]);
     opts($("#job-sort"), [["", t("sort_recent")], ["alpha", t("job_sort_alpha")]]);
+    ["opp","dir","ct","pistes","ver","press","job"].forEach(k => opts($("#" + k + "-zone"), [["", t("zone_all")], ["premium", t("zone_premium")], ["secondaire", t("zone_secondaire")], ["inconnue", t("zone_inconnue")]]));
   }
   const CS = ["a_contacter","contacte","rendez_vous","proposition","gagne","perdu","pas_pertinent"];
   const FAM = ["direction","exploitation","projet","marketing"];
@@ -1446,7 +1483,7 @@ body.luna-locked .app{display:none}
     const choices = [...cats.values()].map(c => ({key: c.key, label: catLabel(c.raw), n: c.n}));
     renderTypePick(all.length, choices.sort((a,b) => a.label.localeCompare(b.label, lang === "fr" ? "fr" : "en", {sensitivity:"base"})));
     if (!dirBuilt) {
-      ["dir-q","dir-people"].forEach(id => $("#"+id).addEventListener("input", () => { dirPage = 0; renderDirList(); }));
+      ["dir-q","dir-people","dir-zone"].forEach(id => $("#"+id).addEventListener("input", () => { dirPage = 0; renderDirList(); }));
       $("#dir-prev").addEventListener("click", () => { dirPage = Math.max(0, dirPage-1); renderDirList(); });
       $("#dir-next").addEventListener("click", () => { dirPage++; renderDirList(); });
       wirePick("#dir-type", "#dir-type-list", "#dir-type-pick", v => { dirType = v; dirPage = 0; renderDir(); });
@@ -1521,9 +1558,9 @@ body.luna-locked .app{display:none}
     const today = todayDubai(), stage = new Map(detPool("projet", arcMode ? dirArch(d) : dirAll(d), arcMode ? "archive" : detF.dir).map(o => [o, stageOf(o, today)]));
     renderDetSelect("projet", dirAll(d));
     $("#dir-note").hidden = [...stage.values()].includes("new") || !stage.size;
-    const list = [...stage.keys()].sort((a,b) => STAGE_RANK[stage.get(a)] - STAGE_RANK[stage.get(b)] || (PRIO_RANK[a.priorite] ?? 3) - (PRIO_RANK[b.priorite] ?? 3)
+    const list = [...stage.keys()].sort((a,b) => zoneRank(a) - zoneRank(b) || STAGE_RANK[stage.get(a)] - STAGE_RANK[stage.get(b)] || (PRIO_RANK[a.priorite] ?? 3) - (PRIO_RANK[b.priorite] ?? 3)
       || a.nom.localeCompare(b.nom)).filter(o => (arcMode || !dirType || catsOf(o).some(s => catKey(s) === dirType))
-      && (arcMode || !pp || (pp === "yes") === (peopleOf(o).length > 0))
+      && (arcMode || !pp || (pp === "yes") === (peopleOf(o).length > 0)) && zoneOk("dir", o)
       && (!q || [o.nom, pick(o,"lieu"), pick(o,"concept"), o.exploitant, o.licence].join(" ").toLowerCase().includes(q)));
     const pages = Math.max(1, Math.ceil(list.length / DIR_PER)); dirPage = Math.min(dirPage, pages-1);
     const body = $("#dir-body"); body.replaceChildren();
@@ -1540,6 +1577,7 @@ body.luna-locked .app{display:none}
       const cells = [el("td","act",catsOf(o).map(catLabel).join(", ")), el("td","place",pick(o,"lieu") || ""), ppl, pr];
       let first = true; cells.forEach(c => { if (!c.textContent) return; if (!first) c.classList.add("sep"); first = false; });
       const nameCell = el("td","name",o.nom); const dc = detChip("projet", o); if (dc) { dc.classList.add("det-tag"); nameCell.append(" ", dc); }
+      const zc = zoneChip(o); if (zc) { zc.classList.add("det-tag"); nameCell.append(" ", zc); }
       tr.append(nameCell, ...cells);
       tr.addEventListener("click", () => openVenue(o));
       tr.addEventListener("keydown", ev => { if (ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); openVenue(o); } });
@@ -1565,6 +1603,7 @@ body.luna-locked .app{display:none}
     const b = el("button","prow"); b.type = "button";
     const av = el("span","avatar", initials(c.nom));
     const mid = el("span"); const pn = el("div","pname", c.nom || ""); const dc = detChip("personne", c); if (dc) { dc.classList.add("det-tag"); pn.append(" ", dc); }
+    const zc = zoneChip(c); if (zc) { zc.classList.add("det-tag"); pn.append(" ", zc); }
     mid.append(pn, el("div","pmeta", [c.poste, c.organisation].filter(Boolean).join(" · ")));
     const side = el("span","pside"); const dot = el("span", lvDot(c)); dot.title = t("lv_" + (c.niveau || "apollo")); side.append(dot, icon("chevron-right"));
     b.append(av, mid, side); b.addEventListener("click", () => openPerson(c));
@@ -1635,6 +1674,7 @@ body.luna-locked .app{display:none}
     if (c.poste) id.append(el("div","p-role", c.poste));
     if (c.organisation) id.append(el("div","p-co", c.organisation));
     const pdc = detChip("personne", c); if (pdc) id.append(pdc);
+    { const pz = zoneChip(c, true); pz.classList.add("zone-block"); id.append(pz); }
     b.append(id);
     // 2. actions rapides : désactivées proprement si l'information manque
     const acts = el("div","p-actions");
@@ -1793,6 +1833,7 @@ body.luna-locked .app{display:none}
     chips.append(el("span","chip muted", t("et_" + o.etat) || o.etat));
     if (o.verification) chips.append(el("span","chip muted", o.verification === "EXACT" ? t("verified_place") : t("probable_place")));
     if (o.nouvelle_societe === "Oui") chips.append(el("span","chip muted", t("new_company")));
+    chips.append(zoneChip(o, true));
     b.append(chips);
     const cats = catsOf(o).map(catLabel).join(", ");
     [venueSection(t("sec_concept"), pick("concept"), cats ? el("p","v-line v-cat",cats) : "", projectLicence(o)), venueSection(t("sec_operator"), o.exploitant), venueSection(t("sec_place"), pick("lieu")),
@@ -1849,6 +1890,7 @@ body.luna-locked .app{display:none}
       if (x.maps) links = [{url: x.maps, label: t("see_listing"), note: sp ? t("seen_on_d")(sp) : ""}];
       else if (sp) sec.push(el("p","v-line src-date",t("seen_on_d")(sp)));
     }
+    chips.append(zoneChip(x, true));
     if (chips.children.length) b.append(chips);
     sec.forEach(v => { if (v) b.append(v); });
     const ls = venueSection(t("pp_sources"), sourcesList(links)); if (ls) b.append(ls);
@@ -1902,6 +1944,7 @@ body.luna-locked .app{display:none}
     const nm = el("button","pc-name"); nm.type = "button"; nm.append(el("span","avatar", initials(c.nom)), el("span","pc-nm", c.nom || ""));
     nm.addEventListener("click", () => openPerson(c)); head.append(nm);
     const dc = detChip("personne", c); if (dc) head.append(dc);
+    const zc = zoneChip(c); if (zc) head.append(zc);
     a.append(head);
     const line = (cls, txt) => { if (txt) a.append(el("div", cls, txt)); };
     line("pc-role", c.poste); line("pc-co", c.organisation);
@@ -1915,7 +1958,7 @@ body.luna-locked .app{display:none}
   function renderCt(){
     const main = detPool("personne", contacts, ""); $("#c-ct").textContent = main.length || "";
     if (!ctBuilt) {
-      ["ct-q","ct-role","ct-has","ct-sort","ct-when"].forEach(id => $("#"+id).addEventListener("input", renderCt));
+      ["ct-q","ct-role","ct-has","ct-sort","ct-when","ct-zone"].forEach(id => $("#"+id).addEventListener("input", renderCt));
       [["cards","#ct-v-cards"],["list","#ct-v-list"]].forEach(([v,sel]) => $(sel).addEventListener("click", () => { store.set("luna-ct-view", v); renderCt(); }));
       ctBuilt = true; }
     const q = $("#ct-q").value.trim().toLowerCase(), fam = $("#ct-role").value, has = $("#ct-has").value, view = ctView();
@@ -1925,14 +1968,14 @@ body.luna-locked .app{display:none}
     const when = $("#ct-when").value;
     const arcMode = detF.ct === "archive" && hidOn;
     const list = detPool("personne", arcMode ? contactsHid : contacts, arcMode ? "archive" : detF.ct).filter(c => (!fam || c.famille === fam) && (!has || (has === "email" ? !!c.email : has === "phone" ? !!c.telephone : !c.email && !c.telephone))
-      && (arcMode || inWhen(ctCreated(c), when))
+      && (arcMode || inWhen(ctCreated(c), when)) && zoneOk("ct", c)
       && (!q || [c.nom, c.poste, c.organisation, ...(c.etablissements || []).map(id => (byId[id] || {}).nom)].join(" ").toLowerCase().includes(q)))
       .sort((a,b) => String(a.nom).localeCompare(String(b.nom)));
     const box = $("#ct-list"); box.replaceChildren(); box.className = view === "cards" ? "pcards" : "people";
     if (!list.length) { box.className = "people"; box.append(el("div","empty", contacts.length || arcMode ? t("none_match") : t("no_contacts"))); return; }
     const byName = (a,b) => String(a.nom || "").localeCompare(String(b.nom || ""), lang === "fr" ? "fr" : "en", {sensitivity:"base"});
     const recent = $("#ct-sort").value === "recent";
-    list.sort((a,b) => recent ? (ctCreated(b).localeCompare(ctCreated(a)) || byName(a,b)) : byName(a,b)).forEach(c => box.append(view === "cards" ? personCardFull(c, byId) : personRow(c)));
+    list.sort((a,b) => recent ? (ctCreated(b).localeCompare(ctCreated(a)) || byName(a,b)) : (zoneRank(a) - zoneRank(b) || byName(a,b))).forEach(c => box.append(view === "cards" ? personCardFull(c, byId) : personRow(c)));
     refreshIcons();
   }
 
@@ -1963,7 +2006,7 @@ body.luna-locked .app{display:none}
   const jobUrl = u => u.replace(/^(https?):/i, m => m.toLowerCase());
   function jobFilter(items, skipEmp){
     const q = catFold($("#job-q").value), scope = $("#job-scope").value, wh = $("#job-when").value, lv = $("#job-live").hidden ? "" : $("#job-live").value;
-    return items.filter(j => (scope === "all" || j.dubai) && inWhen(j.day, wh) && (!lv || j.live === true) && (!q || j.hay.includes(q)) && (skipEmp || !JOB.emp || j.ek === JOB.emp));
+    return items.filter(j => (scope === "all" || j.dubai) && inWhen(j.day, wh) && (!lv || j.live === true) && zoneOk("job", j.x) && (!q || j.hay.includes(q)) && (skipEmp || !JOB.emp || j.ek === JOB.emp));
   }
   function jobProjects(){
     const d = oppDoc(), m = new Map(); if (d) (d.opportunites || []).forEach(o => { if (!projHid(o)) m.set(String(o.id).toLowerCase(), o); });
@@ -1992,6 +2035,7 @@ body.luna-locked .app{display:none}
     const a = el("article", "pcard jobcard");
     a.append(el("div", "pc-nm job-title", j.title || t("job_untitled")));
     const line = (cls, txt) => { if (txt) a.append(el("div", cls, txt)); };
+    { const zc = zoneChip(j.x); if (zc) { const r = el("div", "pc-zone"); r.append(zc); a.append(r); } }
     line("pc-role", j.emp); line("pc-co", j.place);
     if (j.pub) line("pc-date", t("pub_on")(fmtDate(j.pub)));
     if (j.seen) line("pc-date", t("seen_on_d")(fmtDate(j.seen)));
@@ -2006,7 +2050,8 @@ body.luna-locked .app{display:none}
   // informations à la suite, séparées par un point, avec leur libellé ; le lien garde son action, le reste de la ligne ouvre la fiche.
   function jobRow(j){
     const tr = el("tr", "job-row");
-    const co = el("td", "name", j.emp || t("job_emp_none")), pos = el("td", "job-pos", j.title || t("job_untitled"));
+    const co = el("td", "name", j.emp || t("job_emp_none")); { const zc = zoneChip(j.x); if (zc) { zc.classList.add("det-tag"); co.append(" ", zc); } }
+    const pos = el("td", "job-pos", j.title || t("job_untitled"));
     const dateCell = (day, key) => { const td = el("td", "date"); if (day) td.append(el("span", "lg-only", fmtDate(day)), el("span", "sm-only", t(key)(fmtDate(day)))); return td; };
     // Source : le nom du site (champ « site », sinon le domaine de l'adresse) ; lien souligné vers l'annonce si l'adresse est en http ou https.
     const host = jobHttp(j.url) ? j.url.replace(/^https?:\/\/(www\.)?/i, "").split(/[\/?#]/)[0] : "", srcName = j.site || host, st = el("td", "job-src");
@@ -2023,6 +2068,7 @@ body.luna-locked .app{display:none}
     const chips = el("div", "chips");
     if (j.live === true) chips.append(el("span", "chip good", t("job_live"))); else if (j.live === false) chips.append(el("span", "chip muted", t("job_gone")));
     if (!j.dubai) chips.append(el("span", "chip muted", t("job_outside")));
+    chips.append(zoneChip(j.x, true));
     if (chips.children.length) b.append(chips);
     const adP = (() => { if (!j.url) return null; const p = el("p", "v-line"); if (jobHttp(j.url)) p.append(link(jobUrl(j.url), t("job_open_ad"))); else p.append(document.createTextNode(j.url)); return p; })();
     [venueSection(t("job_employer"), j.emp), venueSection(t("place"), j.place),
@@ -2039,7 +2085,7 @@ body.luna-locked .app{display:none}
   function renderJobs(){
     if (!JOB.built) {
       const again = () => { JOB.shown = JOB_PER; renderJobs(); };
-      ["job-q", "job-scope", "job-when", "job-live", "job-sort"].forEach(id => $("#" + id).addEventListener("input", again));
+      ["job-q", "job-scope", "job-when", "job-live", "job-sort", "job-zone"].forEach(id => $("#" + id).addEventListener("input", again));
       wirePick("#job-emp", "#job-emp-list", "#job-emp-pick", v => { JOB.emp = v; again(); });
       [["cards", "#job-v-cards"], ["list", "#job-v-list"]].forEach(([v, sel]) => $(sel).addEventListener("click", () => { store.set("luna-job-view", v); renderJobs(); }));
       $("#job-more").addEventListener("click", () => { JOB.shown += JOB_PER; renderJobs(); });
@@ -2063,7 +2109,7 @@ body.luna-locked .app{display:none}
     const byTitle = (a, b) => (!a.title) - (!b.title) || col.compare(a.title, b.title);
     const today = todayDubai(), sd = d => (d && d <= today ? d : "");
     const key = j => sd(j.pub) || sd(j.seen);
-    list.sort($("#job-sort").value === "alpha" ? byTitle : (a, b) => key(b).localeCompare(key(a)) || byTitle(a, b));
+    list.sort($("#job-sort").value === "alpha" ? byTitle : (a, b) => zoneRank(a.x) - zoneRank(b.x) || key(b).localeCompare(key(a)) || byTitle(a, b));
     if (!list.length) { box.className = "people"; box.append(el("div", "empty", t("job_none_match"))); info.textContent = ""; more.hidden = true; more.textContent = ""; return; }
     box.className = "pcards";
     const projects = jobProjects(), shown = Math.min(JOB.shown, list.length);
@@ -2099,10 +2145,10 @@ body.luna-locked .app{display:none}
   const signalCount = () => ((docs.pistes && docs.pistes.pistes) || []).length + ((docs.presse && docs.presse.etablissements) || []).length;
   function openList(kind){
     const set = (id, v) => { const e = $("#" + id); if (e) e.value = v; };
-    if (kind === "ct") { show("nav-ct"); ["ct-q","ct-role","ct-has","ct-sort"].forEach(id => set(id, "")); detF.ct = ""; set("ct-when", "week"); renderCt(); }
-    else if (kind === "opp") { show("nav-opp"); set("opp-q",""); set("opp-prio",""); set("opp-stat","active"); $("#opp-side").checked = false; oppPage = 0; renderOppList(); }
-    else if (kind === "ver") { show("nav-src"); showSub("p-ver"); set("ver-q",""); set("ver-id",""); set("ver-new",""); set("ver-when",""); set("ver-sort",""); renderVerList(); }
-    else { show("nav-src"); showSub("p-pistes"); set("pistes-when",""); set("pistes-sort",""); renderPistes(); }
+    if (kind === "ct") { show("nav-ct"); ["ct-q","ct-role","ct-has","ct-sort","ct-zone"].forEach(id => set(id, "")); detF.ct = ""; set("ct-when", "week"); renderCt(); }
+    else if (kind === "opp") { show("nav-opp"); set("opp-q",""); set("opp-prio",""); set("opp-stat","active"); set("opp-zone",""); $("#opp-side").checked = false; oppPage = 0; renderOppList(); }
+    else if (kind === "ver") { show("nav-src"); showSub("p-ver"); set("ver-q",""); set("ver-id",""); set("ver-new",""); set("ver-when",""); set("ver-sort",""); set("ver-zone",""); renderVerList(); }
+    else { show("nav-src"); showSub("p-pistes"); set("pistes-when",""); set("pistes-sort",""); set("pistes-zone",""); renderPistes(); }
   }
   function renderHome(){
     greeting();
@@ -2182,7 +2228,7 @@ body.luna-locked .app{display:none}
     kpis($("#opp-kpis"), [[f.format(all.filter(o => !o.secondaire).length),t("k_opp")],[f.format(all.filter(o => o.priorite === "haute").length),t("k_high")],
       [f.format(all.filter(o => !["a_contacter","pas_pertinent"].includes(st(o))).length),t("k_followed")],[f.format(all.filter(o => st(o) === "gagne").length),t("k_won")]]);
     if (!oppBuilt) {
-      ["opp-q","opp-prio","opp-stat","opp-side"].forEach(id => $("#"+id).addEventListener("input", () => { oppPage = 0; renderOppList(); }));
+      ["opp-q","opp-prio","opp-stat","opp-side","opp-zone"].forEach(id => $("#"+id).addEventListener("input", () => { oppPage = 0; renderOppList(); }));
       $("#opp-prev").addEventListener("click", () => { oppPage = Math.max(0, oppPage-1); renderOppList(); window.scrollTo({top: $("#p-opp").offsetTop - 60}); });
       $("#opp-next").addEventListener("click", () => { oppPage++; renderOppList(); window.scrollTo({top: $("#p-opp").offsetTop - 60}); });
       oppBuilt = true;
@@ -2195,8 +2241,9 @@ body.luna-locked .app{display:none}
     const pick = (o, k) => lang === "en" ? (o[k + "_en"] || o[k]) : o[k];
     const st = o => (suivi[o.id] || {}).statut || "a_contacter";
     const arcMode = cs === "archived" && hidOn;
-    const list = (d.opportunites||[]).filter(o => (arcMode ? projHid(o) : !projHid(o)) && (arcMode || side || !o.secondaire) && (!pr || o.priorite === pr) && (arcMode || !cs || (cs === "active" ? isActiveOpp(o) : st(o) === cs))
+    const list = (d.opportunites||[]).filter(o => (arcMode ? projHid(o) : !projHid(o)) && (arcMode || side || !o.secondaire) && (!pr || o.priorite === pr) && (arcMode || !cs || (cs === "active" ? isActiveOpp(o) : st(o) === cs)) && zoneOk("opp", o)
       && (!q || [o.nom, pick(o,"lieu"), pick(o,"concept"), o.exploitant, o.licence].join(" ").toLowerCase().includes(q)));
+    const zl = zoneFirst(list); list.length = 0; list.push(...zl);
     const pages = Math.max(1, Math.ceil(list.length / OPP_PER)); oppPage = Math.min(oppPage, pages-1);
     const box = $("#opp-list");
     if (box.contains(document.activeElement) && document.activeElement.matches("textarea,select")) return;   // ne pas effacer une saisie en cours
@@ -2211,6 +2258,7 @@ body.luna-locked .app{display:none}
     const chips = el("div","chips");
     chips.append(el("span","chip " + (o.priorite === "haute" ? "good" : o.priorite === "moyenne" ? "" : "muted"), `${t("pr_label")(o.priorite)} · ${t("rs_" + o.raison)}`));
     chips.append(el("span","chip muted", t("et_" + o.etat) || o.etat));
+    { const zc = zoneChip(o); if (zc) chips.append(zc); }
     [...new Set((o.sources||[]).map(s => s.type))].forEach(s => chips.append(el("span","chip muted", t("src_" + s))));
     c.append(chips);
     const row = el("div","row"); const sep = lang === "fr" ? " : " : ": ";
@@ -2271,13 +2319,13 @@ body.luna-locked .app{display:none}
     renderSignals();
     const d = docs.pistes; const box = $("#pistes-list"); if (!d) return;
     const all = d.pistes || []; $("#c-pistes").textContent = all.length; box.replaceChildren();
-    if (!pistesBuilt) { ["pistes-when","pistes-sort"].forEach(id => $("#"+id).addEventListener("input", renderPistes)); pistesBuilt = true; }
+    if (!pistesBuilt) { ["pistes-when","pistes-sort","pistes-zone"].forEach(id => $("#"+id).addEventListener("input", renderPistes)); pistesBuilt = true; }
     // Date de détection d'une piste : le premier jour où Luna a vu un signal (le plus ancien « jour » de ses sources).
     const pisteDay = p => (p.sources || []).map(x => dubaiDay(x.jour)).filter(Boolean).sort()[0] || "";
     dateTools("pistes-when", "pistes-sort", all.some(pisteDay));
     const when = $("#pistes-when").value;
-    const list = all.filter(p => inWhen(pisteDay(p), when));
-    if ($("#pistes-sort").value === "recent") list.sort(byDayDesc(pisteDay));
+    const list = all.filter(p => inWhen(pisteDay(p), when) && zoneOk("pistes", p));
+    if ($("#pistes-sort").value === "recent") list.sort(byDayDesc(pisteDay)); else list.splice(0, list.length, ...zoneFirst(list));
     if (!all.length) { box.append(el("div","empty",t("no_leads"))); return; }
     if (!list.length) { box.append(el("div","empty",t("none_match"))); return; }
     list.forEach(p => {
@@ -2288,6 +2336,7 @@ body.luna-locked .app{display:none}
       chips.append(el("span","chip " + (p.preuves_independantes === "plusieurs" ? "" : "warn"), p.preuves_independantes === "plusieurs" ? t("confirmed_many") : t("unconfirmed")));
       if (p.nom_a_verifier) chips.append(el("span","chip warn",t("name_check")));
       if (r && r.statut && !r.concept) chips.append(el("span","chip warn",t("dup")));
+      { const zc = zoneChip(p); if (zc) chips.append(zc); }
       c.append(chips);
       const row = el("div","row");
       const opening = en.ouverture !== undefined ? en.ouverture : p.ouverture;
@@ -2327,7 +2376,7 @@ body.luna-locked .app{display:none}
     const list = d.etablissements || []; $("#c-ver").textContent = list.length;
     const ex = list.filter(x => x.identite === "EXACT").length; const f = nf();
     kpis($("#ver-kpis"), [[f.format(ex),t("k_confirmed")],[f.format(list.length - ex),t("k_probable")],[`${d.lots_verifies} / ${d.lots_prevus}`,t("k_batches")],[f.format(list.length),t("k_passed")]]);   // un seul chiffre partout (JACK-1810-06) : celui de la liste
-    if (!verBuilt) { ["ver-q","ver-id","ver-new","ver-when","ver-sort"].forEach(id => $("#"+id).addEventListener("input", renderVerList)); verBuilt = true; }
+    if (!verBuilt) { ["ver-q","ver-id","ver-new","ver-when","ver-sort","ver-zone"].forEach(id => $("#"+id).addEventListener("input", renderVerList)); verBuilt = true; }
     renderVerList();
   }
   function renderVerList(){
@@ -2336,8 +2385,9 @@ body.luna-locked .app{display:none}
     // Pas de date de vérification dans les documents : la date retenue est celle où l'activité a été ajoutée au fichier des licences.
     const vday = x => dubaiDay(x.activite_ajoutee_le);
     dateTools("ver-when", "ver-sort", (d.etablissements||[]).some(vday));
-    const list = (d.etablissements||[]).filter(x => (!q || (x.nom + " " + x.licence).toLowerCase().includes(q)) && (!idf || x.identite === idf) && (!nw || x.nouvelle_societe === nw) && inWhen(vday(x), $("#ver-when").value));
-    if ($("#ver-sort").value === "recent") list.sort(byDayDesc(vday));
+    zoneTools("ver-zone", zoneAny(d.etablissements || []));
+    const list = (d.etablissements||[]).filter(x => zoneOk("ver", x) && (!q || (x.nom + " " + x.licence).toLowerCase().includes(q)) && (!idf || x.identite === idf) && (!nw || x.nouvelle_societe === nw) && inWhen(vday(x), $("#ver-when").value));
+    if ($("#ver-sort").value === "recent") list.sort(byDayDesc(vday)); else if (zoneAny(list)) list.splice(0, list.length, ...zoneFirst(list));
     const body = $("#ver-body"); body.replaceChildren();
     if (!list.length) { const tr = el("tr"); const td = el("td","empty", (d.etablissements||[]).length ? t("none_match") : t("checking")); td.colSpan = 5; tr.append(td); body.append(tr); return; }
     const OPEN = {oui:["open_yes","good"], bientot:["open_soon","warn"], ferme:["open_closed","warn"], inconnu:["open_unknown","muted"]};
@@ -2346,6 +2396,7 @@ body.luna-locked .app{display:none}
       chips.append(el("span","chip " + (x.identite === "EXACT" ? "" : "muted"), x.identite === "EXACT" ? t("v_confirmed") : t("v_probable")));
       const o = OPEN[x.ouvert] || OPEN.inconnu; chips.append(el("span","chip " + o[1], t(o[0])));
       if (x.nouvelle_societe === "Oui") chips.append(el("span","chip",t("co_new"))); else if (x.nouvelle_societe === "Non") chips.append(el("span","chip muted",t("co_old")));
+      { const zc = zoneChip(x); if (zc) chips.append(zc); }
       v.append(chips);
       const m = el("td"); if (x.maps) m.append(link(x.maps, t("see_listing"))); else m.textContent = t("no_link");
       // La ligne reste une ligne de tableau pour les lecteurs d'écran (JACK-1910-07) : le nom est un bouton, la ligne entière reste cliquable à la souris.
@@ -2365,7 +2416,7 @@ body.luna-locked .app{display:none}
     $("#press-lead").textContent = t("press_lead")(d.fait_le || "");
     kpis($("#press-kpis"), [[f.format(list.length),t("k_press")],[f.format(list.filter(x => x.statut === "annonce").length),t("k_announced")],
       [f.format(list.filter(x => x.renata === "oui").length),t("k_known")],[f.format(list.filter(x => x.data_dubai !== "ABSENT").length),t("k_dd")]]);
-    if (!pressBuilt) { ["press-q","press-status","press-link","press-when","press-sort"].forEach(id => $("#"+id).addEventListener("input", renderPressList)); pressBuilt = true; }
+    if (!pressBuilt) { ["press-q","press-status","press-link","press-when","press-sort","press-zone"].forEach(id => $("#"+id).addEventListener("input", renderPressList)); pressBuilt = true; }
     const arts = $("#press-articles"); arts.replaceChildren(); const ul = el("ul");
     (d.articles||[]).forEach(a => { const li = el("li"); const title = lang === "en" ? (a.titre_en || a.titre) : a.titre; li.append(link(a.url, `${a.media || ""}${a.date ? ", " + a.date : ""} : ${title || a.url}`)); if (a.lu !== "oui") li.append(t("refused")); ul.append(li); });
     arts.append(ul);
@@ -2380,8 +2431,8 @@ body.luna-locked .app{display:none}
     dateTools("press-when", "press-sort", (d.etablissements || []).some(pday));
     const pick = (x, k) => lang === "en" ? (x[k + "_en"] != null ? x[k + "_en"] : x[k]) : x[k];
     const f = (d.etablissements||[]).filter(x => (!q || [x.nom,pick(x,"lieu"),pick(x,"concept"),x.exploitant].join(" ").toLowerCase().includes(q)) && (!st || x.statut === st)
-      && (!lk || (lk === "dd" && x.data_dubai !== "ABSENT") || (lk === "renata" && x.renata === "oui") || (lk === "new" && x.renata !== "oui")) && inWhen(pday(x), $("#press-when").value));
-    if ($("#press-sort").value === "recent") f.sort(byDayDesc(pday));
+      && (!lk || (lk === "dd" && x.data_dubai !== "ABSENT") || (lk === "renata" && x.renata === "oui") || (lk === "new" && x.renata !== "oui")) && inWhen(pday(x), $("#press-when").value) && zoneOk("press", x));
+    if ($("#press-sort").value === "recent") f.sort(byDayDesc(pday)); else f.splice(0, f.length, ...zoneFirst(f));
     const box = $("#press-list"); box.replaceChildren();
     if (!f.length) { box.append(el("div","empty",t("none_match"))); return; }
     f.forEach(x => {
@@ -2391,6 +2442,7 @@ body.luna-locked .app{display:none}
       if (x.renata === "oui") chips.append(el("span","chip",t("known")));
       if (x.data_dubai === "TROUVE") chips.append(el("span","chip",`${t("lic_found")}${x.activite_ajoutee_le ? ", " + t("activity_of") + " " + x.activite_ajoutee_le : ""}`));
       if (x.data_dubai === "PROBABLE") chips.append(el("span","chip muted",t("lic_prob")));
+      { const zc = zoneChip(x); if (zc) chips.append(zc); }
       c.append(chips);
       const row = el("div","row"); const sep = lang === "fr" ? " : " : ": ";
       [["concept",pick(x,"concept")],["operator",pick(x,"exploitant")],["place",pick(x,"lieu")],["opening",pick(x,"ouverture_annoncee")]].forEach(([k,v]) => { if (v) { const s = el("span"); s.append(t(k) + sep, el("b",null,v)); row.append(s); } });
