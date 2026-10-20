@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.116.0/dist/umd/supabase.js https://cdn.jsdelivr.net/npm/lucide@0.460.0/dist/umd/lucide.min.js 'sha256-94r7DLMaeam5/Mts4vEriGiyWL1HoT2tUQyKPotb8NY='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src https://jqqzzakidyrcglyzgbrk.supabase.co wss://jqqzzakidyrcglyzgbrk.supabase.co; manifest-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.116.0/dist/umd/supabase.js https://cdn.jsdelivr.net/npm/lucide@0.460.0/dist/umd/lucide.min.js 'sha256-yFhyi8qqFkTeW/hSET1OUaMdo+aegkt1aCBFegGi/iw='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src https://jqqzzakidyrcglyzgbrk.supabase.co wss://jqqzzakidyrcglyzgbrk.supabase.co; manifest-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
 <meta name="robots" content="noindex, nofollow">
 <meta name="theme-color" content="#F7F3EC">
@@ -110,6 +110,7 @@ q.quote.clamp{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp
    (jamais coupé) et passe à la ligne quand la place manque. */
 .filters .q{flex:2 1 240px;min-width:0;width:auto}
 .filters select[hidden]{display:none}
+.filters[hidden]{display:none}
 .filters select{flex:0 0 auto;width:auto;max-width:100%}
 .filters .pick{flex:0 1 auto;min-width:min(100%,11em);max-width:100%}
 input[type=search],select,textarea{width:100%;font:14px var(--sans);color:var(--taupe);background:var(--cream);border:1px solid var(--border);border-radius:12px;padding:10px 14px;transition:border-color .2s ease}
@@ -347,6 +348,10 @@ button.kpi > svg{position:absolute;top:20px;right:20px;width:16px;height:16px;co
 @media (hover:hover){.card.tap:hover,.pcard.tap:hover{box-shadow:0 6px 22px rgba(81,75,69,.10)}}
 .sheet-body .v-sec{margin-top:0;padding-top:14px;gap:8px}.v-sec p.v-line{margin:0;font-size:14.5px;line-height:1.5;overflow-wrap:anywhere}.v-sec .note{margin:0}
 .src-date{color:var(--taupe-soft);font-size:12.5px}
+
+/* Offres d'emploi (demande de David du 19/10/2026) */
+.job-title{font-size:16px;font-weight:500;line-height:1.35;margin:0}
+.jobcard .pc-est a{font-weight:500}
 </style>
 <style>
 /* Luna, site autonome : écran de connexion et compléments (charte Luna : Ivory, Cream, Tiffany, Cormorant Garamond, Inter). */
@@ -664,6 +669,7 @@ body.luna-locked .app{display:none}
       <button type="button" id="nav-home" data-panel="p-home"><i data-lucide="house"></i><span data-i="nav_home"></span></button>
       <button type="button" id="nav-search" data-panel="p-search"><i data-lucide="search"></i><span data-i="nav_search"></span></button>
       <button type="button" id="nav-src" data-panel="p-src"><i data-lucide="layers"></i><span data-i="nav_src"></span></button>
+      <button type="button" id="nav-jobs" data-panel="p-jobs"><i data-lucide="briefcase"></i><span data-i="nav_jobs"></span><span class="count" id="c-jobs"></span></button>
       <button type="button" id="nav-dir" data-panel="p-dir"><i data-lucide="building-2"></i><span data-i="nav_dir"></span><span class="count" id="c-dir"></span></button>
       <button type="button" id="nav-ct" data-panel="p-ct"><i data-lucide="users"></i><span data-i="nav_ct"></span><span class="count" id="c-ct"></span></button>
       <button type="button" id="nav-opp" data-panel="p-opp"><i data-lucide="target"></i><span data-i="nav_opp"></span><span class="count" id="c-opp"></span></button>
@@ -822,6 +828,20 @@ body.luna-locked .app{display:none}
         <div class="pager"><span id="dd-info"></span><span style="display:flex;gap:8px"><button class="btn" id="dd-prev" data-i="prev"></button><button class="btn" id="dd-next" data-i="next"></button></span></div>
         <details><summary data-i="read_first"></summary><div id="dd-notes"></div></details>
       </div>
+    </section>
+
+    <section class="panel" id="p-jobs" hidden>
+      <div class="page-head"><h2 data-i="pt_jobs"></h2><p class="lead" data-i="lead_jobs"></p></div>
+      <div class="filters" id="job-filters">
+        <input class="q" type="search" id="job-q" data-ph="job_search" aria-label="Search">
+        <select id="job-scope" data-al="job_scope_lbl" aria-label="Area"></select>
+        <select id="job-when" data-al="when_pub" aria-label="Date"></select>
+        <div class="pick" id="job-emp-pick"><button type="button" class="pick-btn" id="job-emp" data-al="job_emp_lbl" aria-label="Employer" aria-haspopup="listbox" aria-expanded="false" aria-controls="job-emp-list"><span class="pick-label" id="job-emp-label" data-i="job_all_emp"></span><i data-lucide="chevron-down"></i></button><ul class="pick-list" id="job-emp-list" role="listbox" aria-label="Employer" hidden></ul></div>
+        <select id="job-live" data-al="job_live_lbl" aria-label="Status" hidden></select>
+        <select id="job-sort" data-al="job_sort_lbl" aria-label="Sort"></select>
+      </div>
+      <div class="pcards" id="job-list"></div>
+      <div class="pager"><span id="job-info" role="status"></span><button type="button" class="btn" id="job-more" hidden></button></div>
     </section>
 
     <section class="panel" id="p-auto" hidden>
@@ -1130,6 +1150,25 @@ body.luna-locked .app{display:none}
       months:["janv.","févr.","mars","avr.","mai","juin","juil.","août","sept.","oct.","nov.","déc."]
     }
   };
+  // Offres d'emploi (demande de David du 19/10/2026) : textes des deux langues.
+  Object.assign(T.en, {
+    nav_jobs:"Job postings", pt_jobs:"Job postings",
+    lead_jobs:"Restaurant and hotel job postings that Luna has picked up, whether or not a venue is linked to them. Touch a posting to see all its details.",
+    when_pub:"Publication date", job_search:"Search a job title, an employer or a place", job_scope_lbl:"Area", job_dubai:"Dubai only", job_all:"Anywhere", job_emp_lbl:"Employer", job_all_emp:"All employers", job_emp_none:"Employer not stated",
+    job_live_lbl:"Status", job_live_all:"All postings", job_live:"Still online", job_gone:"No longer online", job_outside:"Outside Dubai", job_sort_lbl:"Sort", job_sort_alpha:"By job title",
+    job_view:"View the posting", job_untitled:"Untitled posting", job_employer:"Employer", job_dates:"Dates", job_ad:"Posting", job_site:"Site", job_linked:"Linked venue", job_open_ad:"Open the posting",
+    job_none_data:"No job postings yet. They will appear here as soon as Luna has picked some up.", job_none_match:"No job posting matches these filters.",
+    job_info:(n,total) => `${n} of ${total} job posting${Number(total) === 1 ? "" : "s"} shown`, job_more:n => `Show ${n} more`
+  });
+  Object.assign(T.fr, {
+    nav_jobs:"Offres d'emploi", pt_jobs:"Offres d'emploi",
+    lead_jobs:"Offres d'emploi de la restauration et de l'hôtellerie relevées par Luna, qu'un établissement y soit rattaché ou non. Touchez une offre pour voir tout son détail.",
+    when_pub:"Date de publication", job_search:"Chercher un intitulé, un employeur ou un lieu", job_scope_lbl:"Zone", job_dubai:"Dubai seulement", job_all:"Partout", job_emp_lbl:"Employeur", job_all_emp:"Tous les employeurs", job_emp_none:"Employeur non indiqué",
+    job_live_lbl:"État", job_live_all:"Toutes les offres", job_live:"Encore en ligne", job_gone:"Plus en ligne", job_outside:"Hors de Dubai", job_sort_lbl:"Tri", job_sort_alpha:"Par intitulé",
+    job_view:"Voir l'annonce", job_untitled:"Offre sans intitulé", job_employer:"Employeur", job_dates:"Dates", job_ad:"Annonce", job_site:"Site", job_linked:"Établissement lié", job_open_ad:"Ouvrir l'annonce",
+    job_none_data:"Aucune offre d'emploi pour l'instant. Elles apparaîtront ici dès que Luna en aura relevé.", job_none_match:"Aucune offre ne correspond à ces filtres.",
+    job_info:(n,total) => `${n} offre${Number(n) > 1 ? "s" : ""} affichée${Number(n) > 1 ? "s" : ""} sur ${total}`, job_more:n => `Afficher ${n} de plus`
+  });
   const ACT_EN = {"Restaurant":"Restaurant","Coffee shop":"Coffee shop","Cafétéria":"Cafeteria","Café de spécialité":"Specialty coffee","Karaoké et lounge":"Karaoke and lounge",
     "Restaurant flottant":"Floating restaurant","Coffee shop flottant":"Floating coffee shop","Restaurant et épicerie":"Restaurant and grocery","Centre multi-restaurants":"Food court",
     "Cuisine sans salle (cloud kitchen)":"Cloud kitchen","Food truck":"Food truck","Hôtel":"Hotel","Hôtel économique":"Budget hotel","Appartements hôteliers":"Hotel apartments",
@@ -1180,6 +1219,10 @@ body.luna-locked .app{display:none}
     opts($("#ct-sort"), [["",t("sort_alpha")],["recent",t("sort_recent")]]);
     [["ct-when"],["pistes-when"],["press-when"],["ver-when"],["dd-when"]].forEach(([id]) => opts($("#" + id), whenPairs()));
     ["pistes-sort","press-sort","ver-sort","dd-sort"].forEach(id => opts($("#" + id), sortPairs()));
+    opts($("#job-scope"), [["", t("job_dubai")], ["all", t("job_all")]]);
+    opts($("#job-when"), whenPairs());
+    opts($("#job-live"), [["", t("job_live_all")], ["live", t("job_live")]]);
+    opts($("#job-sort"), [["", t("sort_recent")], ["alpha", t("job_sort_alpha")]]);
   }
   const CS = ["a_contacter","contacte","rendez_vous","proposition","gagne","perdu","pas_pertinent"];
   const FAM = ["direction","exploitation","projet","marketing"];
@@ -1208,7 +1251,7 @@ body.luna-locked .app{display:none}
   function showSub(id){ document.querySelectorAll(".subtabs button").forEach(b => b.setAttribute("aria-pressed", b.dataset.sub === id)); subs.forEach(s => { $("#"+s).hidden = s !== id; }); store.set("renata-sub", id); if (typeof fitQuotesSoon === "function") fitQuotesSoon(); }
   document.querySelectorAll(".subtabs button").forEach(b => b.addEventListener("click", () => showSub(b.dataset.sub)));
   const hashMap = {accueil:["nav-home"], home:["nav-home"], recherche:["nav-search"], search:["nav-search"], opportunites:["nav-opp"], opportunities:["nav-opp"], sources:["nav-src"],
-    projets:["nav-dir"], projects:["nav-dir"], contacts:["nav-ct"], pistes:["nav-src","p-pistes"], leads:["nav-src","p-pistes"], verifies:["nav-src","p-ver"], verified:["nav-src","p-ver"],
+    projets:["nav-dir"], projects:["nav-dir"], emplois:["nav-jobs"], jobs:["nav-jobs"], contacts:["nav-ct"], pistes:["nav-src","p-pistes"], leads:["nav-src","p-pistes"], verifies:["nav-src","p-ver"], verified:["nav-src","p-ver"],
     presse:["nav-src","p-press"], press:["nav-src","p-press"], datadubai:["nav-src","p-dd"], automatisations:["nav-auto"], analyses:["nav-ana"], tests:["nav-ana"], demandes:["nav-req"], requests:["nav-req"], parametres:["nav-set"]}[location.hash.slice(1)];
   const saved = store.get("luna-nav"), savedSub = store.get("renata-sub");
   show(hashMap ? hashMap[0] : (tabs.some(([tb]) => tb === saved) ? saved : "nav-home"));
@@ -1236,7 +1279,7 @@ body.luna-locked .app{display:none}
     if (ic) { const i = el("div","kico"); const g = document.createElement("i"); g.setAttribute("data-lucide", ic); i.append(g); k.append(i); }
     k.append(el("div","l",l), el("div","n",n)); if (go) k.append(icon("arrow-right")); box.append(k); }); if (window.lucide) try { window.lucide.createIcons({attrs:{"stroke-width":1.5}}); } catch(e) {} };
 
-  function render(){ renderStatus(); renderHome(); renderAuto(); renderAna(); renderSearch(); renderOpp(); renderDir(); renderCt(); renderPistes(); renderVer(); renderPress(); renderDD(); renderTests(); renderReq(); }
+  function render(){ renderStatus(); renderHome(); renderAuto(); renderAna(); renderSearch(); renderOpp(); renderDir(); renderCt(); renderPistes(); renderVer(); renderPress(); renderDD(); renderJobs(); renderTests(); renderReq(); }
 
   // Opportunités et suivi commercial
   let suivi = {}, oppPage = 0, oppBuilt = false; const OPP_PER = 25;
@@ -1383,7 +1426,7 @@ body.luna-locked .app{display:none}
       ["dir-q","dir-people"].forEach(id => $("#"+id).addEventListener("input", () => { dirPage = 0; renderDirList(); }));
       $("#dir-prev").addEventListener("click", () => { dirPage = Math.max(0, dirPage-1); renderDirList(); });
       $("#dir-next").addEventListener("click", () => { dirPage++; renderDirList(); });
-      wireTypePick();
+      wirePick("#dir-type", "#dir-type-list", "#dir-type-pick", v => { dirType = v; dirPage = 0; renderDir(); });
       dirBuilt = true;
     }
     renderDirList();
@@ -1403,12 +1446,12 @@ body.luna-locked .app{display:none}
     $("#dir-type-label").textContent = cur ? cur.label : t("all_types");
     if (had != null) { const f = [...list.children].find(li => li.dataset.value === had); if (f) f.focus(); }
   }
-  function wireTypePick(){
-    const btn = $("#dir-type"), list = $("#dir-type-list"), box = $("#dir-type-pick");
+  function wirePick(btnSel, listSel, boxSel, onPick){
+    const btn = $(btnSel), list = $(listSel), box = $(boxSel);
     const items = () => [...list.querySelectorAll(".pick-opt")];
     const open = on => { list.hidden = !on; btn.setAttribute("aria-expanded", String(on));
       if (on) { const cur = list.querySelector('.pick-opt[aria-selected="true"]') || items()[0]; if (cur) cur.focus(); } };
-    const choose = li => { dirType = li.dataset.value || ""; open(false); btn.focus(); dirPage = 0; renderDir(); };
+    const choose = li => { open(false); btn.focus(); onPick(li.dataset.value || ""); };
     btn.addEventListener("click", () => open(list.hidden));
     btn.addEventListener("keydown", ev => { if ((ev.key === "ArrowDown" || ev.key === "ArrowUp") && list.hidden) { ev.preventDefault(); open(true); } });
     list.addEventListener("click", ev => { const li = ev.target && ev.target.closest ? ev.target.closest(".pick-opt") : null; if (li) choose(li); });
@@ -1868,6 +1911,119 @@ body.luna-locked .app{display:none}
     const recent = $("#ct-sort").value === "recent";
     list.sort((a,b) => recent ? (ctCreated(b).localeCompare(ctCreated(a)) || byName(a,b)) : byName(a,b)).forEach(c => box.append(view === "cards" ? personCardFull(c, byId) : personRow(c)));
     refreshIcons();
+  }
+
+  // Offres d'emploi (demande de David du 19/10/2026, fiche docs/crm/FICHE_BESOIN_OFFRES_EMPLOI_2026-10-19.md). Lecture des lots comme
+  // les projets (emplois-meta, puis emplois-lot-NN). La date d'une offre est celle de sa publication, sinon celle de son relevé,
+  // toujours un jour de Dubai ; « Dubai seulement » est le réglage par défaut, et le nombre du menu est celui de la liste ainsi réglée.
+  // Affichage progressif : 60 cartes d'abord, puis un bouton en ajoute 60 (la page reste fluide avec plus de 1 200 offres).
+  // Les variables sont déclarées par « var » : la page les lit au démarrage avant cette ligne (piège des « let »).
+  var JOB_PER = 60, JOB = {shown: 60, built: false, emp: "", cache: null};
+  const jobText = v => String(v == null ? "" : v).replace(/\s+/g, " ").trim();
+  function jobItem(x){
+    const pub = dubaiDay(x.publie_le), seen = dubaiDay(x.vu_le), title = jobText(x.intitule), emp = jobText(x.employeur), place = jobText(x.lieu);
+    return {x, id: jobText(x.id), title, emp, place, pub, seen, day: pub || seen, site: jobText(x.site), url: jobText(x.url), dubai: x.dubai !== false,
+      live: x.active === true ? true : x.active === false ? false : null, pid: jobText(x.projet_id).toLowerCase(),
+      hay: catFold([title, emp, place].join(" ")), ek: catFold(emp) || "~none"};
+  }
+  // null : les documents ne sont pas là ; sinon la liste de toutes les offres de l'export.
+  function jobItems(){
+    const m = docs["emplois-meta"]; if (!m) return null;
+    const lots = []; for (let i = 1; i <= (m.lots || 0); i++) { const lot = docs["emplois-lot-" + String(i).padStart(2, "0")]; if (lot && Array.isArray(lot.offres)) lots.push(lot.offres); }
+    const c = JOB.cache;
+    if (c && c.lots.length === lots.length && c.lots.every((l, i) => l === lots[i])) return c.items;
+    const items = []; lots.forEach(l => l.forEach(x => { if (x && typeof x === "object") items.push(jobItem(x)); }));
+    JOB.cache = {lots, items}; return items;
+  }
+  const jobHttp = u => /^https?:\/\/\S+$/i.test(u);
+  const jobUrl = u => u.replace(/^(https?):/i, m => m.toLowerCase());
+  function jobFilter(items, skipEmp){
+    const q = catFold($("#job-q").value), scope = $("#job-scope").value, wh = $("#job-when").value, lv = $("#job-live").hidden ? "" : $("#job-live").value;
+    return items.filter(j => (scope === "all" || j.dubai) && inWhen(j.day, wh) && (!lv || j.live === true) && (!q || j.hay.includes(q)) && (skipEmp || !JOB.emp || j.ek === JOB.emp));
+  }
+  function jobProjects(){
+    const d = oppDoc(), m = new Map(); if (d) (d.opportunites || []).forEach(o => { if (!projHid(o)) m.set(String(o.id).toLowerCase(), o); });
+    return m;
+  }
+  function jobPickFill(items){
+    const groups = new Map();
+    items.forEach(j => { const g = groups.get(j.ek) || {key: j.ek, n: 0, spell: new Map()}; g.n += 1; g.spell.set(j.emp, (g.spell.get(j.emp) || 0) + 1); groups.set(j.ek, g); });
+    if (JOB.emp && !groups.has(JOB.emp)) { const prev = JOB.empLabel || ""; groups.set(JOB.emp, {key: JOB.emp, n: 0, spell: new Map([[prev, 1]])}); }
+    const lab = g => g.key === "~none" ? t("job_emp_none") : [...g.spell].reduce((a, b) => b[1] > a[1] ? b : a)[0];
+    const col = new Intl.Collator(lang === "fr" ? "fr" : "en", {sensitivity: "base"});
+    const rows = [...groups.values()].map(g => ({key: g.key, label: lab(g), n: g.n})).sort((a, b) => (a.key === "~none") - (b.key === "~none") || col.compare(a.label, b.label));
+    const cur = rows.find(r => r.key === JOB.emp); if (cur) JOB.empLabel = cur.label;
+    const list = $("#job-emp-list"), had = list.contains(document.activeElement) ? document.activeElement.dataset.value : null;
+    list.replaceChildren();
+    [{key: "", label: t("job_all_emp"), n: items.length}, ...rows].forEach(c => {
+      const li = el("li", "pick-opt"); li.setAttribute("role", "option"); li.tabIndex = -1; li.dataset.value = c.key;
+      li.setAttribute("aria-selected", String(c.key === JOB.emp));
+      li.append(el("span", "pick-name", c.label), el("span", "pick-n", nf().format(c.n))); list.append(li);
+    });
+    $("#job-emp-label").textContent = cur ? cur.label : t("job_all_emp");
+    if (had != null) { const f = [...list.children].find(li => li.dataset.value === had); if (f) f.focus(); }
+  }
+  function jobAdLink(j){ return jobHttp(j.url) ? link(jobUrl(j.url), t("job_view")) : null; }
+  function jobCard(j, projects){
+    const a = el("article", "pcard jobcard");
+    a.append(el("div", "pc-nm job-title", j.title || t("job_untitled")));
+    const line = (cls, txt) => { if (txt) a.append(el("div", cls, txt)); };
+    line("pc-role", j.emp); line("pc-co", j.place);
+    if (j.pub) line("pc-date", t("pub_on")(fmtDate(j.pub)));
+    if (j.seen) line("pc-date", t("seen_on_d")(fmtDate(j.seen)));
+    line("pc-co", j.site);
+    const proj = j.pid ? projects.get(j.pid) : null;
+    if (proj) { const r = el("div", "pc-est"); r.append(el("span", "k", t("pc_est") + sepC()));
+      const b = el("button", "pc-link", proj.nom); b.type = "button"; b.addEventListener("click", () => openVenue(proj)); r.append(b); a.append(r); }
+    const ad = jobAdLink(j); if (ad) { const r = el("div", "pc-est"); r.append(ad); a.append(r); }
+    return tapOpen(a, () => openJob(j));
+  }
+  function openJob(j){
+    $("#sheet").classList.remove("pmode"); curVenue = null;
+    $("#sheet-title").textContent = j.title || t("job_untitled");
+    const b = $("#sheet-body"); b.replaceChildren();
+    const chips = el("div", "chips");
+    if (j.live === true) chips.append(el("span", "chip good", t("job_live"))); else if (j.live === false) chips.append(el("span", "chip muted", t("job_gone")));
+    if (!j.dubai) chips.append(el("span", "chip muted", t("job_outside")));
+    if (chips.children.length) b.append(chips);
+    const adP = (() => { if (!j.url) return null; const p = el("p", "v-line"); if (jobHttp(j.url)) p.append(link(jobUrl(j.url), t("job_open_ad"))); else p.append(document.createTextNode(j.url)); return p; })();
+    [venueSection(t("job_employer"), j.emp), venueSection(t("place"), j.place),
+     venueSection(t("job_dates"), j.pub ? t("pub_on")(fmtDate(j.pub)) : "", j.seen ? t("seen_on_d")(fmtDate(j.seen)) : ""),
+     venueSection(t("job_ad"), adP, j.site ? t("job_site") + sepC() + j.site : "")].forEach(x => { if (x) b.append(x); });
+    const proj = j.pid ? jobProjects().get(j.pid) : null;
+    if (proj) {
+      const bt = el("button", "p-venue"); bt.type = "button"; bt.append(el("span", "vn", proj.nom), icon("chevron-right")); bt.addEventListener("click", () => openVenue(proj));
+      b.append(venueSection(t("job_linked"), bt)); b.append(peopleSection(peopleOf(proj)));
+    }
+    document.dispatchEvent(new CustomEvent("luna:plain-open", {detail: {body: b}}));
+    openSheetLayer(); $("#sheet-close").focus(); refreshIcons();
+  }
+  function renderJobs(){
+    if (!JOB.built) {
+      const again = () => { JOB.shown = JOB_PER; renderJobs(); };
+      ["job-q", "job-scope", "job-when", "job-live", "job-sort"].forEach(id => $("#" + id).addEventListener("input", again));
+      wirePick("#job-emp", "#job-emp-list", "#job-emp-pick", v => { JOB.emp = v; again(); });
+      $("#job-more").addEventListener("click", () => { JOB.shown += JOB_PER; renderJobs(); });
+      JOB.built = true;
+    }
+    const all = jobItems(), box = $("#job-list"), more = $("#job-more"), info = $("#job-info");
+    const dflt = all ? all.filter(j => j.dubai).length : 0;
+    $("#c-jobs").textContent = dflt || "";
+    const any = !!all && all.length > 0;
+    const lv = $("#job-live"); lv.hidden = !(any && all.some(j => j.live !== null)); if (lv.hidden) lv.value = "";
+    $("#job-filters").hidden = !any;
+    box.replaceChildren();
+    if (!any) { box.className = "people"; box.append(el("div", "empty", t("job_none_data"))); info.textContent = ""; more.hidden = true; more.textContent = ""; return; }
+    jobPickFill(jobFilter(all, true));
+    const list = jobFilter(all, false), col = new Intl.Collator(lang === "fr" ? "fr" : "en", {sensitivity: "base"});
+    const byTitle = (a, b) => col.compare(a.title, b.title);
+    list.sort($("#job-sort").value === "alpha" ? byTitle : (a, b) => b.day.localeCompare(a.day) || b.seen.localeCompare(a.seen) || byTitle(a, b));
+    if (!list.length) { box.className = "people"; box.append(el("div", "empty", t("job_none_match"))); info.textContent = ""; more.hidden = true; more.textContent = ""; return; }
+    box.className = "pcards";
+    const projects = jobProjects(), shown = Math.min(JOB.shown, list.length);
+    list.slice(0, shown).forEach(j => box.append(jobCard(j, projects)));
+    info.textContent = t("job_info")(shown, list.length);
+    more.hidden = shown >= list.length; more.textContent = more.hidden ? "" : t("job_more")(Math.min(JOB_PER, list.length - shown));
   }
 
   // Nouvelle charte : accueil, recherche, automatisations, analyses, navigation latérale
@@ -2340,7 +2496,7 @@ body.luna-locked .app{display:none}
     detInfo(kind, id){ const d = oppDoc(), x = kind === "projet" ? (d ? (d.opportunites || []).find(o => o.id === id) : null) : contactsRaw.find(c => String(c.id) === String(id));
       if (!x) return null; const arc = kind === "personne" ? hidHas(x) : projHid(x), st = arc ? "" : detState(kind, x); return {archived: arc, state: st, applied: !!st && st !== "new" && detApplied(kind, x, st)}; },
     setHidden(ids){ hidOn = true; const all = (ids || []).map(String); hidSet = new Set(all.filter(x => !x.startsWith("projet:"))); hidProj = new Set(all.filter(x => x.startsWith("projet:")).map(x => x.slice(7)));
-      syncContacts(); if (oppDoc()) { renderDir(); renderOpp(); renderAna(); } renderCt(); renderHome(); if ($("#search-q").value.trim().length >= 2) renderSearch(); detSheetSync(); },
+      syncContacts(); if (oppDoc()) { renderDir(); renderOpp(); renderAna(); } renderCt(); renderHome(); renderJobs(); if ($("#search-q").value.trim().length >= 2) renderSearch(); detSheetSync(); },
     refreshVenue(){ if (curVenue && !$("#sheet").hidden && !$("#sheet").classList.contains("pmode")) openVenue(curVenue); },
     refreshPerson(){ if (curPerson && !$("#sheet").hidden && $("#sheet").classList.contains("pmode")) openPerson(curPerson); }
   };
