@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.116.0/dist/umd/supabase.js https://cdn.jsdelivr.net/npm/lucide@0.460.0/dist/umd/lucide.min.js 'sha256-UbNX096RCkixa4L8gtH3t28IEkgu0uwH2E/rciNg5iY='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src https://jqqzzakidyrcglyzgbrk.supabase.co wss://jqqzzakidyrcglyzgbrk.supabase.co; manifest-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.116.0/dist/umd/supabase.js https://cdn.jsdelivr.net/npm/lucide@0.460.0/dist/umd/lucide.min.js 'sha256-FJZdjs/uSwTcXr80H9s+msgbewtLdekXcxGUplR7bx4='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src https://jqqzzakidyrcglyzgbrk.supabase.co wss://jqqzzakidyrcglyzgbrk.supabase.co; manifest-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
 <meta name="robots" content="noindex, nofollow">
 <meta name="theme-color" content="#F7F3EC">
@@ -2026,7 +2026,7 @@ body.luna-locked .app{display:none}
   // désigne l'ouverture d'un service, pas d'un établissement : il ne compte pas, sauf si « pre-opening » ou « opening team » figure.
   // Les autres mots (new restaurant, launch…) gardent leur effet.
   var JOB_OPEN_KEEP = /(?:^| )(?:pre ?opening|preopening|opening team)(?: |$)/;
-  var JOB_OPEN_SERVICE = /(?:^| )opening (?:supervisor|manager|shift|team member|team leader|lead|crew|staff|attendant|duty manager|cashier)(?= |$)/g;
+  var JOB_OPEN_SERVICE = /(?:^| )opening (?:supervisor|manager|shift|team member|team leader|lead|crew|staff|attendant|duty manager|cashier)s?(?= |$)/g;   // pluriel compris (recette de Jacob)
   function jobIsOpening(x, title, place){
     if (x && x.ouverture === true) return true;
     let f = catFold(title + " " + place);
