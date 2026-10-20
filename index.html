@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.116.0/dist/umd/supabase.js https://cdn.jsdelivr.net/npm/lucide@0.460.0/dist/umd/lucide.min.js 'sha256-yFhyi8qqFkTeW/hSET1OUaMdo+aegkt1aCBFegGi/iw='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src https://jqqzzakidyrcglyzgbrk.supabase.co wss://jqqzzakidyrcglyzgbrk.supabase.co; manifest-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.116.0/dist/umd/supabase.js https://cdn.jsdelivr.net/npm/lucide@0.460.0/dist/umd/lucide.min.js 'sha256-Cvftv+GXyMXpaUmhU6MAUowrc+7sGXq0v04rQO2azwo='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src https://jqqzzakidyrcglyzgbrk.supabase.co wss://jqqzzakidyrcglyzgbrk.supabase.co; manifest-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
 <meta name="robots" content="noindex, nofollow">
 <meta name="theme-color" content="#F7F3EC">
@@ -352,6 +352,18 @@ button.kpi > svg{position:absolute;top:20px;right:20px;width:16px;height:16px;co
 /* Offres d'emploi (demande de David du 19/10/2026) */
 .job-title{font-size:16px;font-weight:500;line-height:1.35;margin:0}
 .jobcard .pc-est a{font-weight:500}
+.job-table tbody tr{cursor:pointer}
+.job-table .sm-only{display:none}
+.job-table td.job-src a{text-decoration:underline}
+@media (max-width:900px){
+  .job-table thead{display:none}
+  .job-table tr{display:block;padding:10px 16px;height:auto;border-bottom:1px solid var(--line)}
+  .job-table td{display:inline;border:0;padding:0;height:auto;min-height:0;font-size:13px;line-height:1.45;color:var(--taupe-soft);vertical-align:baseline;white-space:normal}
+  .job-table td.name{display:block;margin-bottom:2px;font-size:15px;line-height:1.35;color:var(--taupe)}
+  .job-table td.sep::before{content:"\00a0· ";color:var(--faint)}
+  .job-table .sm-only{display:inline;white-space:nowrap}
+  .job-table .lg-only{display:none}
+}
 </style>
 <style>
 /* Luna, site autonome : écran de connexion et compléments (charte Luna : Ivory, Cream, Tiffany, Cormorant Garamond, Inter). */
@@ -840,6 +852,15 @@ body.luna-locked .app{display:none}
         <select id="job-live" data-al="job_live_lbl" aria-label="Status" hidden></select>
         <select id="job-sort" data-al="job_sort_lbl" aria-label="Sort"></select>
       </div>
+      <div class="ct-bar" id="job-bar">
+        <div class="lang" role="group" data-al="ct_view" aria-label="Display"><button type="button" id="job-v-cards" aria-pressed="false" data-i="ct_cards"></button><button type="button" id="job-v-list" aria-pressed="true" data-i="ct_list"></button></div>
+      </div>
+      <div class="tablebox" id="job-tablebox">
+        <table class="dir-table job-table">
+          <thead><tr><th data-i="job_th_co"></th><th data-i="job_th_pos"></th><th data-i="job_th_pub"></th><th data-i="job_th_seen"></th><th data-i="job_th_src"></th></tr></thead>
+          <tbody id="job-body"></tbody>
+        </table>
+      </div>
       <div class="pcards" id="job-list"></div>
       <div class="pager"><span id="job-info" role="status"></span><button type="button" class="btn" id="job-more" hidden></button></div>
     </section>
@@ -1160,6 +1181,7 @@ body.luna-locked .app{display:none}
     job_none_data:"No job postings yet. They will appear here as soon as Luna has picked some up.", job_none_match:"No job posting matches these filters.",
     job_info:(n,total) => `${n} of ${total} job posting${Number(total) === 1 ? "" : "s"} shown`, job_more:n => `Show ${n} more`
   });
+  Object.assign(T.en, { job_th_co:"Company", job_th_pos:"Position", job_th_pub:"Published on", job_th_seen:"Spotted on", job_th_src:"Source" });
   Object.assign(T.fr, {
     nav_jobs:"Offres d'emploi", pt_jobs:"Offres d'emploi",
     lead_jobs:"Offres d'emploi de la restauration et de l'hôtellerie relevées par Luna, qu'un établissement y soit rattaché ou non. Touchez une offre pour voir tout son détail.",
@@ -1169,6 +1191,7 @@ body.luna-locked .app{display:none}
     job_none_data:"Aucune offre d'emploi pour l'instant. Elles apparaîtront ici dès que Luna en aura relevé.", job_none_match:"Aucune offre ne correspond à ces filtres.",
     job_info:(n,total) => `${n} offre${Number(n) > 1 ? "s" : ""} affichée${Number(n) > 1 ? "s" : ""} sur ${total}`, job_more:n => `Afficher ${n} de plus`
   });
+  Object.assign(T.fr, { job_th_co:"Entreprise", job_th_pos:"Poste proposé", job_th_pub:"Publié le", job_th_seen:"Repéré le", job_th_src:"Source" });
   const ACT_EN = {"Restaurant":"Restaurant","Coffee shop":"Coffee shop","Cafétéria":"Cafeteria","Café de spécialité":"Specialty coffee","Karaoké et lounge":"Karaoke and lounge",
     "Restaurant flottant":"Floating restaurant","Coffee shop flottant":"Floating coffee shop","Restaurant et épicerie":"Restaurant and grocery","Centre multi-restaurants":"Food court",
     "Cuisine sans salle (cloud kitchen)":"Cloud kitchen","Food truck":"Food truck","Hôtel":"Hotel","Hôtel économique":"Budget hotel","Appartements hôteliers":"Hotel apartments",
@@ -1935,6 +1958,7 @@ body.luna-locked .app{display:none}
     const items = []; lots.forEach(l => l.forEach(x => { if (x && typeof x === "object") items.push(jobItem(x)); }));
     JOB.cache = {lots, items}; return items;
   }
+  const jobView = () => store.get("luna-job-view") === "cards" ? "cards" : "list";      // « Liste » par défaut (JACK-2010-50)
   const jobHttp = u => /^https?:\/\/\S+$/i.test(u);
   const jobUrl = u => u.replace(/^(https?):/i, m => m.toLowerCase());
   function jobFilter(items, skipEmp){
@@ -1978,6 +2002,20 @@ body.luna-locked .app{display:none}
     const ad = jobAdLink(j); if (ad) { const r = el("div", "pc-est"); r.append(ad); a.append(r); }
     return tapOpen(a, () => openJob(j));
   }
+  // Vue « Liste » : une ligne par offre. Ordinateur : une colonne par information. Téléphone : l'entreprise, puis les autres
+  // informations à la suite, séparées par un point, avec leur libellé ; le lien garde son action, le reste de la ligne ouvre la fiche.
+  function jobRow(j){
+    const tr = el("tr", "job-row");
+    const co = el("td", "name", j.emp || t("job_emp_none")), pos = el("td", "job-pos", j.title || t("job_untitled"));
+    const dateCell = (day, key) => { const td = el("td", "date"); if (day) td.append(el("span", "lg-only", fmtDate(day)), el("span", "sm-only", t(key)(fmtDate(day)))); return td; };
+    // Source : le nom du site (champ « site », sinon le domaine de l'adresse) ; lien souligné vers l'annonce si l'adresse est en http ou https.
+    const host = jobHttp(j.url) ? j.url.replace(/^https?:\/\/(www\.)?/i, "").split(/[\/?#]/)[0] : "", srcName = j.site || host, st = el("td", "job-src");
+    if (srcName) { if (jobHttp(j.url)) st.append(link(jobUrl(j.url), srcName)); else st.append(srcName); }
+    const cells = [pos, dateCell(j.pub, "pub_on"), dateCell(j.seen, "seen_on_d"), st];
+    let first = true; cells.forEach(c => { if (!c.textContent && !c.firstChild) return; if (!first) c.classList.add("sep"); first = false; });
+    tr.append(co, ...cells);
+    return tapOpen(tr, () => openJob(j));
+  }
   function openJob(j){
     $("#sheet").classList.remove("pmode"); curVenue = null;
     $("#sheet-title").textContent = j.title || t("job_untitled");
@@ -2003,6 +2041,7 @@ body.luna-locked .app{display:none}
       const again = () => { JOB.shown = JOB_PER; renderJobs(); };
       ["job-q", "job-scope", "job-when", "job-live", "job-sort"].forEach(id => $("#" + id).addEventListener("input", again));
       wirePick("#job-emp", "#job-emp-list", "#job-emp-pick", v => { JOB.emp = v; again(); });
+      [["cards", "#job-v-cards"], ["list", "#job-v-list"]].forEach(([v, sel]) => $(sel).addEventListener("click", () => { store.set("luna-job-view", v); renderJobs(); }));
       $("#job-more").addEventListener("click", () => { JOB.shown += JOB_PER; renderJobs(); });
       JOB.built = true;
     }
@@ -2012,16 +2051,24 @@ body.luna-locked .app{display:none}
     const any = !!all && all.length > 0;
     const lv = $("#job-live"); lv.hidden = !(any && all.some(j => j.live !== null)); if (lv.hidden) lv.value = "";
     $("#job-filters").hidden = !any;
+    const view = jobView(), tbox = $("#job-tablebox"), tbody = $("#job-body");
+    $("#job-bar").hidden = !any; tbox.hidden = true; tbody.replaceChildren(); box.hidden = false;
+    $("#job-v-cards").setAttribute("aria-pressed", view === "cards"); $("#job-v-list").setAttribute("aria-pressed", view === "list");
     box.replaceChildren();
     if (!any) { box.className = "people"; box.append(el("div", "empty", t("job_none_data"))); info.textContent = ""; more.hidden = true; more.textContent = ""; return; }
     jobPickFill(jobFilter(all, true));
     const list = jobFilter(all, false), col = new Intl.Collator(lang === "fr" ? "fr" : "en", {sensitivity: "base"});
-    const byTitle = (a, b) => col.compare(a.title, b.title);
-    list.sort($("#job-sort").value === "alpha" ? byTitle : (a, b) => b.day.localeCompare(a.day) || b.seen.localeCompare(a.seen) || byTitle(a, b));
+    // JACK-2010-29 : une offre sans intitulé se range à la fin du tri par intitulé ; une date future (ou une date de relevé future)
+    // compte comme « sans date » dans le tri, pour ne jamais passer en tête.
+    const byTitle = (a, b) => (!a.title) - (!b.title) || col.compare(a.title, b.title);
+    const today = todayDubai(), sd = d => (d && d <= today ? d : "");
+    const key = j => sd(j.pub) || sd(j.seen);
+    list.sort($("#job-sort").value === "alpha" ? byTitle : (a, b) => key(b).localeCompare(key(a)) || byTitle(a, b));
     if (!list.length) { box.className = "people"; box.append(el("div", "empty", t("job_none_match"))); info.textContent = ""; more.hidden = true; more.textContent = ""; return; }
     box.className = "pcards";
     const projects = jobProjects(), shown = Math.min(JOB.shown, list.length);
-    list.slice(0, shown).forEach(j => box.append(jobCard(j, projects)));
+    if (view === "list") { box.hidden = true; tbox.hidden = false; list.slice(0, shown).forEach(j => tbody.append(jobRow(j))); }
+    else list.slice(0, shown).forEach(j => box.append(jobCard(j, projects)));
     info.textContent = t("job_info")(shown, list.length);
     more.hidden = shown >= list.length; more.textContent = more.hidden ? "" : t("job_more")(Math.min(JOB_PER, list.length - shown));
   }
