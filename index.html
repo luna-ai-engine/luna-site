@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.116.0/dist/umd/supabase.js https://cdn.jsdelivr.net/npm/lucide@0.460.0/dist/umd/lucide.min.js 'sha256-FJZdjs/uSwTcXr80H9s+msgbewtLdekXcxGUplR7bx4='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src https://jqqzzakidyrcglyzgbrk.supabase.co wss://jqqzzakidyrcglyzgbrk.supabase.co; manifest-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.116.0/dist/umd/supabase.js https://cdn.jsdelivr.net/npm/lucide@0.460.0/dist/umd/lucide.min.js 'sha256-ywPomS1BF04hfOOec9nw2R71SAOvTZgSOuvbP0N14bc='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src https://jqqzzakidyrcglyzgbrk.supabase.co wss://jqqzzakidyrcglyzgbrk.supabase.co; manifest-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
 <meta name="robots" content="noindex, nofollow">
 <meta name="theme-color" content="#F7F3EC">
@@ -2662,6 +2662,9 @@ body.luna-locked .app{display:none}
     setOverlay(entries){ overlay = new Map(entries || []); if (oppDoc()) renderDir(); },
     projects(){ const d = oppDoc(); return d ? (d.opportunites || []).filter(o => !o.masque).map(o => ({id: o.id, nom: o.nom, categorie: o.categorie || ""})) : []; },
     lang: () => lang, refresh(){ if (oppDoc()) renderDir(); },
+    // Ouvre la fiche d'un projet par son identifiant (JACK-0911-02 : lien « Fiche projet » d'une note du CRM) ; faux si inconnu.
+    openProject(id){ const d = oppDoc(), o = d ? (d.opportunites || []).find(x => String(x.id).toLowerCase() === String(id).toLowerCase()) : null;
+      if (!o) return false; show("nav-dir"); openVenue(o); return true; },
     setPersonOverlay(entries){ personOv = new Map(entries || []); },
     setDetections(entries){ detOn = true; detLead(); detDec = new Map(entries || []); syncContacts(); if (oppDoc()) renderDir(); renderCt(); renderHome(); detSheetSync(); },
     detInfo(kind, id){ const d = oppDoc(), x = kind === "projet" ? (d ? (d.opportunites || []).find(o => o.id === id) : null) : contactsRaw.find(c => String(c.id) === String(id));

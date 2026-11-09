@@ -46,10 +46,10 @@
     company_row: "id,name,status,city_or_emirate,group_ids,sector_ids,tag_ids,auto_groups,primary_contact_id,primary_contact_first_name,primary_contact_last_name,open_deal_count,last_contact_at,archived_at,archived_by,version",
     company: "id,name,status,status_since,source_id,group_ids,sector_ids,tag_ids,website,city_or_emirate,country_code,primary_contact_id,archived_at,archived_by,version,auto_groups,primary_contact_first_name,primary_contact_last_name,open_deal_count,last_contact_at",
     company_dup: "id,name,status,city_or_emirate,archived_at",
-    contact_row: "id,first_name,last_name,job_title,company_id,company_name,company_status,decision_role,nature,group_ids,tag_ids,auto_groups,do_not_contact,review_due,review_due_on,is_primary_contact,primary_email,archived_at,archived_by,version",
-    contact: "id,first_name,last_name,job_title,company_id,brand_id,decision_role,preferred_language,nature,source_id,group_ids,tag_ids,next_step,follow_up_on,do_not_contact,dnc_since,dnc_by,dnc_reason,review_due_on,last_reviewed_at,last_reviewed_by,archived_at,archived_by,version,company_name,company_status,is_primary_contact,review_due,auto_groups,primary_email,last_contact_at,linkedin_url",
+    contact_row: "id,created_at,first_name,last_name,job_title,company_id,company_name,company_status,decision_role,nature,group_ids,tag_ids,auto_groups,do_not_contact,review_due,review_due_on,is_primary_contact,primary_email,archived_at,archived_by,version",
+    contact: "id,created_at,first_name,last_name,job_title,company_id,brand_id,decision_role,preferred_language,nature,source_id,group_ids,tag_ids,next_step,follow_up_on,do_not_contact,dnc_since,dnc_by,dnc_reason,review_due_on,last_reviewed_at,last_reviewed_by,archived_at,archived_by,version,company_name,company_status,is_primary_contact,review_due,auto_groups,primary_email,last_contact_at,linkedin_url",
     // Repli tant que la migration 0038 (linkedin_url) n'est pas en ligne.
-    contact_base: "id,first_name,last_name,job_title,company_id,brand_id,decision_role,preferred_language,nature,source_id,group_ids,tag_ids,next_step,follow_up_on,do_not_contact,dnc_since,dnc_by,dnc_reason,review_due_on,last_reviewed_at,last_reviewed_by,archived_at,archived_by,version,company_name,company_status,is_primary_contact,review_due,auto_groups,primary_email,last_contact_at",
+    contact_base: "id,created_at,first_name,last_name,job_title,company_id,brand_id,decision_role,preferred_language,nature,source_id,group_ids,tag_ids,next_step,follow_up_on,do_not_contact,dnc_since,dnc_by,dnc_reason,review_due_on,last_reviewed_at,last_reviewed_by,archived_at,archived_by,version,company_name,company_status,is_primary_contact,review_due,auto_groups,primary_email,last_contact_at",
     contact_dup: "id,first_name,last_name,company_id,company_name,archived_at",
     deal_row: "id,name,company_id,company_name,stage_id,stage_outcome,value_aed,next_step,follow_up_on,days_in_stage,closed_on,close_reason_id,service_ids,source_id,is_renewal,engine_link_kind,engine_link_key,archived_at,archived_by,version",
     deal: "id,name,company_id,brand_id,outlet_id,primary_contact_id,stage_id,stage_entered_at,service_ids,value_aed,is_renewal,source_id,referred_by_company_id,referred_by_contact_id,expected_decision_on,next_step,follow_up_on,close_reason_id,closed_on,engine_link_kind,engine_link_key,archived_at,archived_by,version,stage_outcome,company_name,days_in_stage,last_contact_at",
@@ -267,6 +267,7 @@
     if (CODES.status.includes(f.companyStatus)) q = q.eq("company_status", f.companyStatus);
     q = withGroup(q, f.group);
     if (isUuid(f.tag)) q = q.contains("tag_ids", [f.tag]);
+    if (isUuid(f.newTag)) q = q.contains("tag_ids", [f.newTag]);
     if (f.review) q = q.eq("review_due", true);
     if (f.dnc) q = q.eq("do_not_contact", true);
     return run(q.order("last_name", { ascending: true, nullsFirst: false }).order("first_name", { ascending: true, nullsFirst: false }).limit(LIMIT));

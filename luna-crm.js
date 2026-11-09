@@ -121,6 +121,9 @@
       make_client_yes: "Yes, current client", make_client_no: "Not now",
       note_hint: "Note the work, not private life (health, family, religion).", no_notes: "No note or activity yet.",
       by_x: who => `by ${who}`, about_x: name => `About ${name}`,
+      new_chip: d => `New · arrived ${d} · automatic search`, f_new: n => `New (${n})`, seen: "Seen",
+      as_title: d => `Automatic search of ${d}`, as_venue: "Venue", as_source: "Source page", as_general: "General contact", as_open: "Project sheet",
+      as_email: "email", as_phone: "phone", as_both: "email and phone", as_none: "none", as_no_project: "That project is not in the list right now.",
       no_history: "No history yet.", system: "Luna", changed_x: list => `Changed: ${list}`, empty_value: "empty",
       del_btn: "Delete", del_title: "Delete this contact", del_title_co: "Delete this company", del_arch_lead: "The record is moved to Archived. Nothing is erased, and it can be restored at any time.", del_arch_reason: "Reason", del_arch_go: "Delete",
       archive_title: "Archive", archive_lead: "The record leaves the lists and stays in Archived, with the date and your name. You can restore it at any time.",
@@ -284,6 +287,9 @@
       make_client_yes: "Oui, client actuel", make_client_no: "Pas maintenant",
       note_hint: "Notez le travail, pas la vie privée (santé, famille, religion).", no_notes: "Aucune note ni aucun échange pour l'instant.",
       by_x: who => `par ${who}`, about_x: name => `Au sujet de ${name}`,
+      new_chip: d => `Nouveau · arrivé le ${d} · recherche automatique`, f_new: n => `Nouveaux (${n})`, seen: "Vu",
+      as_title: d => `Recherche automatique du ${d}`, as_venue: "Établissement", as_source: "Page source", as_general: "Contact général", as_open: "Fiche projet",
+      as_email: "email", as_phone: "téléphone", as_both: "email et téléphone", as_none: "aucun", as_no_project: "Ce projet n'est pas dans la liste pour l'instant.",
       no_history: "Aucun historique pour l'instant.", system: "Luna", changed_x: list => `Modifié : ${list}`, empty_value: "vide",
       del_btn: "Supprimer", del_title: "Supprimer ce contact", del_title_co: "Supprimer cette entreprise", del_arch_lead: "La fiche est rangée dans Archivés. Rien n'est effacé, et elle peut être restaurée à tout moment.", del_arch_reason: "Motif", del_arch_go: "Supprimer",
       archive_title: "Archiver", archive_lead: "La fiche quitte les listes et reste dans les Archivés, avec la date et votre nom. Vous pouvez la restaurer à tout moment.",
@@ -507,7 +513,7 @@
     state: "loading", me: null, items: [], byId: new Map(), periods: [], stack: [], current: null, seq: {}, built: {},
     pf: { view: "open", stage: "", service: "", source: "", noNext: false, archived: false, period: "month" },
     cf: { q: "", status: "", group: "", sector: "", tag: "", archived: false },
-    kf: { q: "", group: "", nature: "", companyStatus: "", tag: "", review: false, dnc: false, archived: false },
+    kf: { q: "", group: "", nature: "", companyStatus: "", tag: "", review: false, dnc: false, archived: false, isNew: false },
     listKind: "group", listsUnsure: false
   };
   const nextSeq = k => (S.seq[k] = (S.seq[k] || 0) + 1);
@@ -937,10 +943,10 @@
     sel.addEventListener("change", () => onChange(sel.value));
     return sel;
   }
-  function ctlCheck(id, label, value, onChange) {
+  function ctlCheck(id, label, value, onChange, labelId) {
     const b = h("input", { type: "checkbox", id, checked: !!value });
     b.addEventListener("change", () => onChange(b.checked));
-    return h("label", { class: "check", for: id }, b, h("span", { text: label }));
+    return h("label", { class: "check", for: id }, b, h("span", { text: label, id: labelId || null }));
   }
   function ctlSearch(id, placeholder, value, onInput) {
     const i = h("input", { type: "search", id, placeholder, "aria-label": t("search"), value: value || "", autocomplete: "off" });
@@ -998,7 +1004,20 @@
   }
 
   // Contacts (E6)
-  const contactFilterCount = () => ["group", "nature", "companyStatus", "tag"].filter(k => S.kf[k]).length + ["review", "dnc", "archived"].filter(k => S.kf[k]).length;
+  const contactFilterCount = () => ["group", "nature", "companyStatus", "tag"].filter(k => S.kf[k]).length + ["review", "dnc", "archived", "isNew"].filter(k => S.kf[k]).length;
+  const NEW_CODE = "tag_new_auto_search", NO_TAG = "00000000-0000-0000-0000-000000000000";
+  const newTagId = () => { const i = S.items.find(x => x.kind === "tag" && x.code === NEW_CODE); return i ? i.id : ""; };
+  const hasNewTag = ct => { const id = newTagId(); return !!id && Array.isArray(ct && ct.tag_ids) && ct.tag_ids.includes(id); };
+  const newDate = ct => { const d = fmtDay(ct && ct.created_at); return d ? d.slice(0, 5) : ""; };
+  const newChip = ct => chip(t("new_chip", newDate(ct)), "good crm-new");
+  let newCountSeq = 0;
+  function refreshNewCount() {
+    const my = ++newCountSeq;
+    return api().contacts({ newTag: newTagId() || NO_TAG }).then(rows => {
+      const e = byId("crm-ct-new-l");
+      if (my === newCountSeq && e) e.textContent = t("f_new", rows.length);
+    }, () => {});
+  }
   function buildContacts(box) {
     const f = S.kf;
     const re = () => { setFilterCount("crm-ct-filters", contactFilterCount()); loadContacts(); };
@@ -1010,6 +1029,7 @@
           ctlSelect("crm-ct-nature", t("f_type"), [["", t("all_types")], ...fxOptions("contact_nature")], f.nature, v => { f.nature = v; re(); }),
           ctlSelect("crm-ct-costatus", t("f_status"), [["", t("all_company_statuses")], ...fxOptions("relationship_status")], f.companyStatus, v => { f.companyStatus = v; re(); }),
           ctlSelect("crm-ct-tag", t("f_tags"), [["", t("all_tags")], ...itemOptions("tag")], f.tag, v => { f.tag = v; re(); }),
+          ctlCheck("crm-ct-new", t("f_new", 0), f.isNew, v => { f.isNew = v; re(); }, "crm-ct-new-l"),
           ctlCheck("crm-ct-review", t("f_to_review"), f.review, v => { f.review = v; re(); }),
           ctlCheck("crm-ct-dnc", t("f_dnc"), f.dnc, v => { f.dnc = v; re(); }),
           ctlCheck("crm-ct-arch", t("f_archived"), f.archived, v => { f.archived = v; re(); })
@@ -1019,6 +1039,7 @@
   }
   function contactRow(r) {
     const chips = [
+      hasNewTag(r) ? newChip(r) : null,
       r.is_primary_contact ? chip(t("main_contact_badge"), "good") : null,
       r.decision_role === "decision_maker" ? chip(fx("decision_role", "decision_maker"), "") : null,
       r.do_not_contact ? chip(t("dnc"), "warn") : null,
@@ -1028,7 +1049,8 @@
   }
   function loadContacts() {
     const filtered = !!(S.kf.q || contactFilterCount());
-    return loadList("ct", "crm-ct-list", "crm-ct-count", () => api().contacts(S.kf), (rows, list, info) => {
+    refreshNewCount();
+    return loadList("ct", "crm-ct-list", "crm-ct-count", () => api().contacts(Object.assign({}, S.kf, { newTag: S.kf.isNew ? (newTagId() || NO_TAG) : "" })), (rows, list, info) => {
       info.textContent = t("count_contacts", rows.length);
       put(list, ...(rows.length ? rows.map(contactRow) : [empty(filtered ? t("none_match") : t("no_contacts_list"))]));
     });
@@ -1248,7 +1270,7 @@
     const noteBox = n => h("article", { class: "crm-note" },
       h("div", { class: "crm-note-head" }, chip(fx("exchange_type", n.kind), n.kind === "note" ? "muted" : ""),
         h("span", { class: "s", text: [fmtWhen(n.occurred_at), n.created_by ? t("by_x", actor(n.created_by)) : "", about(n)].filter(Boolean).join(" · ") })),
-      n.body ? h("p", { class: "crm-note-body", text: n.body }) : null,
+      n.body ? (isAutoNote(n.body) ? autoNoteBody(n.body) : h("p", { class: "crm-note-body", text: n.body })) : null,
       locked ? null : h("div", { class: "crm-mini" }, btn(t("edit"), () => noteForm(n), "sm"),
         actBtn(t("archive"), () => doAction(() => api().archive("note", n.id, n.version), t("archived_done")), "sm")));
     return section(t("sec_notes"),
@@ -1365,6 +1387,43 @@
       footer("company", co, () => companyForm(co))] };
   }
 
+  // Pastille « Nouveau » : « Vu » retire seulement cette étiquette (version de la fiche), message après la réponse de la base.
+  function seenBar(ct) {
+    const id = newTagId();
+    return acts(actBtn(t("seen"), () => doAction(() => api().update("contact", ct.id, ct.version, { tag_ids: (ct.tag_ids || []).filter(x => x !== id) }))));
+  }
+  // Note de l'import « Automatic search: » : lignes à libellés fixes en anglais, traduites ; lignes inconnues telles quelles.
+  const AS_HEAD = /^Automatic search:\s*(.*)$/;
+  const isAutoNote = body => typeof body === "string" && AS_HEAD.test(body.split(/\r?\n/)[0].trim());
+  // « Fiche projet » d'une note de l'import (JACK-0911-02) : la fiche du CRM se ferme, puis la page ouvre la fiche du projet par
+  // son point d'accroche (lunaPage.openProject) ; projet inconnu : message, rien d'autre.
+  function openProjectCard(id) {
+    const pg = root.lunaPage;
+    if (!pg || typeof pg.openProject !== "function") { toast(t("as_no_project"), true); return; }
+    closeSheet();
+    if (!pg.openProject(id)) toast(t("as_no_project"), true);
+  }
+  function autoNoteBody(body) {
+    const lines = body.split(/\r?\n/).map(l => l.trim()).filter(Boolean), out = [];
+    lines.forEach((l, i) => {
+      let m;
+      if (i === 0 && (m = AS_HEAD.exec(l))) {
+        const dm = /^(\d{4})-(\d{2})-(\d{2})$/.exec(m[1].trim());
+        out.push(h("p", { class: "crm-note-body", text: t("as_title", dm ? `${dm[3]}/${dm[2]}/${dm[1]}` : m[1].trim()) }));
+      } else if ((m = /^Venue:\s*(.*)$/.exec(l))) out.push(h("p", { class: "crm-note-body", text: `${t("as_venue")} : ${m[1]}` }));
+      else if ((m = /^Project:\s*((?:lic|nom)-\S+)$/.exec(l))) {
+        const pid = m[1], pg = root.lunaPage, pr = pg && typeof pg.projects === "function" ? pg.projects().find(x => x.id === pid) : null;
+        out.push(h("p", { class: "crm-note-body" }, `${t("as_open")} : `, pr ? h("button", { type: "button", class: "linkbtn", text: pr.nom || pid, onclick: () => openProjectCard(pid) }) : pid));
+      }
+      else if ((m = /^Source page:\s*(\S+)$/.exec(l)) && /^https?:\/\/[^\s]+$/i.test(m[1])) out.push(h("p", { class: "crm-note-body" }, h("a", { href: m[1], target: "_blank", rel: "noopener noreferrer", text: t("as_source") })));
+      else if ((m = /^General contact:\s*(.*)$/.exec(l))) {
+        const k = { "email": "as_email", "phone": "as_phone", "email and phone": "as_both", "none": "as_none" }[m[1].trim().toLowerCase()];
+        out.push(h("p", { class: "crm-note-body", text: `${t("as_general")} : ${k ? t(k) : m[1]}` }));
+      } else out.push(h("p", { class: "crm-note-body", text: l }));
+    });
+    return h("div", {}, out);
+  }
+
   // Fiche contact (E7)
   async function contactView(id) {
     const A = api();
@@ -1419,10 +1478,10 @@
       [t("f_reason"), dnc ? ct.dnc_reason || "" : ""]]),
       locked ? null : acts(btn(t("review_now"), () => reviewDialog(ct)), dnc ? btn(t("dnc_off"), () => dncOffDialog(ct)) : btn(t("dnc_on"), () => dncOnDialog(ct))));
     return { title: fullName(ct), nodes: [
-      h("div", { class: "chips" }, chip(fx("contact_nature", ct.nature), "muted"), ct.is_primary_contact ? chip(t("main_contact_badge"), "good") : null,
+      h("div", { class: "chips" }, hasNewTag(ct) ? newChip(ct) : null, chip(fx("contact_nature", ct.nature), "muted"), ct.is_primary_contact ? chip(t("main_contact_badge"), "good") : null,
         ct.decision_role === "decision_maker" ? chip(fx("decision_role", ct.decision_role), "") : null, dnc ? chip(t("dnc"), "warn") : null,
         ct.review_due && !locked ? chip(t("to_review"), "warn") : null),
-      archivedBanner("contact", ct), quick, identity, detailsSec, classSec, nextSec, notesSection({ contact: ct }, notesList), dataSec,
+      archivedBanner("contact", ct), hasNewTag(ct) && !locked ? seenBar(ct) : null, quick, identity, detailsSec, classSec, nextSec, notesSection({ contact: ct }, notesList), dataSec,
       historySection(hist, id), footer("contact", ct, () => contactForm(ct))] };
   }
 
