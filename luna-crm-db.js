@@ -43,8 +43,8 @@
     list_item: "id,kind,code,label_en,label_fr,position,stage_outcome,is_locked,archived_at,archived_by,version",
     review_period: "id,nature,months,version",
     pipeline: "stage_id,position,label_en,label_fr,stage_outcome,stage_archived,deal_count,value_aed_total",
-    company_row: "id,name,status,city_or_emirate,group_ids,sector_ids,tag_ids,auto_groups,primary_contact_id,primary_contact_first_name,primary_contact_last_name,open_deal_count,last_contact_at,archived_at,archived_by,version",
-    company: "id,name,status,status_since,source_id,group_ids,sector_ids,tag_ids,website,city_or_emirate,country_code,primary_contact_id,archived_at,archived_by,version,auto_groups,primary_contact_first_name,primary_contact_last_name,open_deal_count,last_contact_at",
+    company_row: "id,created_at,name,status,city_or_emirate,group_ids,sector_ids,tag_ids,auto_groups,primary_contact_id,primary_contact_first_name,primary_contact_last_name,open_deal_count,last_contact_at,archived_at,archived_by,version",
+    company: "id,created_at,name,status,status_since,source_id,group_ids,sector_ids,tag_ids,website,city_or_emirate,country_code,primary_contact_id,archived_at,archived_by,version,auto_groups,primary_contact_first_name,primary_contact_last_name,open_deal_count,last_contact_at",
     company_dup: "id,name,status,city_or_emirate,archived_at",
     contact_row: "id,created_at,first_name,last_name,job_title,company_id,company_name,company_status,decision_role,nature,group_ids,tag_ids,auto_groups,do_not_contact,review_due,review_due_on,is_primary_contact,primary_email,archived_at,archived_by,version",
     contact: "id,created_at,first_name,last_name,job_title,company_id,brand_id,decision_role,preferred_language,nature,source_id,group_ids,tag_ids,next_step,follow_up_on,do_not_contact,dnc_since,dnc_by,dnc_reason,review_due_on,last_reviewed_at,last_reviewed_by,archived_at,archived_by,version,company_name,company_status,is_primary_contact,review_due,auto_groups,primary_email,last_contact_at,linkedin_url",
@@ -254,6 +254,7 @@
     q = withGroup(q, f.group);
     if (isUuid(f.sector)) q = q.contains("sector_ids", [f.sector]);
     if (isUuid(f.tag)) q = q.contains("tag_ids", [f.tag]);
+    if (isUuid(f.newTag)) q = q.contains("tag_ids", [f.newTag]);
     return run(q.order("name", { ascending: true }).limit(LIMIT));
   }
 

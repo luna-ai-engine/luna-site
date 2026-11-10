@@ -123,6 +123,7 @@
       by_x: who => `by ${who}`, about_x: name => `About ${name}`,
       new_chip: d => `New · arrived ${d} · automatic search`, f_new: n => `New (${n})`, seen: "Seen",
       as_title: d => `Automatic search of ${d}`, as_venue: "Venue", as_source: "Source page", as_general: "General contact", as_open: "Project sheet",
+      as_opening: "Opening announced", as_group: "Group", as_group_unknown: "not known", as_host: "Host listing", as_place: "Place", as_signal: "Signal", as_first: "First seen",
       as_email: "email", as_phone: "phone", as_both: "email and phone", as_none: "none", as_no_project: "That project is not in the list right now.",
       no_history: "No history yet.", system: "Luna", changed_x: list => `Changed: ${list}`, empty_value: "empty",
       del_btn: "Delete", del_title: "Delete this contact", del_title_co: "Delete this company", del_arch_lead: "The record is moved to Archived. Nothing is erased, and it can be restored at any time.", del_arch_reason: "Reason", del_arch_go: "Delete",
@@ -289,6 +290,7 @@
       by_x: who => `par ${who}`, about_x: name => `Au sujet de ${name}`,
       new_chip: d => `Nouveau · arrivé le ${d} · recherche automatique`, f_new: n => `Nouveaux (${n})`, seen: "Vu",
       as_title: d => `Recherche automatique du ${d}`, as_venue: "Établissement", as_source: "Page source", as_general: "Contact général", as_open: "Fiche projet",
+      as_opening: "Ouverture annoncée", as_group: "Groupe", as_group_unknown: "inconnu", as_host: "Annonce de l'hôtel", as_place: "Lieu", as_signal: "Signal", as_first: "Première détection",
       as_email: "email", as_phone: "téléphone", as_both: "email et téléphone", as_none: "aucun", as_no_project: "Ce projet n'est pas dans la liste pour l'instant.",
       no_history: "Aucun historique pour l'instant.", system: "Luna", changed_x: list => `Modifié : ${list}`, empty_value: "vide",
       del_btn: "Supprimer", del_title: "Supprimer ce contact", del_title_co: "Supprimer cette entreprise", del_arch_lead: "La fiche est rangée dans Archivés. Rien n'est effacé, et elle peut être restaurée à tout moment.", del_arch_reason: "Motif", del_arch_go: "Supprimer",
@@ -512,7 +514,7 @@
   const S = {
     state: "loading", me: null, items: [], byId: new Map(), periods: [], stack: [], current: null, seq: {}, built: {},
     pf: { view: "open", stage: "", service: "", source: "", noNext: false, archived: false, period: "month" },
-    cf: { q: "", status: "", group: "", sector: "", tag: "", archived: false },
+    cf: { q: "", status: "", group: "", sector: "", tag: "", archived: false, isNew: false },
     kf: { q: "", group: "", nature: "", companyStatus: "", tag: "", review: false, dnc: false, archived: false, isNew: false },
     listKind: "group", listsUnsure: false
   };
@@ -971,7 +973,16 @@
   }
 
   // Entreprises (E4)
-  const companyFilterCount = () => ["status", "group", "sector", "tag"].filter(k => S.cf[k]).length + (S.cf.archived ? 1 : 0);
+  const companyFilterCount = () => ["status", "group", "sector", "tag"].filter(k => S.cf[k]).length + (S.cf.archived ? 1 : 0) + (S.cf.isNew ? 1 : 0);
+  // Entreprises « Nouveau » (JACK-1011-02) : même étiquette que les contacts, nombre tenu à part.
+  let coNewCountSeq = 0;
+  function refreshCoNewCount() {
+    const my = ++coNewCountSeq;
+    return api().companies({ newTag: newTagId() || NO_TAG }).then(rows => {
+      const e = byId("crm-co-new-l");
+      if (my === coNewCountSeq && e) e.textContent = t("f_new", rows.length);
+    }, () => {});
+  }
   function buildCompanies(box) {
     const f = S.cf;
     const re = () => { setFilterCount("crm-co-filters", companyFilterCount()); loadCompanies(); };
@@ -983,6 +994,7 @@
           ctlSelect("crm-co-group", t("f_groups"), [["", t("all_groups")], ...groupOptions()], f.group, v => { f.group = v; re(); }),
           ctlSelect("crm-co-sector", t("f_industries"), [["", t("all_industries")], ...itemOptions("sector")], f.sector, v => { f.sector = v; re(); }),
           ctlSelect("crm-co-tag", t("f_tags"), [["", t("all_tags")], ...itemOptions("tag")], f.tag, v => { f.tag = v; re(); }),
+          ctlCheck("crm-co-new", t("f_new", 0), f.isNew, v => { f.isNew = v; re(); }, "crm-co-new-l"),
           ctlCheck("crm-co-arch", t("f_archived"), f.archived, v => { f.archived = v; re(); })
         ], companyFilterCount())),
       h("p", { class: "crm-count", id: "crm-co-count", role: "status", "aria-live": "polite" }),
@@ -992,12 +1004,13 @@
     const main = [r.primary_contact_first_name, r.primary_contact_last_name].filter(Boolean).join(" ");
     const meta = [main, r.last_contact_at ? t("last_contact_on", fmtDay(r.last_contact_at)) : "",
       Number(r.open_deal_count) ? t("open_deals_n", Number(r.open_deal_count)) : ""].filter(Boolean).join(" · ");
-    return rowButton({ title: r.name, chips: [chip(fx("relationship_status", r.status), statusTone(r.status))], lines: [meta],
+    return rowButton({ title: r.name, chips: [hasNewTag(r) ? newChip(r) : null, chip(fx("relationship_status", r.status), statusTone(r.status))], lines: [meta],
       archivedLine: archivedLine(r), onclick: () => openRecord("company", r.id) });
   }
   function loadCompanies() {
     const filtered = !!(S.cf.q || companyFilterCount());
-    return loadList("co", "crm-co-list", "crm-co-count", () => api().companies(S.cf), (rows, list, info) => {
+    refreshCoNewCount();
+    return loadList("co", "crm-co-list", "crm-co-count", () => api().companies(Object.assign({}, S.cf, { newTag: S.cf.isNew ? (newTagId() || NO_TAG) : "" })), (rows, list, info) => {
       info.textContent = t("count_companies", rows.length);
       put(list, ...(rows.length ? rows.map(companyRow) : [empty(filtered ? t("none_match") : t("no_companies_yet"))]));
     });
@@ -1382,15 +1395,16 @@
       closed.length ? h("div", { class: "crm-list inline" }, closed.map(d => dealRow(d, { hideCompany: true }))) : null,
       locked ? null : acts(btn(t("new_deal"), () => dealForm(null, { company: coRef }))));
     return { title: co.name, nodes: [
-      h("div", { class: "chips" }, chip(fx("relationship_status", co.status), statusTone(co.status))), archivedBanner("company", co),
+      h("div", { class: "chips" }, hasNewTag(co) ? newChip(co) : null, chip(fx("relationship_status", co.status), statusTone(co.status))), archivedBanner("company", co),
+      hasNewTag(co) && !locked ? seenBar(co, "company") : null,
       summary, deciders, brandsSec, dealsSec, notesSection({ company: co }, notesList, { contacts, deals }), historySection(hist, id),
       footer("company", co, () => companyForm(co))] };
   }
 
   // Pastille « Nouveau » : « Vu » retire seulement cette étiquette (version de la fiche), message après la réponse de la base.
-  function seenBar(ct) {
+  function seenBar(ct, kind) {
     const id = newTagId();
-    return acts(actBtn(t("seen"), () => doAction(() => api().update("contact", ct.id, ct.version, { tag_ids: (ct.tag_ids || []).filter(x => x !== id) }))));
+    return acts(actBtn(t("seen"), () => doAction(() => api().update(kind || "contact", ct.id, ct.version, { tag_ids: (ct.tag_ids || []).filter(x => x !== id) }))));
   }
   // Note de l'import « Automatic search: » : lignes à libellés fixes en anglais, traduites ; lignes inconnues telles quelles.
   const AS_HEAD = /^Automatic search:\s*(.*)$/;
@@ -1403,14 +1417,22 @@
     closeSheet();
     if (!pg.openProject(id)) toast(t("as_no_project"), true);
   }
+  // Note de l'import des ouvertures annoncées (SUN-1011-01, JACK-1011-02) : six libellés de plus, traduits ; dates au format du jour.
+  const AS_KEYS = { "Opening announced": ["as_opening"], "Group": ["as_group"], "Host listing": ["as_host"], "Place": ["as_place"],
+    "Signal": ["as_signal"], "First seen": ["as_first", "day"] };
+  const AS_LINES = /^(Opening announced|Group|Host listing|Place|Signal|First seen):\s*(.*)$/;
+  const asDay = v => { const dm = /^(\d{4})-(\d{2})-(\d{2})(?:$|[T ])/.exec(String(v).trim()); return dm ? `${dm[3]}/${dm[2]}/${dm[1]}` : String(v).trim(); };
   function autoNoteBody(body) {
     const lines = body.split(/\r?\n/).map(l => l.trim()).filter(Boolean), out = [];
     lines.forEach((l, i) => {
       let m;
       if (i === 0 && (m = AS_HEAD.exec(l))) {
-        const dm = /^(\d{4})-(\d{2})-(\d{2})$/.exec(m[1].trim());
-        out.push(h("p", { class: "crm-note-body", text: t("as_title", dm ? `${dm[3]}/${dm[2]}/${dm[1]}` : m[1].trim()) }));
+        out.push(h("p", { class: "crm-note-body", text: t("as_title", asDay(m[1])) }));
       } else if ((m = /^Venue:\s*(.*)$/.exec(l))) out.push(h("p", { class: "crm-note-body", text: `${t("as_venue")} : ${m[1]}` }));
+      else if ((m = AS_LINES.exec(l))) {
+        const [key, val] = AS_KEYS[m[1]], v = m[2].trim();
+        out.push(h("p", { class: "crm-note-body", text: `${t(key)} : ${val === "day" ? asDay(v) : key === "as_group" && v === "not known" ? t("as_group_unknown") : v}` }));
+      }
       else if ((m = /^Project:\s*((?:lic|nom)-\S+)$/.exec(l))) {
         const pid = m[1], pg = root.lunaPage, pr = pg && typeof pg.projects === "function" ? pg.projects().find(x => x.id === pid) : null;
         out.push(h("p", { class: "crm-note-body" }, `${t("as_open")} : `, pr ? h("button", { type: "button", class: "linkbtn", text: pr.nom || pid, onclick: () => openProjectCard(pid) }) : pid));
